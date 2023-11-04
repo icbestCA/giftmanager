@@ -1,0 +1,46 @@
+/* Apply a very soft blur effect */
+.login-wrap {
+    background: rgba(0, 0, 0, 0.1); /* Adjust the alpha value (0.2) for a softer blur */
+    -webkit-backdrop-filter: blur(10px); /* Add this line first, it fixes blur for Safari*/
+    backdrop-filter: blur(10px); /* Adjust the blur radius (10px) for a softer effect */
+    border-radius: 30px; /* Round the corners of the blurred background box */
+}
+
+.custom-btn {
+    min-width: 340px; /* Adjust the width as needed */
+    max-width: 100%; /* Set the maximum width to 100% of its container */
+    width: auto; /* Allow the button to adjust its width based on content */
+    font-weight: bold; /* Make the text bold (fat) */
+    border-radius: 20px; /* Round the corners of form elements */
+    padding: 20px; /* Add padding to form elements */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Add box shadow to form elements */
+}
+
+/* Make the text bold (fat) */
+.login-wrap h3,
+.login-wrap input[type="text"],
+.login-wrap input[type="password"],
+.login-wrap button {
+    font-weight: bold;
+}
+
+/* Round the corners of form elements */
+.login-wrap input[type="text"],
+.login-wrap input[type="password"],
+.login-wrap button {
+    border-radius: 20px; /* Increase the radius for more rounded corners */
+}
+
+/* Add padding to form elements */
+.login-wrap input[type="text"],
+.login-wrap input[type="password"],
+.login-wrap button {
+    padding: 20px; /* Increase the padding as needed */
+}
+
+/* Add box shadow to form elements */
+.login-wrap input[type="text"],
+.login-wrap input[type="password"],
+.login-wrap button {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Adjust the shadow properties for a softer effect */
+}
