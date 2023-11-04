@@ -1,0 +1,18 @@
+[
+    {
+        "username": "demo",
+        "password": "89e495e7941cf9e40e6980d14a16bf023ccd4c91",
+        "full_name": "Demo User",
+        "birthday": "2024-01-24",
+        "email": "demo@example.com",
+        "avatar": "icons/avatar1.png"
+    },
+    {
+        "username": "user2",
+        "password": "2aa60a8ff7fcd473d321e0146afd9e26df395147",
+        "full_name": "User Two",
+        "birthday": "2028-01-28",
+        "last_name": "Two",
+        "email": "user2@example.com"
+    }
+]
