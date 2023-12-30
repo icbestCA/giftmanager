@@ -19,12 +19,15 @@
             <h1 class="text-2xl font-semibold mb-4">Ajouter une idée cadeau</h1>
             <form action="{{ url_for('add_idea', selected_user_id=default_user) }}" method="post">
                 <div class="mb-4">
-                    <label for="user" class="block text-gray-700 font-bold">Utilisateur:</label>
-                    <select name="user" id="user" class="border rounded py-2 px-3 w-full" required>
+                    <label for="user" class="block text-gray-700 font-bold">Ajouter à:</label>
+                        <select name="user" id="user" class="border rounded py-2 px-3 w-full" required>
                         {% for user in user_list %}
-                            <option value="{{ user }}" {% if user == default_user %}selected{% endif %}>{{ user }}</option>
+                        <option value="{{ user['username'] }}" {% if user['username'] == default_user %}selected{% endif %}>{{ user['full_name'] }}</option>
                         {% endfor %}
                     </select>
+
+
+
                 </div>
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700 font-bold">Nom:</label>

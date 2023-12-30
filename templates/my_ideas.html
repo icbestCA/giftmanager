@@ -19,13 +19,13 @@
                 Retour
             </button>
             
-            <a href="{{ url_for('add_idea', selected_user_id=session['username']) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Idea</a>
+            <a href="{{ url_for('add_idea', selected_user_id=session['username']) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Nouvelle idée</a>
             <!-- The button will use the user_id of the first user in the list, which corresponds to the selected user -->
         </nav>
     </header>
     <main class="container mx-auto p-8">
         <section class="bg-gray-100 shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">User's Gift Ideas</h1>
+            <h1 class="text-2xl font-semibold mb-4">Ma liste d'idées</h1>
             <ul class="space-y-4">
                 {% for gift_idea in my_gift_ideas %}
                 <li class="bg-white p-4 shadow-md rounded-lg">
@@ -34,12 +34,19 @@
                             <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
                             <p class="text-gray-600 description">{{ gift_idea.description }}</p>
                             <!-- Display who added the gift idea below the description -->
-                            <p class="text-gray-600">Added by: {{ gift_idea.added_by }}</p>
+                            <p class="text-gray-600">Par: {{ gift_idea.added_by }}</p>
                         </div>
 
                     <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button" data-idea-id="{{ gift_idea.gift_idea_id }}">
                         <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon">
-                    </button>                    
+                    </button>
+                    
+                    <!-- Add the "Edit" button here -->
+                    {% if gift_idea.added_by == session['username'] %}
+                    <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link" data-idea-id="{{ gift_idea.gift_idea_id }}">
+                        <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon">
+                    </a>
+                    {% endif %}
                     <!-- Place the "Open Link" button after the description -->
                     <div class="flex items-center space-x-2">
                         {% if gift_idea.link %}
@@ -84,6 +91,20 @@
                 console.error('Error deleting idea:', error);
             });
         }
+
+    // Add the code for editing an idea here
+    document.querySelectorAll('.edit-idea-link').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default link behavior (i.e., navigating to a new page)
+            const ideaId = link.getAttribute('data-idea-id');
+            editIdea(ideaId);
+        });
+    });
+
+    function editIdea(ideaId) {
+        // Redirect to the edit page for the specific idea
+        window.location.href = `/edit_idea/${ideaId}`;
+    }
     </script>    
     
 </body>

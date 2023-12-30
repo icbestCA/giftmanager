@@ -87,15 +87,15 @@ def run_script():
 def login():
 
     if request.method == 'POST':
-        username = request.form['username']
+        input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
 
         hashed = hashlib.sha1(bytearray(password,encoding="utf-8")).hexdigest()
 
         # Check if the username and password match
         for user in users:
-            if user['username'] == username and user['password'] == hashed:
-                session['username'] = username
+            if user['username'].lower() == input_username and user['password'] == hashed:
+                session['username'] = user['username']
                 flash('Login successful!', 'success')
                 return redirect(url_for('dashboard'))
 
@@ -116,7 +116,7 @@ def feedback():
             'Messages': [
                 {
                     'From': {
-                        'Email': ADRESS EMAIL OF SENDER',
+                        'Email': 'ADRESS EMAIL OF SENDER', # Your email as the sender
                         'Name': 'Cadeaux Feedback',
                     },
                     'To': [
@@ -438,6 +438,36 @@ def mark_as_not_bought(idea_id):
 
     return '', 204  # Return a response with HTTP status code 204 (no content)
 
+@app.route('/bought_items')
+@login_required
+def bought_items():
+    # Filter the gift ideas to include only the ones that are bought by the current user
+    bought_items = [idea for idea in gift_ideas_data if idea['bought_by'] == session['username']]
+
+    # Add the full name for each bought item
+    for item in bought_items:
+        item['recipient_name'] = get_full_name(item['user_id'])
+
+    return render_template('bought_items.html', bought_items=bought_items)
+
+
+def get_full_name(user_id):
+    # Assuming you have a list of user data in JSON
+    for user in users:
+        if user.get('username') == user_id:
+            return user.get('full_name')
+    return None 
+
+
+
+
+def get_user_full_name(selected_user_id):
+    # Assuming you have a list of user data in JSON
+    for user in users:
+        if user.get('username') == selected_user_id:
+            return user.get('full_name')
+    return None 
+
 @app.route('/user_gift_ideas/<selected_user_id>')
 @login_required
 def user_gift_ideas(selected_user_id):
@@ -513,6 +543,37 @@ def add_user():
         return redirect(url_for('dashboard'))
 
     return render_template('add_user.html')
+
+@app.route('/edit_idea/<int:idea_id>', methods=['GET', 'POST'])
+@login_required
+def edit_idea(idea_id):
+    # Find the idea by its ID
+    idea = find_idea_by_id(gift_ideas_data, idea_id)
+
+    if idea:
+        current_user_username = session['username']  # Use 'username' from the session
+
+        # Check if the idea was added by the current user or if it's in their list
+        if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username:
+            if request.method == 'POST':
+                # Update idea details with submitted form data
+                idea['description'] = request.form.get('description', '')
+                idea['link'] = request.form.get('link', '')
+
+                # Update the JSON file with the modified data
+                update_gift_ideas_json(gift_ideas_data)
+
+                flash('Idea updated successfully!', 'success')
+                return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
+            
+            # Render the edit idea form with pre-filled data
+            return render_template('edit_idea.html', idea=idea)
+        else:
+            flash('You are not authorized to edit this idea.', 'danger')
+    else:
+        flash('Idea not found', 'danger')
+
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)

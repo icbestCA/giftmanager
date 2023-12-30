@@ -155,7 +155,10 @@
 
                     <div class="help" onclick="location.href='{{ url_for('feedback') }}'">
                         <img class="helplogo" src="{{ url_for('static', filename='icons/help.svg') }}">
-                    </div>                    
+                    </div>        
+                    <div class="help" onclick="location.href='{{ url_for('bought_items') }}'">
+                        <img class="helplogo" src="{{ url_for('static', filename='icons/cart.svg') }}">
+                    </div>           
 
                     <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
                         <p class="text-center text-gray-600">Nouvelle idée</p>
