@@ -334,6 +334,16 @@ def dashboard():
     with open('users.json', 'r') as file:
         users = json.load(file)
 
+    # Sort the user list alphabetically by full_name
+    sorted_users = sorted(users, key=lambda x: x['full_name'].lower())
+
+    current_user = next((user for user in sorted_users if user['username'] == session['username']), None)
+
+        # Move the current user to the top of the list
+    if current_user:
+        sorted_users.remove(current_user)
+        sorted_users.insert(0, current_user)
+
     # Find the user's data by matching the username in the session
     user_data = next((user for user in users if user['username'] == session['username']), None)
 
@@ -348,7 +358,7 @@ def dashboard():
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', profile_info=profile_info, users=users)  # Pass both profile_info and users
+    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users)  # Pass both profile_info and users
 
 @app.route('/change_password', methods=['POST'])
 @login_required
