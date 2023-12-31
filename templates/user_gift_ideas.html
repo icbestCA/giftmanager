@@ -10,40 +10,6 @@
         .description {
         max-width: 400px; /* Adjust the max-width value to control the width */
     }
-
-    /* Style for the pop-up */
-    #popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 20px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      z-index: 999;
-    }
-
-    /* Style for the overlay */
-    #overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 998;
-    }
-
-    /* Style for the close button in the pop-up */
-    #close-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-    }
     </style>
 </head>
 <body class="text-gray-900 font-sans">
@@ -75,14 +41,12 @@
                             <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon">
                         </button>
                     {% endif %}
-
-                    <!-- Add the "Edit" button here -->
+                     <!-- Add the "Edit" button here -->
                     {% if gift_idea.added_by == session['username'] %}
                     <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link" data-idea-id="{{ gift_idea.gift_idea_id }}">
                         <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon">
                     </a>
-                     {% endif %}
-                    
+                    {% endif %}
                         <!-- Place the "Open Link" button after the description -->
                         <div class="flex items-center space-x-2">
                             {% if gift_idea.link %}
@@ -103,7 +67,7 @@
                             </button>
                         {% endif %}
                     {% else %}
-                    <strong>Idée disponible</strong>
+			<strong>Idée disponible</strong>
                         <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button"
                             data-idea-id="{{ gift_idea.gift_idea_id }}">Achat réalisé
                         </button>
@@ -112,16 +76,7 @@
                 {% endfor %}
             </ul>
         </section>
-    </main> 
-    
-        <!-- Pop-up content -->
-        <div id="popup">
-            <div id="close-btn" onclick="closePopup()">X</div>
-            <p>This is an example pop-up explaining the use of the button.</p>
-        </div>
-    
-        <!-- Overlay to cover the background when the pop-up is open -->
-        <div id="overlay"></div>
+    </main>    
     <script>
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {
@@ -202,7 +157,6 @@
                 console.error('Error deleting idea:', error);
             });
         }
-
     // Add the code for editing an idea here
     document.querySelectorAll('.edit-idea-link').forEach(link => {
         link.addEventListener('click', (event) => {
@@ -215,46 +169,7 @@
     function editIdea(ideaId) {
         // Redirect to the edit page for the specific idea
         window.location.href = `/edit_idea/${ideaId}`;
-    }   
-
-        // Function to open the pop-up
-        function openPopup() {
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-
-            // Automatically close the pop-up after 20 seconds
-            setTimeout(closePopup, 20000);
-        }
-
-        // Function to close the pop-up
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        // Function to check if a week has passed since the last popup
-        function hasWeekPassed() {
-            const lastPopupDate = localStorage.getItem('lastPopupDate');
-
-            if (!lastPopupDate) {
-                // If there is no stored date, it's the first time, show the popup
-                return true;
-            }
-
-            const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
-            const currentTime = new Date().getTime();
-            const lastPopupTime = new Date(lastPopupDate).getTime();
-
-            return currentTime - lastPopupTime >= oneWeekInMilliseconds;
-        }
-
-        // Automatically open the pop-up if a week has passed since the last popup
-        if (hasWeekPassed()) {
-            openPopup();
-            // Update the stored date
-            localStorage.setItem('lastPopupDate', new Date().toJSON());
-        }
-        
+    }  
     </script>    
     
 </body>
