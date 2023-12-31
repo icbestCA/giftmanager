@@ -11,6 +11,10 @@ The Gift Ideas Web Application is a simple web application built using Flask, al
 - **Mark as Bought:** Users can mark gift ideas as bought or not bought to avoid the others user buying the same gift twice.
 - **View Gift Ideas:** Users can view their own gift ideas and those of other users, but can't see the ideas added to his list by other user and the user can't see if his own idea was bought. To keep the surprise.
 - **Delete Gift Ideas:** Users can delete gift ideas they added to someone else or those in their list, because everyone can chnage mind. If the gift ideas is already buyed it will send an email to the buyer to notify him that the idea he bought was deleted.
-- **Bought Items** Users can see what items they bought by clicking the small cart on the dashboard.
-- **Adding profiles** Every authenticated users can add a new profile to the site.
+- **Bought Items:** Users can see what items they bought by clicking the small cart on the dashboard.
+- **Adding profiles:** Every authenticated users can add a new profile to the site.
 - **Email Notifications:** Buyers receive email notifications when a gift marked as bought is deleted, there's also a feedback page the website owner will receive the feedback by email.
+
+## Installation
+
+For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
