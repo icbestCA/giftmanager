@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Ideas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+</head>
+<body class="text-gray-900 font-sans">
+    <header class="bg-white text-gray-900 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">
+                Back
+            </button>
+        </nav>
+    </header>
+    <main class="container mx-auto p-8">
+        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-4">Add Ideas</h1>
+            <form action="{{ url_for('add_idea', selected_user_id=default_user) }}" method="post">
+                <div class="mb-4">
+                    <label for="user" class="block text-gray-700 font-bold">Add to:</label>
+                        <select name="user" id="user" class="border rounded py-2 px-3 w-full" required>
+                        {% for user in user_list %}
+                        <option value="{{ user['username'] }}" {% if user['username'] == default_user %}selected{% endif %}>{{ user['full_name'] }}</option>
+                        {% endfor %}
+                    </select>
+
+
+
+                </div>
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 font-bold">Title:</label>
+                    <input type="text" name="name" id="name" class="border rounded py-2 px-3 w-full" required>
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-gray-700 font-bold">Description:</label>
+                    <textarea name="description" id="description" class="border rounded py-2 px-3 w-full"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="link" class="block text-gray-700 font-bold">Link:</label>
+                    <input type="url" name="link" id="link" class="border rounded py-2 px-3 w-full">
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Add</button>
+            </form>
+        </section>
+    </main>        
+    <script>
+    const backButton = document.getElementById('backButton');
+    backButton.addEventListener('click', () => {
+        window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+    });
+    </script>
+</body>
+</html>

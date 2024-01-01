@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        main {
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        section {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 420px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .submit-button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .answer {
+            display: none;
+        }
+
+        .question {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Support & Feedback</h1>
+    </header>
+    <main>
+        <section>
+            <form method="POST" action="/feedback" class="feedback-form">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" class="input-field" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">EMAIL (Optionnal):</label>
+                    <input type="email" name="email" id="email" class="input-field">
+                </div>
+
+                <div class="form-group">
+                    <label for="feedback">Feedback:</label>
+                    <textarea name="feedback" id="feedback" class="input-field" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Submit Feedback" class="submit-button">
+                </div>
+            </form>
+        </section>
+        <section>
+            <h2>Frequently Asked Questions (FAQ)</h2>
+            <ul>
+                <li class="question">
+                    <strong>Q1: What is this website about?</strong><br>
+                    <div class="answer">
+                        A1: This website is about...
+                    </div>
+                </li>
+                <br>
+                <li class="question">
+                    <strong>Q2: How do I contact support?</strong><br>
+                    <div class="answer">
+                        A2: You can contact our support team by...
+                    </div>
+                </li>
+                <!-- Add more FAQ items as needed -->
+            </ul>
+        </section>
+
+        <section>
+            <h2>Tutorials</h2>
+            <ul>
+                <li class="question">
+                    <strong>Tutorial 1: Getting Started</strong><br>
+                    <div class="answer">
+                        This tutorial will guide you through...
+                    </div>
+                </li>
+                <br>
+                <li class="question">
+                    <strong>Tutorial 2: Advanced Features</strong><br>
+                    <div class="answer">
+                        Learn advanced features and techniques...
+                    </div>
+                </li>
+                <!-- Add more tutorials as needed -->
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        // JavaScript to toggle answers when clicking on questions
+        const questions = document.querySelectorAll('.question');
+        questions.forEach((question) => {
+            question.addEventListener('click', () => {
+                const answer = question.querySelector('.answer');
+                answer.style.display = (answer.style.display === 'block') ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>
