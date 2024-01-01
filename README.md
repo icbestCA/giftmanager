@@ -19,7 +19,7 @@ The Gift Ideas Web Application is a simple web application built using Flask, al
 
 - For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
 
-- **Lines to edit in app.py**
+  **Lines to edit in app.py**
 - API keys mailjet ``` Lines 11 and 12 ``` 
 - Add your email for the service or your personnal one ``` Lines 119, 124, 288 ```
 - Add the name of the service ``` Line 289 ```
