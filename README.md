@@ -2,7 +2,11 @@
 
 The Gift Ideas Web Application is a simple web application built using Flask, allowing users to manage and share gift ideas.
 
+# Demo
+Test the demo here: https://giftmanagerdemo.pages.dev/ only for the graphical interface.
+
 ## Features
+-**Notice** The login page isn't coded by me. It from https://github.com/LoginRadius/awesome-login-pages > login form 13 
 
 - **User Authentication:** Users can create accounts, log in, and log out. All the passwords are stored encrypted with SHA-1, within a JSON, separated from the ideas.
 - **User Profiles:** Users can view and update their password and email.
