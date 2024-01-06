@@ -2,7 +2,11 @@
 
 The Gift Ideas Web Application is a simple web application built using Flask, allowing users to manage and share gift ideas.
 
+# Demo
+Test the demo here: https://giftmanagerdemo.pages.dev/ only for the graphical interface.
+
 ## Features
+-**Notice** The login page isn't coded by me. It from https://github.com/LoginRadius/awesome-login-pages > login form 13 
 
 - **User Authentication:** Users can create accounts, log in, and log out. All the passwords are stored encrypted with SHA-1, within a JSON, separated from the ideas.
 - **User Profiles:** Users can view and update their password and email.
@@ -17,16 +21,16 @@ The Gift Ideas Web Application is a simple web application built using Flask, al
 
 ## Installation
 
-For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
+- For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
 
-**Lines to edit in app.py**
-API keys mailjet ``` Lines 11 and 12 ``` 
-Add your email for the service or your personnal one ``` Lines 119, 124, 288 ```
-Add the name of the service ``` Line 289 ```
+  **Lines to edit in app.py**
+- API keys mailjet ``` Lines 11 and 12 ``` 
+- Add your email for the service or your personnal one ``` Lines 119, 124, 288 ```
+- Add the name of the service ``` Line 289 ```
 
 
 ## To Do
 
-**Add tutorials and FAQ** Add tutorials to the feedback page
-**Add email password reset** User could reset their password on their own without asking the admin
+- **Add tutorials and FAQ** Add tutorials to the feedback page
+- **Add email password reset** User could reset their password on their own without asking the admin
 
