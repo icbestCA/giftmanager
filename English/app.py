@@ -205,7 +205,7 @@ def add_idea(selected_user_id):
         name = request.form['name']
         description = request.form.get('description', '')
         link = request.form.get('link', '')
-        added_by = session('username')  # Get the username of the user who added the idea
+        added_by = session.get('username')  # Get the username of the user who added the idea
 
         # Find the largest gift idea ID
         largest_gift_idea_id = max(idea['gift_idea_id'] for idea in gift_ideas_data)
@@ -240,7 +240,7 @@ def add_idea(selected_user_id):
     user_list = [{"full_name": user["full_name"], "username": user["username"]} for user in users]
 
     # Render the "Add Idea" page with the user list and the selected user as default
-    return render_template('add_idea.html', user_list=user_list, default_user=selected_user_id)
+    return render_template('add_idea.html', user_list=user_list, gift_ideas=gift_ideas_data, default_user=selected_user_id)
 
 
 
