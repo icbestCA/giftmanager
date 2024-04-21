@@ -154,7 +154,7 @@ def add2(selected_user_id):
         name = request.form['name']
         description = request.form.get('description', '')
         link = request.form.get('link', '')
-        added_by = session('username')  # Get the username of the user who added the idea
+        added_by = session['username']  # Get the username of the user who added the idea
 
         # Find the largest gift idea ID
         largest_gift_idea_id = max(idea['gift_idea_id'] for idea in gift_ideas_data)
