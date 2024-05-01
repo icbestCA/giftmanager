@@ -30,7 +30,7 @@ Test the demo here: https://giftmanagerdemo.pages.dev/ only for the graphical in
 
 
 ## To Do
-- **Use SQL databse** Instead of JSON use SQL because of the workers in Gunicorn
+- **Fix login button on tablets** Login button too wide on tablets.
 - **Add tutorials and FAQ** Add tutorials to the feedback page
 - **Add email password reset** User could reset their password on their own without asking the admin
 
