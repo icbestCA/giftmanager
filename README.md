@@ -24,6 +24,7 @@ Test the demo here: https://giftmanagerdemo.pages.dev/ only for the graphical in
 - For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
 
   **Lines to edit in app.py**
+- Add your flask secret key ``` Line 9 ``` 
 - API keys mailjet ``` Lines 11 and 12 ``` 
 - Add your email for the service or your personnal one ``` Lines 119, 124, 288 ```
 - Add the name of the service ``` Line 289 ```
