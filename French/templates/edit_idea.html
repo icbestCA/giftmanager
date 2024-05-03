@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Idea</title>
+    <title>{{ idea.gift_name }} - Modifier une idée</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <!-- Add your CSS styles here if needed -->
 </head>
@@ -13,7 +13,7 @@
 
     <div class="container mx-auto p-8">
 
-        <h1 class="text-4xl font-bold mb-8">Modifier une idée</h1>
+        <h1 class="text-4xl font-bold mb-8">{{ idea.gift_name }}</h1> <!-- Display the gift_name as a heading -->
 
         <form method="post" action="{{ url_for('edit_idea', idea_id=idea.gift_idea_id) }}"
             class="bg-white p-6 rounded-lg shadow-md mb-8">
