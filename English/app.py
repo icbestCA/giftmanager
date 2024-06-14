@@ -1,12 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 from mailjet_rest import Client
-from datetime import datetime, timedelta
+from datetime import datetime
 import json, subprocess, hashlib
+from flask_wtf import CSRFProtect
 
 
 app = Flask(__name__)
-app.secret_key = 'test'
+app.config['SECRET_KEY'] = 'test'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Set SameSite attribute to Strict
+csrf = CSRFProtect(app)
 
 mailjet_api_key = "YOUR_API_KEY"
 mailjet_api_secret = "YOUR_API_KEY"
