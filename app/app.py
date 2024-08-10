@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, render_template_string
+from flask import Flask, render_template, request, redirect, url_for, session, flash, render_template_string, send_file, abort
 from functools import wraps
 from mailjet_rest import Client
-from datetime import datetime
+from datetime import datetime, timedelta
 import json, subprocess, hashlib
 import os
 from dotenv import load_dotenv, set_key, dotenv_values
@@ -11,6 +11,9 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Set SameSite attribute to Strict
+app.permanent_session_lifetime = timedelta(days=30)
+app.config['UPLOAD_FOLDER'] = './'  # Directory where files are stored
+app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
@@ -113,6 +116,7 @@ def login():
         # Check if the username and password match
         for user in users:
             if user['username'].lower() == input_username and user['password'] == hashed:
+                session.permanent = True  # This makes the session permanent
                 session['username'] = user['username']
                 flash('Login successful!', 'success')
                 return redirect(url_for('dashboard'))
@@ -702,31 +706,62 @@ field_explanations = {
 def get_env_values():
     return dotenv_values()
 
-@app.route('/env')
+@app.route('/setup', methods=['GET'])
 @login_required
 @admin_required
-def env():
+def setup():
     env_values = get_env_values()
-    return render_template_string('''
-        <h1>Configure .env File</h1>
-        <form method="POST" action="{{ url_for('update_env') }}">
-            {% for key, value in env_values.items() %}
-                <div>
-                    <label>{{ key }}: {{ explanations[key] }}</label>
-                    <input type="text" name="{{ key }}" value="{{ value }}">
-                </div>
-            {% endfor %}
-            <button type="submit">Update</button>
-        </form>
-    ''', env_values=env_values, explanations=field_explanations)
+    return render_template('setup.html', env_values=env_values, explanations=field_explanations)
+
 
 @app.route('/update', methods=['POST'])
+@login_required
+@admin_required
 def update_env():
     for key in field_explanations.keys():
         if key in request.form:
             new_value = request.form[key]
             set_key('.env', key, new_value)
-    return redirect(url_for('env'))
+    return redirect(url_for('setup'))
+
+@app.route('/upload_files', methods=['POST'])
+@login_required
+@admin_required
+def upload_files():
+    ideas_file = request.files.get('ideas_file')
+    users_file = request.files.get('users_file')
+
+    if ideas_file and allowed_file(ideas_file.filename):
+        ideas_file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'ideas.json'))
+
+    if users_file and allowed_file(users_file.filename):
+        users_file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'users.json'))
+
+    return redirect(url_for('setup'))
+
+
+@app.route('/download_files', methods=['GET'])
+@login_required
+@admin_required
+def download_files():
+    # Handle file downloads
+    file = request.args.get('file')
+    if file not in ['ideas.json', 'users.json']:
+        abort(404)
+    
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file)
+    
+    if not os.path.exists(file_path):
+        abort(404)
+    
+    return send_file(file_path, as_attachment=True)
+
+
+def allowed_file(filename):
+    """
+    Check if the file has a valid extension.
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 if __name__ == '__main__':
     app.run(debug=True)
