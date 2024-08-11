@@ -2,33 +2,31 @@
 
 The Gift Ideas Web Application is a simple web application built using Flask, allowing users to manage and share gift ideas.
 
+### For documentation, installation and setup see [gift.icbest.ca](https://gift.icbest.ca/) 
+
 # Demo
 Test the demo here: https://giftmanagerdemo.pages.dev/ only for the graphical interface.
 
 ## Features
--**Notice** The login page isn't coded by me. It from https://github.com/LoginRadius/awesome-login-pages > login form 13 
+Sleek and Adaptable Design: Powered by Tailwind CSS, providing a responsive layout that looks great on any device.
 
-- **User Authentication:** Users can create accounts, log in, and log out. All the passwords are stored encrypted with SHA-1, within a JSON, separated from the ideas.
-- **User Profiles:** Users can view and update their password and email.
-- **Add Gift Ideas:** Users can add new gift ideas, providing details such as the gift name, description and link.
-- **Ideas Editing** Users that added an ideas can modify it but only the link and description to prevent someone modifying the compelete sense of it.
-- **Mark as Bought:** Users can mark gift ideas as bought or not bought to avoid the others user buying the same gift twice.
-- **View Gift Ideas:** Users can view their own gift ideas and those of other users, but can't see the ideas added to his list by other user and the user can't see if his own idea was bought. To keep the surprise.
-- **Delete Gift Ideas:** Users can delete gift ideas they added to someone else or those in their list, because everyone can chnage mind. If the gift ideas is already buyed it will send an email to the buyer to notify him that the idea he bought was deleted.
-- **Bought Items:** Users can see what items they bought by clicking the small cart on the dashboard.
-- **Adding profiles:** Every authenticated users can add a new profile to the site.
-- **Email Notifications:** Buyers receive email notifications when a gift marked as bought is deleted, there's also a feedback page the website owner will receive the feedback by email.
+Effortless Interaction: Intuitive SVG icons enhance every button, making navigation seamless.
 
-## Installation
+Comprehensive Control: Seamlessly add, edit, and delete gift ideas.
 
-- For testing use ``` flask run ``` You will need to signup and install the Mailjet module ``` pip install mailjet-rest ``` 
+Detailed Information: Include important details for each gift idea, such as name, description, and link.
 
-  **Lines to edit in app.py**
-- Add your flask secret key ``` Line 9 ``` 
-- API keys mailjet ``` Lines 11 and 12 ``` 
-- Add your email for the service or your personnal one ``` Lines 119, 124, 288 ```
-- Add the name of the service ``` Line 289 ```
+Automated Alerts: Effortlessly mark ideas as "Bought" or "Not Bought," with 
 
+ sent to buyers when ideas are removed.
+
+Complete Transparency: View all relevant information for your gift ideas, including who added them and who bought them.
+
+Organized and Personalized: Keep your gift lists tidy, with each user's list displayed alphabetically and your own list always at the top.
+
+Surprise Preservation: Keep the excitement alive—others can see if an idea is bought, but you cannot, so you won’t know what gifts you’ll receive. Additionally, you won’t see what others have added to your list, keeping surprises intact.
+
+Easy Management and Installation for the Admin: Simplify administrative tasks with an intuitive interface and straightforward installation process, ensuring smooth operation and quick setup.
 
 ## To Do
 - **Add tutorials and FAQ** Add tutorials to the feedback page
