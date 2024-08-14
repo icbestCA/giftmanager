@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, render_template_string, send_file, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort, make_response
 from functools import wraps
 from mailjet_rest import Client
 from datetime import datetime, timedelta
@@ -11,7 +11,6 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Set SameSite attribute to Strict
-app.permanent_session_lifetime = timedelta(days=30)
 app.config['UPLOAD_FOLDER'] = './'  # Directory where files are stored
 app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
@@ -116,7 +115,7 @@ def login():
         # Check if the username and password match
         for user in users:
             if user['username'].lower() == input_username and user['password'] == hashed:
-                session.permanent = True  # This makes the session permanent
+                #session.permanent = True  # This makes the session permanent
                 session['username'] = user['username']
                 flash('Login successful!', 'success')
                 return redirect(url_for('dashboard'))
@@ -343,13 +342,14 @@ def get_user_email_by_username(username):
 
 
 
-
 @app.route('/logout')
-@login_required
 def logout():
-    session.pop('username', None)
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    session.clear()  # Clear all session data
+    response = make_response(redirect(url_for('login')))
+    expires = datetime.utcnow() + timedelta(seconds=5)
+    response.set_cookie('session', '', expires=expires)  # Set the session cookie to expire in 5 seconds
+    return response
+
 
 @app.route('/dashboard')
 @login_required
@@ -701,6 +701,7 @@ field_explanations = {
     "MAILJET_API_SECRET": "Mailjet API secret key",
     "SECRET_KEY": "Flask secret key for browser data",
     "SYSTEM_EMAIL": "System email that will send the mesaage related to the app, must be allowed in mailjet",
+    "DELETE_DAYS":"days delete"
 }
 # Function to get current .env values
 def get_env_values():
@@ -763,5 +764,5 @@ def allowed_file(filename):
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
