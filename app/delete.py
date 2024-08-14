@@ -1,33 +1,35 @@
 import json
+import os
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
-# Load the gift ideas from the JSON file
+threshold_days = int(os.getenv("DELETE_DAYS"))  
+
+threshold_time = datetime.now() - timedelta(days=threshold_days)
+
 with open('ideas.json', 'r') as ideas_file:
     gift_ideas_data = json.load(ideas_file)
 
-# Define the threshold for 2 months
-two_months_ago = datetime.now() - timedelta(days=20)
 
-# Create a new list to store ideas that should be kept
 updated_gift_ideas = []
+removed_count = 0
 
-# Iterate through the gift ideas
 for idea in gift_ideas_data:
-    # Check if the idea has a 'date_bought' field
     if 'date_bought' in idea:
-        # Parse the date_bought field as a datetime object
         date_bought = datetime.strptime(idea['date_bought'], '%Y-%m-%d %H:%M:%S')
 
-        # Check if the date_bought is more than 2 months ago
-        if date_bought < two_months_ago:
-            # Skip this idea (it has been bought more than 2 months ago)
+        if date_bought < threshold_time:
+            removed_count += 1
             continue
 
-    # If the idea is still within the 2-month threshold or doesn't have a 'date_bought' field, add it to the updated list
     updated_gift_ideas.append(idea)
 
-# Save the updated gift ideas back to the JSON file
 with open('ideas.json', 'w') as ideas_file:
     json.dump(updated_gift_ideas, ideas_file, indent=2)
 
-print("Ideas older than 2 months have been removed.")
+last_execution_time = datetime.now().isoformat()
+with open('last_execution_time.txt', 'w') as time_file:
+    time_file.write(last_execution_time)
+
+print(f"Ideas older than {threshold_days} days have been removed. Total removed: {removed_count}")
