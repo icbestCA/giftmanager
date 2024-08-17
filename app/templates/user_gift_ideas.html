@@ -1,82 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift ideas</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
-    <style>
-        /* Add any custom styles here */
-        .description {
-        max-width: 400px; /* Adjust the max-width value to control the width */
-    }
-    </style>
-</head>
-<body class="text-gray-900 font-sans">
-    <header class="bg-white text-gray-900 p-4">
-        <nav class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">
-                Back
-            </button>
-            
-            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
-            <!-- The button will use the user_id of the first user in the list, which corresponds to the selected user -->
-        </nav>
-    </header>
-    <main class="container mx-auto p-8">
-        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">Ideas list for {{ user_namels }}</h1>
-            <ul class="space-y-4">
-                {% for gift_idea in user_gift_ideas %}
-                <li class="bg-white p-4 shadow-md rounded-lg">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
-                            <p class="text-gray-600 description">{{ gift_idea.description }}</p>
-                            <!-- Display who added the gift idea below the description -->
-                            <p class="text-gray-600">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gift Ideas</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+        <style>
+            /* Custom styles for better mobile responsiveness */
+            .description {
+                max-width: 400px;
+                word-wrap: break-word;
+            }
+    
+            /* Responsive layout adjustments */
+            @media (max-width: 640px) {
+                .idea-container {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+    
+                .idea-actions {
+                    flex-direction: row;
+                    gap: 0.5rem;
+                    margin-top: 1rem;
+                    width: 100%;
+                    justify-content: flex-start;
+                }
+    
+                .idea-actions button,
+                .idea-actions a {
+                    flex: 1;
+                    text-align: center;
+                }
+            }
+        </style>
+    </head>
+    
+    <body class="text-gray-900 font-sans">
+        <header class="bg-white text-gray-900 p-4">
+            <nav class="container mx-auto flex justify-between items-center">
+                <button id="backButton" class="text-2xl px-4 py-2">Back</button>
+                <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
+            </nav>
+        </header>
+        <main class="container mx-auto p-8">
+            <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+                <h1 class="text-2xl font-semibold mb-4">Ideas list for {{ user_namels }}</h1>
+                <ul class="space-y-4">
+                    {% for gift_idea in user_gift_ideas %}
+                    <li class="bg-white p-4 shadow-md rounded-lg">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center idea-container">
+                            <div class="flex-1 min-w-0 mb-2 sm:mb-0">
+                                <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
+                                <p class="text-gray-600 description">{{ gift_idea.description }}</p>
+                                <p class="text-gray-600">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
+                                {% if gift_idea.added_by == session['username'] %}
+                                <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                    <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5">
+                                </button>
+                                <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                    <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5">
+                                </a>
+                                {% endif %}
+                                {% if gift_idea.link %}
+                                {% set link = gift_idea.link %}
+                                {% if not link.startswith('http://') and not link.startswith('https://') %}
+                                {% set link = 'https://' + link %}
+                                {% endif %}
+                                <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
+                                    <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5">
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
-                        {% if gift_idea.added_by == session['username'] %}
-                        <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                            <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon">
-                        </button>
-                    {% endif %}
-                     <!-- Add the "Edit" button here -->
-                    {% if gift_idea.added_by == session['username'] %}
-                    <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                        <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon">
-                    </a>
-                    {% endif %}
-                        <!-- Place the "Open Link" button after the description -->
-                        <div class="flex items-center space-x-2">
-                            {% if gift_idea.link %}
-                            <a href="{{ gift_idea.link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded open-link-button">
-                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link">
-                            </a>
-                            {% else %}
-                                <div style="width: 0; height: 0; overflow: hidden; visibility: hidden;"></div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    {% if gift_idea.bought_by %}
+                        {% if gift_idea.bought_by %}
                         <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
                         {% if gift_idea.bought_by == session['username'] %}
-                            <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button"
-                                data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase
-                            </button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
                         {% endif %}
-                    {% else %}
-			<strong>Available idea</strong>
-                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button"
-                            data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed
-                        </button>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </section>
-    </main>    
+                        {% else %}
+                        <strong>Available idea</strong>
+                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </main>   
     <script>
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {

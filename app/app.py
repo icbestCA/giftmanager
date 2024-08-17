@@ -139,12 +139,12 @@ def feedback():
                 {
                     'From': {
                         'Email': os.getenv("SYSTEM_EMAIL"),
-                        'Name': 'Cadeaux Feedback',
+                        'Name': 'GiftManager Feedback',
                     },
                     'To': [
                         {
                             'Email': os.getenv("FEED_SEND"),  # Your email as the recipient
-                            'Name': 'Isaac',
+                            'Name': 'Admin',
                         },
                     ],
                     'Subject': 'Feedback',
@@ -281,7 +281,7 @@ def delete_idea(idea_id):
             # Check if the idea is bought
             if idea['bought_by']:
                 # Send an email to the buyer using Mailjet
-                send_email_to_buyer_via_mailjet(idea['bought_by'], f'{idea["gift_name"]}', 'IDÉE SUPPRIMÉE')
+                send_email_to_buyer_via_mailjet(idea['bought_by'], f'{idea["gift_name"]}', 'IDEAS DELETED')
 
             # Delete the idea
             gift_ideas_data.remove(idea)
@@ -301,7 +301,7 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
             buyer_email = get_user_email_by_username(buyer_username)
             
             if buyer_email:
-                text_part = f"Cette idée, '{idea_name}',a été supprimé alors QUE VOUS L'AVEZ ACHETÉ ."
+                text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
 
                 # Send an email to the buyer using Mailjet
                 data = {
@@ -309,7 +309,7 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
                         {
                             'From': {
                                 'Email': os.getenv("SYSTEM_EMAIL"),  # Your sender email address
-                                'Name': 'Liste Cadeau',
+                                'Name': 'GiftManager',
                             },
                             'To': [
                                 {
@@ -406,12 +406,12 @@ def change_password():
 
     # Check if the current password matches the stored password
     if currenthash != user_password:
-        flash('Mot de passe actuel incorrect', 'danger')
+        flash('Actual password incorrect', 'danger')
         return redirect(url_for('dashboard'))
 
     # Check if the new password and confirmation match
     if newhash != confhash:
-        flash('Nouveau mot de passe et confirmation ne correspondent pas', 'danger')
+        flash('New password and confirmation do not match', 'danger')
         return redirect(url_for('dashboard'))
 
     # Update the user's password in the JSON data (you may need to modify this)
@@ -424,7 +424,7 @@ def change_password():
     with open('users.json', 'w') as file:
         json.dump(users, file, indent=4)
 
-    flash('Mot de passe modifié avec succès.', 'success')
+    flash('Password successfully modified', 'success')
     return redirect(url_for('dashboard'))
 
 def find_idea_by_id(ideas, idea_id):
