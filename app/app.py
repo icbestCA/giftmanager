@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from functools import wraps
 from mailjet_rest import Client
 from datetime import datetime, timedelta
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 import json, subprocess, hashlib
 import os
 from dotenv import load_dotenv, set_key, dotenv_values
@@ -17,6 +19,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'json'}
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
 mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
+ph = PasswordHasher()
 
 
 def update_gift_ideas_json(data):
@@ -105,26 +108,26 @@ def run_email():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
     if request.method == 'POST':
         input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
 
-        hashed = hashlib.sha1(bytearray(password,encoding="utf-8")).hexdigest()
-
-        # Check if the username and password match
+        # Check if the username exists
         for user in users:
-            if user['username'].lower() == input_username and user['password'] == hashed:
-                #session.permanent = True  # This makes the session permanent
-                session['username'] = user['username']
-                flash('Login successful!', 'success')
-                return redirect(url_for('dashboard'))
+            if user['username'].lower() == input_username:
+                try:
+                    # Verify the password against the stored hash using Argon2
+                    if ph.verify(user['password'], password):
+                        session['username'] = user['username']
+                        flash('Login successful!', 'success')
+                        return redirect(url_for('dashboard'))
+                except VerifyMismatchError:
+                    flash('Invalid login credentials. Please try again.', 'danger')
+                    return render_template('login.html')
 
         flash('Invalid login credentials. Please try again.', 'danger')
 
     return render_template('login.html')
-
-
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
@@ -341,7 +344,6 @@ def get_user_email_by_username(username):
     return None  # Return None if user email not found
 
 
-
 @app.route('/logout')
 def logout():
     session.clear()  # Clear all session data
@@ -391,9 +393,7 @@ def change_password():
     new_password = request.form['new_password']
     confirm_password = request.form['confirm_password']
 
-    currenthash = hashlib.sha1(bytearray(current_password,encoding="utf-8")).hexdigest()
-    newhash = hashlib.sha1(bytearray(new_password,encoding="utf-8")).hexdigest()
-    confhash = hashlib.sha1(bytearray(confirm_password,encoding="utf-8")).hexdigest()
+    newhash = password_hash(new_password)
 
     # Retrieve the user's current password from the JSON data (you may need to modify this)
     for user in users:
@@ -405,12 +405,13 @@ def change_password():
         return redirect(url_for('dashboard'))
 
     # Check if the current password matches the stored password
-    if currenthash != user_password:
+    if not verify_password_hash(user_password, current_password):
+
         flash('Actual password incorrect', 'danger')
         return redirect(url_for('dashboard'))
 
     # Check if the new password and confirmation match
-    if newhash != confhash:
+    if new_password != confirm_password:
         flash('New password and confirmation do not match', 'danger')
         return redirect(url_for('dashboard'))
 
@@ -556,7 +557,7 @@ def add_user():
         email = request.form.get('email')  # Use request.form.get to handle optional fields
         avatar = request.form.get('avatar')
 
-        hashed = hashlib.sha1(bytearray(password,encoding="utf-8")).hexdigest()
+        hashed = password_hash(password)
         # Validate the form data, e.g., check for duplicate usernames, password requirements, etc.
 
         # Create a new user object with the provided data
@@ -612,16 +613,6 @@ def edit_idea(idea_id):
         flash('Idea not found', 'danger')
 
     return redirect(url_for('dashboard'))
-
-
-def check_password(username, password):
-    with open('users.json', 'r') as file:
-        users = json.load(file)
-        for user in users:
-            if user['username'] == username:
-                hashed_password = hashlib.sha1(password.encode()).hexdigest()
-                return hashed_password == user['password']
-    return False
 
 
 def admin_required(f):
@@ -694,6 +685,25 @@ def delete_default_profiles():
 
     return render_template('delete_default_profiles.html')
 
+def check_password(username, password):
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+        for user in users:
+            if user['username'] == username:
+                return verify_password_hash(user['password'], password)
+    return False
+
+# Hash the password using Argon2
+def password_hash(password):
+    return ph.hash(password)
+
+# Verify the hashed password
+def verify_password_hash(hash, password):
+    try:
+        return ph.verify(hash, password)
+    except VerifyMismatchError:
+        return False
+
 
 field_explanations = {
     "FEED_SEND": "adress email you wish to receve the feedback from the form  ",
@@ -765,4 +775,4 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
