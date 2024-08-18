@@ -1,0 +1,49 @@
+# Ignore the virtual environment directory
+venv/
+.env/
+
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+
+# Flask instance folder (can be used for instance-specific configurations)
+instance/
+
+# Configuration files
+*.cfg
+*.ini
+
+# Temporary files and directories
+*.swp
+*.swo
+*.swn
+
+# macOS Finder metadata
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# PyCharm project files
+.idea/
+
+# VSCode settings
+.vscode/
+
+# Flask-specific
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage reports
+.coverage
+*.cover
+*.py,cover

@@ -117,9 +117,6 @@ def login():
         # Check if the username and password match
         for user in users:
             if user['username'].lower() == input_username:
-                print(password)
-                print(user['password'])
-                print(hashed)
                 if verify_password_hash(user['password'], password):
                 #session.permanent = True  # This makes the session permanent
                     session['username'] = user['username']
