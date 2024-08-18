@@ -345,12 +345,10 @@ def get_user_email_by_username(username):
 
 #hash the password using argon2
 def password_hash(password):
-    #ph = PasswordHasher()
     return ph.hash(password)  # Return Argon2 hash of the password
 
 #verify the hashed password
 def verify_password_hash(hash, password):
-    #ph = PasswordHasher()
     try:
         ph.verify(hash, password)
         return True
