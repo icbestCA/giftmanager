@@ -108,26 +108,26 @@ def run_email():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
     if request.method == 'POST':
         input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
-        hashed = password_hash(password)
 
-        # Check if the username and password match
+        # Check if the username exists
         for user in users:
             if user['username'].lower() == input_username:
-                if verify_password_hash(user['password'], password):
-                #session.permanent = True  # This makes the session permanent
-                    session['username'] = user['username']
-                    flash('Login successful!', 'success')
-                    return redirect(url_for('dashboard'))
+                try:
+                    # Verify the password against the stored hash using Argon2
+                    if ph.verify(user['password'], password):
+                        session['username'] = user['username']
+                        flash('Login successful!', 'success')
+                        return redirect(url_for('dashboard'))
+                except VerifyMismatchError:
+                    flash('Invalid login credentials. Please try again.', 'danger')
+                    return render_template('login.html')
 
         flash('Invalid login credentials. Please try again.', 'danger')
 
     return render_template('login.html')
-
-
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
@@ -342,18 +342,6 @@ def get_user_email_by_username(username):
         if user.get('username') == username:
             return user.get('email')
     return None  # Return None if user email not found
-
-#hash the password using argon2
-def password_hash(password):
-    return ph.hash(password)  # Return Argon2 hash of the password
-
-#verify the hashed password
-def verify_password_hash(hash, password):
-    try:
-        ph.verify(hash, password)
-        return True
-    except VerifyMismatchError:
-        return False  
 
 
 @app.route('/logout')
@@ -627,17 +615,6 @@ def edit_idea(idea_id):
     return redirect(url_for('dashboard'))
 
 
-def check_password(username, password):
-    with open('users.json', 'r') as file:
-        users = json.load(file)
-        for user in users:
-            if user['username'] == username:
-                hashed_password = password_hash(password)
-                check = verify_password_hash(user['password'], hashed_password)
-                return check
-    return False
-
-
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -707,6 +684,25 @@ def delete_default_profiles():
         return redirect(url_for('dashboard'))
 
     return render_template('delete_default_profiles.html')
+
+def check_password(username, password):
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+        for user in users:
+            if user['username'] == username:
+                return verify_password_hash(user['password'], password)
+    return False
+
+# Hash the password using Argon2
+def password_hash(password):
+    return ph.hash(password)
+
+# Verify the hashed password
+def verify_password_hash(hash, password):
+    try:
+        return ph.verify(hash, password)
+    except VerifyMismatchError:
+        return False
 
 
 field_explanations = {
