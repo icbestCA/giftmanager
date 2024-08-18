@@ -111,17 +111,15 @@
             <ul class="space-y-2">
                 <li>
                     <!-- Display Error Messages -->
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            <div class="alert alert-danger">
-                                {% for message in messages %}
-                                    {% if "password" in message|lower %}
-                                        {{ message }}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
+                    {% if password_messages %}
+                        <div class="alert alert-danger">
+                            {% for message in password_messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+
 
                     <h2 class="text-lg font-semibold mt-2">Info</h2>
                     <p class="text-gray-600">Name: {{ profile_info['full_name'] }}</p>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort, make_response, get_flashed_messages
 from functools import wraps
 from mailjet_rest import Client
 from datetime import datetime, timedelta
@@ -128,7 +128,6 @@ def login():
         flash('Invalid login credentials. Please try again.', 'danger')
 
     return render_template('login.html')
-
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
     if request.method == 'POST':
@@ -373,6 +372,9 @@ def dashboard():
     # Find the user's data by matching the username in the session
     user_data = next((user for user in users if user['username'] == session['username']), None)
 
+    messages = get_flashed_messages()
+    password_messages = [msg for msg in messages if 'password' in msg.lower()]
+
     if user_data:
         # Display user information on the dashboard
         profile_info = {
@@ -384,7 +386,7 @@ def dashboard():
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users)  # Pass both profile_info and users
+    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages)
 
 @app.route('/change_password', methods=['POST'])
 @login_required
