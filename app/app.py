@@ -113,7 +113,6 @@ def login():
         input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
         hashed = password_hash(password)
-        #hashed = hashlib.sha1(bytearray(password,encoding="utf-8")).hexdigest()
 
         # Check if the username and password match
         for user in users:
@@ -122,7 +121,6 @@ def login():
                 print(user['password'])
                 print(hashed)
                 if verify_password_hash(user['password'], password):
-            #if user['username'].lower() == input_username and user['password'] == hashed:
                 #session.permanent = True  # This makes the session permanent
                     session['username'] = user['username']
                     flash('Login successful!', 'success')
@@ -577,7 +575,6 @@ def add_user():
         avatar = request.form.get('avatar')
 
         hashed = password_hash(password)
-        #hashed = hashlib.sha1(bytearray(password,encoding="utf-8")).hexdigest()
         # Validate the form data, e.g., check for duplicate usernames, password requirements, etc.
 
         # Create a new user object with the provided data
@@ -642,8 +639,6 @@ def check_password(username, password):
             if user['username'] == username:
                 hashed_password = password_hash(password)
                 check = verify_password_hash(user['password'], hashed_password)
-                #hashed_password = hashlib.sha1(password.encode()).hexdigest()
-                #return hashed_password == user['password']
                 return check
     return False
 
