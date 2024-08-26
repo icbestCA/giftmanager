@@ -6,6 +6,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import json, subprocess, hashlib
 import os
+import random
 from dotenv import load_dotenv, set_key, dotenv_values
 load_dotenv()
 
@@ -66,12 +67,15 @@ def change_email():
 @app.context_processor
 def utility_processor():
     def get_full_name(username):
-        for user in users:  # Assuming you have a list of users
-            if user['username'] == username:
-                return user['full_name']
+        with open('users.json', 'r') as file:
+            users = json.load(file)
+            for user in users:
+                if user['username'] == username:
+                    return user['full_name']
         return username  # Return the username if the full name is not found
 
     return dict(get_full_name=get_full_name)
+
 
 
 @app.route('/')
@@ -103,8 +107,6 @@ def run_email():
         error_message = f"Error occurred while running {script_name}: {e}\n\n"
         error_message += e.stderr  # Append the error details from stderr
         return render_template('script_output.html', script_output=error_message)
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -375,6 +377,10 @@ def dashboard():
     messages = get_flashed_messages()
     password_messages = [msg for msg in messages if 'password' in msg.lower()]
 
+    assigned_user = None
+    if current_user and 'assigned_user' in current_user:
+        assigned_user = current_user['assigned_user']
+
     if user_data:
         # Display user information on the dashboard
         profile_info = {
@@ -386,7 +392,7 @@ def dashboard():
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages)
+    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages, assigned_user=assigned_user)
 
 @app.route('/change_password', methods=['POST'])
 @login_required
@@ -775,6 +781,113 @@ def allowed_file(filename):
     Check if the file has a valid extension.
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+
+@app.route('/secret_santa', methods=['GET', 'POST'])
+@admin_required
+@login_required
+def secret_santa():
+    if request.method == 'POST':
+        if 'end_secret_santa' in request.form:
+            # Handle ending the Secret Santa event
+            with open('users.json', 'r+') as file:
+                users = json.load(file)
+                for user in users:
+                    user.pop('assigned_user', None)  # Remove the assigned_user field
+
+                # Save the updated data back to the file
+                file.seek(0)
+                json.dump(users, file, indent=4)
+                file.truncate()
+
+            # Optionally delete the instructions file
+            try:
+                os.remove('santa_inst.txt')
+            except FileNotFoundError:
+                pass
+
+            flash('Secret Santa event has been ended, and assignments have been cleared!', 'success')
+            return redirect(url_for('dashboard'))
+
+        else:
+            # Handle creating Secret Santa assignments
+            selected_participants = request.form.getlist('participants')
+            secret_santa_instructions = request.form.get('instructions', '')  # Default to an empty string if not provided
+
+            if len(selected_participants) < 2:
+                flash('You need at least 2 participants for Secret Santa!', 'error')
+                return redirect(url_for('secret_santa'))
+
+            # Shuffle and assign
+            shuffled_participants = selected_participants[:]
+            random.shuffle(shuffled_participants)
+
+            assignments = {}
+            for i, participant in enumerate(shuffled_participants):
+                # Assign each participant the next one in the shuffled list, looping around
+                assignments[participant] = shuffled_participants[(i + 1) % len(shuffled_participants)]
+
+            # Save the assignments to the users JSON
+            with open('users.json', 'r+') as file:
+                users = json.load(file)
+                for user in users:
+                    if user['username'] in assignments:
+                        user['assigned_user'] = assignments[user['username']]
+
+                # Save the updated assignments back to the file
+                file.seek(0)
+                json.dump(users, file, indent=4)
+                file.truncate()
+
+            # Save the instructions to a text file
+            with open('santa_inst.txt', 'w') as file:
+                file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
+
+            flash('Secret Santa assignments have been made!', 'success')
+            return redirect(url_for('secret_santa_assignments'))
+
+    # Load users from the JSON
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    return render_template('secret_santa.html', users=users)
+
+
+
+
+
+@app.route('/secret_santa_assignments', methods=['GET'])
+@login_required
+def secret_santa_assignments():
+    # Load the current user's assignment
+    current_user = session['username']
+
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    assigned_user = None
+    for user in users:
+        if user['username'] == current_user and 'assigned_user' in user:
+            assigned_user = user['assigned_user']
+            break
+
+    if not assigned_user:
+        flash("You don't have a Secret Santa assignment yet.", "error")
+        return redirect(url_for('secret_santa'))
+
+    # Load the instructions from the text file
+    try:
+        with open('santa_inst.txt', 'r') as file:
+            secret_santa_instructions = file.read()
+    except FileNotFoundError:
+        secret_santa_instructions = "No specific instructions provided."
+
+    return render_template('secret_santa_assignment.html', assigned_user=assigned_user, instructions=secret_santa_instructions)
+
+
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

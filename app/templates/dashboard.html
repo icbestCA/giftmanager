@@ -48,6 +48,7 @@
         /* Sidebar styles */
         .sidebar {
             position: fixed;
+            overflow-y: scroll;
             top: 0;
             left: 0;
             width: 250px;
@@ -57,6 +58,7 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
             z-index: 50;
+            bottom: 0;
         }
 
         .sidebar.open {
@@ -175,6 +177,14 @@
                     <div class="help" onclick="location.href='{{ url_for('bought_items') }}'">
                         <img class="helplogo" src="{{ url_for('static', filename='icons/cart.svg') }}">
                     </div>
+
+                    {% if assigned_user %}
+                    <div class="help">
+                        <a href="{{ url_for('secret_santa_assignments') }}" title="View your Secret Santa assignment">
+                            <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">
+                        </a>
+                    </div>
+                    {% endif %}
 
                     <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
                         <p class="text-center text-gray-600">Add ideas</p>
