@@ -16,9 +16,19 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="login-wrap p-0">
                         <h3 class="mb-4 text-center">Connection</h3> 
-                        <!-- Notice for the user -->
-                        <div class="alert alert-info text-center" role="alert">
-                            No account? Contact a family member to create account.
+                        <div>
+                        {% if messages %}
+                            <ul class="flashes">
+                                {% for category, message in messages %}
+                                    <li class="{{ category }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <!-- Notice for the user -->
+                            <div class="alert alert-info text-center" role="alert">
+                                No account? Contact a family member to create account.
+                            </div>
+                        {% endif %}
                         </div>
                         <!-- Login Form -->
                         <form action="/login" method="POST" class="signin-form">
