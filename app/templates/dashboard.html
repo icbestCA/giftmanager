@@ -178,7 +178,7 @@
                         <img class="helplogo" src="{{ url_for('static', filename='icons/cart.svg') }}">
                     </div>
 
-                    {% if assigned_user %}
+                    {% if assigned_users %}
                     <div class="help">
                         <a href="{{ url_for('secret_santa_assignments') }}" title="View your Secret Santa assignment">
                             <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">

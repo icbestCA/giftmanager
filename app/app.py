@@ -377,9 +377,9 @@ def dashboard():
     messages = get_flashed_messages()
     password_messages = [msg for msg in messages if 'password' in msg.lower()]
 
-    assigned_user = None
-    if current_user and 'assigned_user' in current_user:
-        assigned_user = current_user['assigned_user']
+    assigned_users = None
+    if current_user and 'assigned_users' in current_user:
+        assigned_users = current_user['assigned_users']
 
     if user_data:
         # Display user information on the dashboard
@@ -392,7 +392,7 @@ def dashboard():
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages, assigned_user=assigned_user)
+    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages, assigned_users=assigned_users)
 
 @app.route('/change_password', methods=['POST'])
 @login_required
@@ -789,31 +789,44 @@ def allowed_file(filename):
 @login_required
 def secret_santa():
     if request.method == 'POST':
-        if 'end_secret_santa' in request.form:
-            # Handle ending the Secret Santa event
+        pool_name_to_delete = request.form.get('pool_name_to_delete')
+
+        if pool_name_to_delete:
+            # Handle deleting a specific pool
             with open('users.json', 'r+') as file:
                 users = json.load(file)
+                pool_exists = False
                 for user in users:
-                    user.pop('assigned_user', None)  # Remove the assigned_user field
+                    if 'assigned_users' in user and pool_name_to_delete in user['assigned_users']:
+                        pool_exists = True
+                        del user['assigned_users'][pool_name_to_delete]
 
-                # Save the updated data back to the file
-                file.seek(0)
-                json.dump(users, file, indent=4)
-                file.truncate()
+                if not pool_exists:
+                    flash(f'Pool "{pool_name_to_delete}" does not exist.', 'error')
+                else:
+                    # Remove the corresponding instructions file
+                    try:
+                        os.remove(f'santa_inst_{pool_name_to_delete}.txt')
+                    except FileNotFoundError:
+                        pass
 
-            # Optionally delete the instructions file
-            try:
-                os.remove('santa_inst.txt')
-            except FileNotFoundError:
-                pass
+                    # Save the updated data back to the file
+                    file.seek(0)
+                    json.dump(users, file, indent=4)
+                    file.truncate()
 
-            flash('Secret Santa event has been ended, and assignments have been cleared!', 'success')
-            return redirect(url_for('dashboard'))
+                    flash(f'Pool "{pool_name_to_delete}" has been deleted!', 'success')
+            return redirect(url_for('dashboard'))  # Redirect to dashboard after deletion
 
         else:
             # Handle creating Secret Santa assignments
             selected_participants = request.form.getlist('participants')
             secret_santa_instructions = request.form.get('instructions', '')  # Default to an empty string if not provided
+            pool_name = request.form.get('pool_name')
+
+            if not pool_name:
+                flash('Pool name is required!', 'error')
+                return redirect(url_for('secret_santa'))
 
             if len(selected_participants) < 2:
                 flash('You need at least 2 participants for Secret Santa!', 'error')
@@ -833,15 +846,17 @@ def secret_santa():
                 users = json.load(file)
                 for user in users:
                     if user['username'] in assignments:
-                        user['assigned_user'] = assignments[user['username']]
+                        if 'assigned_users' not in user:
+                            user['assigned_users'] = {}
+                        user['assigned_users'][pool_name] = assignments[user['username']]
 
                 # Save the updated assignments back to the file
                 file.seek(0)
                 json.dump(users, file, indent=4)
                 file.truncate()
 
-            # Save the instructions to a text file
-            with open('santa_inst.txt', 'w') as file:
+            # Save the instructions to a text file specific to the pool
+            with open(f'santa_inst_{pool_name}.txt', 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
             flash('Secret Santa assignments have been made!', 'success')
@@ -854,39 +869,34 @@ def secret_santa():
     return render_template('secret_santa.html', users=users)
 
 
-
-
-
 @app.route('/secret_santa_assignments', methods=['GET'])
 @login_required
 def secret_santa_assignments():
-    # Load the current user's assignment
     current_user = session['username']
 
     with open('users.json', 'r') as file:
         users = json.load(file)
 
-    assigned_user = None
+    assigned_users = {}
     for user in users:
-        if user['username'] == current_user and 'assigned_user' in user:
-            assigned_user = user['assigned_user']
-            break
+        if user['username'] == current_user and 'assigned_users' in user:
+            assigned_users = user['assigned_users']  # Dictionary of pool names and assigned users
 
-    if not assigned_user:
-        flash("You don't have a Secret Santa assignment yet.", "error")
+    if not assigned_users:
+        flash("You don't have any Secret Santa assignments yet.", "error")
         return redirect(url_for('secret_santa'))
 
-    # Load the instructions from the text file
-    try:
-        with open('santa_inst.txt', 'r') as file:
-            secret_santa_instructions = file.read()
-    except FileNotFoundError:
-        secret_santa_instructions = "No specific instructions provided."
+    # Load instructions for each pool
+    pool_instructions = {}
+    for pool_name in assigned_users.keys():
+        try:
+            with open(f'santa_inst_{pool_name}.txt', 'r') as file:
+                pool_instructions[pool_name] = file.read()
+        except FileNotFoundError:
+            pool_instructions[pool_name] = "No specific instructions provided."
 
-    return render_template('secret_santa_assignment.html', assigned_user=assigned_user, instructions=secret_santa_instructions)
-
-
-
+    # Pass the 'assigned_users' and 'pool_instructions' to the template
+    return render_template('secret_santa_assignment.html', assigned_users=assigned_users, pool_instructions=pool_instructions)
 
 
 if __name__ == "__main__":
