@@ -180,6 +180,7 @@ def add2():
         name = request.form['name']
         description = request.form.get('description', '')
         link = request.form.get('link', '')
+        value = request.form.get('value', None)  # Optional field
 
         # You can customize how you retrieve the currently logged-in user here
         # For example, if you're storing the username in the session:
@@ -196,6 +197,7 @@ def add2():
             'gift_name': name,
             'description': description,
             'link': link,
+            'value': value,
             'added_by': added_by,  # Track who added the idea
             'bought_by': None  # Initialize as not bought
         }
@@ -234,6 +236,7 @@ def add_idea(selected_user_id):
         name = request.form['name']
         description = request.form.get('description', '')
         link = request.form.get('link', '')
+        value = request.form.get('value', None)  # Optional field
         
         # You can customize how you retrieve the currently logged-in user here
         # For example, if you're storing the username in the session:
@@ -249,6 +252,7 @@ def add_idea(selected_user_id):
             'gift_name': name,
             'description': description,
             'link': link,
+            'value': value,
             'added_by': added_by,  # Track who added the idea
             'bought_by': None  # Initialize as not bought
         }
@@ -606,6 +610,7 @@ def edit_idea(idea_id):
                 # Update idea details with submitted form data
                 idea['description'] = request.form.get('description', '')
                 idea['link'] = request.form.get('link', '')
+                idea['value'] = request.form.get('value', None)
 
                 # Update the JSON file with the modified data
                 update_gift_ideas_json(gift_ideas_data)

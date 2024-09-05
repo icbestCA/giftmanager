@@ -15,23 +15,32 @@
 
         <h1 class="text-4xl font-bold mb-8">{{ idea.gift_name }}</h1> <!-- Display the gift_name as a heading -->
 
-        <form method="post" action="{{ url_for('edit_idea', idea_id=idea.gift_idea_id) }}"
-            class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <label for="description" class="block mb-2">Description:</label>
-            <textarea id="description" name="description" rows="4" cols="50"
-                class="border rounded py-2 px-3 w-full">{{ idea.description }}</textarea>
+        <form method="post" action="{{ url_for('edit_idea', idea_id=idea.gift_idea_id) }}" class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <!-- Description Field -->
+            <label for="description" class="block mb-2">Description (Optional):</label>
+            <textarea id="description" name="description" rows="4" cols="50" class="border rounded py-2 px-3 w-full">{{ idea.description }}</textarea>
+            
             <br>
-            <label for="link" class="block mt-4 mb-2">Link:</label>
-            <input type="text" id="link" name="link" value="{{ idea.link }}"
-                class="border rounded py-2 px-3 w-full">
+        
+            <!-- Link Field -->
+            <label for="link" class="block mt-4 mb-2">Link (Optional):</label>
+            <input type="text" id="link" name="link" value="{{ idea.link }}" class="border rounded py-2 px-3 w-full">
+        
             <br>
-            <button type="submit"
-                class="bg-blue-500 text-white px-3 py-2 rounded mt-4 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
+        
+            <!-- Estimated Value Field -->
+            <label for="value" class="block mt-4 mb-2">Estimated Value (Optional):</label>
+            <input type="text" id="value" name="value" value="{{ idea.value }}" class="border rounded py-2 px-3 w-full" placeholder="Enter estimated value in dollars">
+        
+            <br>
+        
+            <!-- Save and Cancel Buttons -->
+            <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mt-4 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
                 Save Changes
             </button>
-            <a href="{{ url_for('user_gift_ideas', selected_user_id=idea.user_id) }}"
-            class="text-blue-500 hover:underline">Cancel</a>
+            <a href="{{ url_for('user_gift_ideas', selected_user_id=idea.user_id) }}" class="text-blue-500 hover:underline">Cancel</a>
         </form>
+        
 
         <!-- Add your JavaScript scripts here if needed -->
 

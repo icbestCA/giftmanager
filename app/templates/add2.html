@@ -16,7 +16,7 @@
     </header>
     <main class="container mx-auto p-8">
         <section class="bg-gray-100 shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">Add new gift ideas</h1>
+            <h1 class="text-2xl font-semibold mb-4">Add Ideas</h1>
             <form action="{{ url_for('add2', selected_user_id=selected_user_id) }}" method="post">
                 <div class="mb-4">
                     <label for="user" class="block text-gray-700 font-bold">Add to:</label>
@@ -32,17 +32,22 @@
                     <input type="text" name="name" id="name" class="border rounded py-2 px-3 w-full" required>
                 </div>
                 <div class="mb-4">
-                    <label for="description" class="block text-gray-700 font-bold">Description:</label>
+                    <label for="description" class="block text-gray-700 font-bold">Description (Optional):</label>
                     <textarea name="description" id="description" class="border rounded py-2 px-3 w-full"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="link" class="block text-gray-700 font-bold">Link:</label>
+                    <label for="link" class="block text-gray-700 font-bold">Link (Optional):</label>
                     <input type="url" name="link" id="link" class="border rounded py-2 px-3 w-full">
                 </div>
-                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Add</button>
+                <div class="mb-4">
+                    <label for="value" class="block text-gray-700 font-bold">Estimated Value (Optional):</label>
+                    <input type="number" id="value" name="value" step="1" placeholder="Estimated Value" 
+                        class="border rounded py-2 px-3 w-full">
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Submit</button>
             </form>
         </section>
-    </main>        
+    </main>       
     <script>
     const backButton = document.getElementById('backButton');
     backButton.addEventListener('click', () => {
