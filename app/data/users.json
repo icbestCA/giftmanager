@@ -14,6 +14,14 @@
         "birthday": "2028-01-28",
         "last_name": "Two",
         "email": "user2@example.com",
-	"avatar": "icons/avatar2.png"
+        "avatar": "icons/avatar2.png"
+    },
+    {
+        "username": "Marcel",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$P4DhVocdGR0oF9qomYLbDQ$syx+xKTe1u8LIt24qqz9rP0dJQ2QTth3seHHTZq3m2c",
+        "full_name": "Marcel",
+        "birthday": "1994-04-01",
+        "email": "mbruckner94@gmail.com",
+        "avatar": "icons/avatar1.png"
     }
 ]
