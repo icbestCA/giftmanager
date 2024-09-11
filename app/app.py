@@ -35,6 +35,50 @@ def update_gift_ideas_json(data):
         json.dump(data, file, indent=4)
 
 
+def prepopulate_file(filename: str, data: str):
+    if Path(filename).exists():
+        return
+
+    # Prepopulate user data
+    Path(filename).parent.mkdir(exist_ok=True, parents=True)
+    with open(filename, 'w') as file:
+        file.write(data)
+
+
+prepopulate_file(app.config['USERS_FILE'], """
+        [
+            {
+                "username": "demo",
+                "password": "$argon2id$v=19$m=65536,t=3,p=4$hAdUKyUo7pcfg1hdNYIDhg$KPgnV/9PPkwoI22pEJIYBkJuEzm1TiFTUNWA+/wEVWw",
+                "full_name": "Demo User",
+                "birthday": "2024-01-24",
+                "email": "demo@example.com",
+                "avatar": "icons/avatar1.png"
+            },
+            {
+                "username": "user2",
+                "password": "$argon2id$v=19$m=65536,t=3,p=4$IZfmO/VxTL1wm/+arwqJrA$dtH8cONMraVIDYFdhypcdOoTbH4e4DjeJ8QH5pnw3+Y",
+                "full_name": "User Two",
+                "birthday": "2028-01-28",
+                "last_name": "Two",
+                "email": "user2@example.com",
+                "avatar": "icons/avatar2.png"
+            }
+        ]""")
+
+prepopulate_file(app.config['IDEAS_FILE'], """
+        [
+            {
+                "user_id": "demo",
+                "gift_idea_id": 1,
+                "gift_name": "Default",
+                "description": "dont delete",
+                "link": "icbest.ca",
+                "added_by": "demo",
+                "bought_by": ""
+            }
+        ]""")
+
 # Load user data from the JSON file
 with open(app.config['USERS_FILE'], 'r') as file:
     users = json.load(file)
