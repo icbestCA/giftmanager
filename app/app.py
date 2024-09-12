@@ -375,8 +375,8 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
             buyer_email = get_user_email_by_username(buyer_username)
 
             if buyer_email:
-                text_part = f"This ideas, '{
-                    idea_name}',has been deleted but you already BOUGHT IT."
+                text_part = f"This idea '{idea_name}' "
+                f"has been deleted but you already BOUGHT IT."
 
                 # Send an email to the buyer using Mailjet
                 data = {
@@ -534,8 +534,8 @@ def mark_as_bought(idea_id):
             flash(f'Marked "{idea["gift_name"]}" as bought!', 'success')
             update_gift_ideas_json(gift_ideas_data)  # Update JSON file
         else:
-            flash(f'"{idea["gift_name"]}" has already been bought by {
-                  idea["bought_by"]}.', 'warning')
+            flash(f'"{idea["gift_name"]}" has already been bought by '
+                  f'{idea["bought_by"]}.', 'warning')
     else:
         flash('Idea not found', 'danger')
 
@@ -557,8 +557,8 @@ def mark_as_not_bought(idea_id):
             flash(f'Marked "{idea["gift_name"]}" as not bought.', 'success')
             update_gift_ideas_json(gift_ideas_data)  # Update JSON file
         else:
-            flash(f'You did not buy "{
-                  idea["gift_name"]}", so you cannot mark it as not bought.', 'danger')
+            flash(f'You did not buy "{idea["gift_name"]}", '
+                  f'so you cannot mark it as not bought.', 'danger')
     else:
         flash('Idea not found', 'danger')
 
