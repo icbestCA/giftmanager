@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure .env File</title>
+</head>
+<body>
+    <h1>Configure .env File</h1>
+    <form method="POST" action="{{ url_for('update_env') }}">
+        {% for key, value in env_values.items() %}
+            <div>
+                <label for="{{ key }}">{{ key }}: {{ explanations[key] }}</label>
+                <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+            </div>
+        {% endfor %}
+        <button type="submit">Update</button>
+    </form>
+
+    <hr>
+
+    <h2>Upload JSON Files</h2>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_files') }}">
+        <div>
+            <label for="ideas_file">Upload ideas.json:</label>
+            <input type="file" id="ideas_file" name="ideas_file" accept=".json">
+        </div>
+        <div>
+            <label for="users_file">Upload users.json:</label>
+            <input type="file" id="users_file" name="users_file" accept=".json">
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+
+    <hr>
+
+    <h2>Download JSON Files</h2>
+    <form method="GET" action="{{ url_for('download_files') }}">
+        <button type="submit" name="file" value="ideas.json">Download ideas.json</button>
+        <button type="submit" name="file" value="users.json">Download users.json</button>
+    </form>
+</body>
+</html>

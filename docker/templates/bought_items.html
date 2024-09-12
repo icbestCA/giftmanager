@@ -1,0 +1,45 @@
+<!-- template.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bought Items</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+</head>
+
+<body class="text-gray-900 font-sans">
+    <header class="bg-white text-gray-900 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">
+                Back
+            </button>
+        </nav>
+    </header>
+    <main class="container mx-auto p-8">
+        <h1 class="text-4xl font-bold mb-8">Object bought by me:</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {% for item in bought_items %}
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+                    <h3 class="text-xl font-semibold mb-4">{{ item.gift_name }}</h3>
+                    <p><strong>For:</strong> {{ item.recipient_name }}</p>
+                    <p><strong>Description:</strong> {{ item.description }}</p>
+                    {% if item.link %}
+                        <p><strong>Link:</strong> <a href="{{ item.link }}" target="_blank">{{ item.link }}</a></p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>        
+    </main>
+    
+    <script>
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', () => {
+            window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+        });
+    </script>
+</body>
+
+</html>

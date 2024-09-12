@@ -1,0 +1,24 @@
+<!-- delete_default_profiles.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Default Profiles</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+</head>
+<body class="text-gray-900 font-sans">
+    <main class="container mx-auto p-8">
+        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-4">Delete Default Profiles</h1>
+            <form action="{{ url_for('delete_default_profiles') }}" method="POST">
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700 font-bold">Enter Your Password:</label>
+                    <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
+                </div>
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Delete Default Profiles</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>No gift ideas?</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .mec {
+            width: 800px;
+            height: 320px;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .user-card-button {
+         display: inline-block;
+         padding: 10px 20px;
+         background-color: #007bff;
+         color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        .button-text {
+        margin: 0;
+        }
+
+    </style>
+</head>
+<body class="text-gray-900 font-sans">
+    <header class="bg-white text-gray-900 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">
+                Back
+            </button>
+    <h1>This person lacks imagination, help them!</h1>
+    <img class="mec" src="{{ url_for('static', filename='icons/nope.png') }}" width="800" height="320">
+    <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
+        <p class="button-text">Add ideas</p>
+    </div>
+    <script>
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', () => {
+            window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+        });
+    </script>      
+</body>
+</html>

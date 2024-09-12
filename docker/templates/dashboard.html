@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        .rounded-blue-button {
+            background-color: rgb(42, 42, 218);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 5px;
+            cursor: pointer;
+        }
+
+        .rounded-blue-button:hover {
+            background-color: rgb(10, 10, 190);
+        }
+
+        .help {
+            cursor: pointer;
+        }
+
+        .user-card-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .user-card-button:hover {
+            background-color: #ddd;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            overflow-y: scroll;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+            bottom: 0;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 40;
+        }
+
+        .overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body {
+            background-color: #f0f0f0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 20px 0;
+        }
+
+        /* Error message styles */
+        .alert-danger {
+            background-color: #ffe6e6;
+            border-left: 5px solid #ff4d4d;
+            padding: 10px;
+            margin-bottom: 20px;
+            color: #b30000;
+        }
+    </style>
+</head>
+<body class="text-gray-900 font-sans">
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <h2 class="text-lg font-semibold mb-4">Menu</h2>
+            <ul class="space-y-2">
+                <li>
+                    <!-- Display Error Messages -->
+                    {% if password_messages %}
+                        <div class="alert alert-danger">
+                            {% for message in password_messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+
+
+                    <h2 class="text-lg font-semibold mt-2">Info</h2>
+                    <p class="text-gray-600">Name: {{ profile_info['full_name'] }}</p>
+                    <p class="text-gray-600">Birthday: {{ profile_info['birthday'] }}</p>
+                    <br>
+
+                    <!-- Password Change Form -->
+                    <h2><strong>Change password</strong></h2>
+                    <form method="POST" action="/change_password">
+                        <label for="current_password">Actual password:</label>
+                        <input type="password" name="current_password" required>
+                        <label for="new_password">New password:</label>
+                        <input type="password" name="new_password" required>
+                        <label for="confirm_password">Repeat new password:</label>
+                        <input type="password" name="confirm_password" required><br>
+                        <br>
+                        <input type="submit" value="Change password" class="rounded-blue-button">
+                    </form>
+                </li>
+                <hr>
+                <li>
+                    <img src="{{ url_for('static', filename='icons/mail.svg') }}" alt="email">
+                    <form method="POST" action="/change_email">
+                        <label for="new_email">New email:</label>
+                        <input type="email" name="new_email" required>
+                        <br><br>
+                        <input type="submit" value="Change" class="rounded-blue-button">
+                    </form>
+                    <br><br>
+                </li>
+                <a href="/logout" class="block mt-4 hover:text-gray-600"><img src="{{ url_for('static', filename='icons/log-out.svg') }}" alt="Logout"></a> <br>
+                <a href="/add_user" class="block mt-4 hover:text-gray-600">Add new user</a>
+            </ul>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1">
+            <header class="bg-white text-gray-900 p-4">
+                <nav class="container mx-auto flex justify-between items-center">
+                    <button id="sidebarToggle" class="text-2xl px-4 py-2">
+                        <svg class="h-8 w-8 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </button>
+
+                    <div class="help" onclick="location.href='{{ url_for('feedback') }}'">
+                        <img class="helplogo" src="{{ url_for('static', filename='icons/help.svg') }}">
+                    </div>
+                    <div class="help" onclick="location.href='{{ url_for('bought_items') }}'">
+                        <img class="helplogo" src="{{ url_for('static', filename='icons/cart.svg') }}">
+                    </div>
+
+                    {% if assigned_users %}
+                    <div class="help">
+                        <a href="{{ url_for('secret_santa_assignments') }}" title="View your Secret Santa assignment">
+                            <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
+                        <p class="text-center text-gray-600">Add ideas</p>
+                    </div>
+                </nav>
+            </header>
+
+            <main class="container mx-auto p-8">
+                <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+                    <h1 class="text-2xl font-semibold mb-4">Users</h1>
+                    <div class="user-list">
+                        {% for user in users %}
+                        <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
+                            <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                            <p class="text-center text-gray-600">{{ user.full_name }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        // Check the local storage for the sidebar state
+        const sidebarState = localStorage.getItem('sidebarState');
+        if (sidebarState === 'open') {
+            sidebar.classList.add('open');
+            overlay.classList.add('visible');
+        }
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+            // Store the sidebar state in local storage
+            if (sidebar.classList.contains('open')) {
+                localStorage.setItem('sidebarState', 'open');
+            } else {
+                localStorage.setItem('sidebarState', 'closed');
+            }
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+            localStorage.setItem('sidebarState', 'closed');
+        });
+    </script>
+</body>
+</html>

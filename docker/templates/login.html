@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="img js-fullheight" style="background-image: url({{ url_for('static', filename='images/bg.jpg') }});">
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <h3 class="mb-4 text-center">Connection</h3> 
+                        <!-- Notice for the user -->
+                        <div class="alert alert-info text-center" role="alert">
+                            No account? Contact a family member to create account.
+                        </div>
+                        <!-- Login Form -->
+                        <form action="/login" method="POST" class="signin-form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="username" placeholder="Login Username" required>
+                            </div>
+                            <div class="form-group">
+                                <input id="password-field" type="password" class="form-control" name="password" placeholder="Password" required>
+                                <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary custom-btn">Sign In</button>
+                            </div>
+                            <div class="w-100 text-center">
+                                <a style="color: #fff">Contact the administrator to reset your password.</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
