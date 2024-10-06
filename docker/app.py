@@ -598,7 +598,6 @@ def get_user_full_name(selected_user_id):
 @app.route('/user_gift_ideas/<selected_user_id>')
 @login_required
 def user_gift_ideas(selected_user_id):
-
     # Check if the selected user is the same as the connected user
     connected_user = session.get('username')
     if selected_user_id == connected_user:
@@ -606,8 +605,11 @@ def user_gift_ideas(selected_user_id):
         return redirect(url_for('my_ideas'))
 
     # Filter the gift ideas for the selected user
-    user_gift_ideas = [
-        idea for idea in gift_ideas_data if idea['user_id'] == selected_user_id]
+    gift_ideas_data = read_gift_ideas()
+    user_gift_ideas = [idea for idea in gift_ideas_data if idea['user_id'] == selected_user_id]
+
+    # Sort the gift ideas by priority, with ideas that have no priority appearing at the bottom
+    user_gift_ideas.sort(key=lambda x: (x.get('priority', float('inf')), x['gift_idea_id']))
 
     # Check if there are no ideas and redirect to the dashboard
     if not user_gift_ideas:
@@ -618,15 +620,22 @@ def user_gift_ideas(selected_user_id):
 
     return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels)
 
+def read_gift_ideas():
+    with open('ideas.json', 'r') as file:
+        return json.load(file)
 
 @app.route('/my_ideas')
 @login_required
 def my_ideas():
     # Get the connected user
     connected_user = session.get('username')
+    # Read the gift ideas from the JSON file
+    gift_ideas_data = read_gift_ideas()
     # Filter the gift ideas to include only the ones added by the connected user
-    my_gift_ideas = [idea for idea in gift_ideas_data if idea['user_id']
-                     == connected_user and idea.get('added_by') == connected_user]
+    my_gift_ideas = [idea for idea in gift_ideas_data if idea['user_id'] == connected_user and idea.get('added_by') == connected_user]
+
+    # Sort the gift ideas by priority, with ideas that have no priority appearing at the bottom
+    my_gift_ideas.sort(key=lambda x: (x.get('priority', float('inf')), x['gift_idea_id']))
 
     # Check if there are no ideas and redirect to a different page
     if not my_gift_ideas:
@@ -634,6 +643,25 @@ def my_ideas():
         return redirect(url_for('noidea'))
 
     return render_template('my_ideas.html', my_gift_ideas=my_gift_ideas)
+
+@app.route('/update_order', methods=['POST'])
+@login_required
+def update_order():
+    # Get the new order data from the request
+    data = request.get_json()
+    new_order = data.get('order')  # Ensure 'order' includes 'priority'
+
+    # Loop to update the priorities of ideas
+    for idea in gift_ideas_data:
+        for item in new_order:
+            if int(idea['gift_idea_id']) == int(item['gift_idea_id']):
+                idea['priority'] = item['priority']  # Make sure priority is updated
+
+    # Write the updated data back to the JSON file
+    update_gift_ideas_json(gift_ideas_data)
+
+    # Option 1: Return a success message as plain text
+    return "Order updated successfully!"
 
 
 @app.route('/noidea')
