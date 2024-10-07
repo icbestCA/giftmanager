@@ -621,7 +621,7 @@ def user_gift_ideas(selected_user_id):
     return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels)
 
 def read_gift_ideas():
-    with open('ideas.json', 'r') as file:
+    with open(app.config['IDEAS_FILE'], 'r') as file:
         return json.load(file)
 
 @app.route('/my_ideas')
