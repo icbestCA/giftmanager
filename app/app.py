@@ -17,6 +17,9 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Set SameSite attribute to St
 app.config['UPLOAD_FOLDER'] = './'  # Directory where files are stored
 app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
+TRUSTED_PROXY = os.getenv("TRUSTED_PROXY")
+USERNAME_HEADER = OS.getenv("USERNAME_HEADER")
+
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
 mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
@@ -34,6 +37,14 @@ with open('users.json', 'r') as file:
 # Load gift ideas data from the JSON file
 with open('ideas.json', 'r') as file:
     gift_ideas_data = json.load(file)
+    
+def check_username_header(request):
+    username = ""
+    if request.remote_addr == TRUSTED_PROXY or request.remote_addr == "127.0.0.1":
+        user = request.headers.get(USERNAME_HEADER)
+        if user:
+            username = user
+    return username
 
 # Define a decorator for requiring authentication
 def login_required(f):
@@ -80,7 +91,7 @@ def utility_processor():
 
 @app.route('/')
 def index():
-    if 'username' in session:
+    if 'username' in session or check_username_header(request):
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
@@ -128,6 +139,15 @@ def login():
                     return render_template('login.html')
 
         flash('Invalid login credentials. Please try again.', 'danger')
+    elif request.method == "GET":
+        user = check_username_header(request)
+        messages = get_flashed_messages(with_categories=True)
+        if ('danger','User data not found') in messages:
+            return render_template('login.html', messages=messages)
+        elif user:
+            session['username'] = user
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
 
     return render_template('login.html')
 @app.route('/feedback', methods=['GET', 'POST'])
