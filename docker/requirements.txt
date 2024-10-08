@@ -1,5 +1,5 @@
-Flask==3.0.3
-mailjet_rest==1.3.4
-python-dotenv==1.0.1
-argon2-cffi==21.3.0
+Flask
+mailjet_rest
+python-dotenv
+argon2-cffi
 APScheduler
