@@ -45,6 +45,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/favicon.ico')
+def favicon():
+    # Redirect to an external URL where your PNG favicon is hosted
+    return redirect("https://r2.icbest.ca/favicon-32x32.png")
+
 @app.route('/change_email', methods=['POST'])
 @login_required
 def change_email():
