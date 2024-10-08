@@ -1,50 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Login</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-</head>
-<body class="img js-fullheight" style="background-image: url({{ url_for('static', filename='images/bg.jpg') }});">
-    <section class="ftco-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <div class="login-wrap p-0">
-                        <h3 class="mb-4 text-center">Connection</h3> 
-                        <!-- Notice for the user -->
-                        <div class="alert alert-info text-center" role="alert">
-                            No account? Contact a family member to create account.
-                        </div>
-                        <!-- Login Form -->
-                        <form action="/login" method="POST" class="signin-form">
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="username" placeholder="Login Username" required>
-                            </div>
-                            <div class="form-group">
-                                <input id="password-field" type="password" class="form-control" name="password" placeholder="Password" required>
-                                <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                            </div>
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary custom-btn">Sign In</button>
-                            </div>
-                            <div class="w-100 text-center">
-                                <a style="color: #fff">Contact the administrator to reset your password.</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/png">
 
-<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/popper.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: url('./static/images/bg.jpg'); /* Replace with actual image path */
+            background-size: cover;
+            background-position: center;
+        }
+
+        form {
+            background-color: rgba(97, 97, 97, 0.836); /* Semi-transparent background */
+            padding: 20px; /* Padding inside the form */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            width: 320px;
+            text-align: center;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+        }
+
+        h1 {
+            color: #fff; /* White text for the title */
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .info-box {
+            background-color: #d0f0ff; /* Light blue box */
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            color: #000; /* Black text */
+        }
+
+        label {
+            display: block;
+            color: #fff; /* White labels */
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px; /* Rounded input fields */
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly opaque */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box; /* Ensures padding is included in the width */
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #f7b89a; /* Light orange button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffae82; /* Darker shade on hover */
+        }
+
+        p {
+            color: #fff; /* White text for the footer */
+            margin-top: 10px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        .info-box {
+            background-color: #d0f0ff; /* Light blue box */
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            color: #000; /* Black text */
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="/login">
+        <h1>Connexion</h1>
+        <div class="info-box">
+            No account? Contact a family member to create account.
+        </div>
+        <!-- Displaying flashed messages for the login route only -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category.startswith('login') %}  <!-- Show only login-related messages -->
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }}">
+                    {{ message }}
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Your form fields here -->
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="SIGN IN">
+        <p>Contact the administrator to reset your password.</p>
+    </form>
 </body>
 </html>

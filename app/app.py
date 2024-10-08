@@ -126,15 +126,16 @@ def login():
                     # Verify the password against the stored hash using Argon2
                     if ph.verify(user['password'], password):
                         session['username'] = user['username']
-                        flash('Login successful!', 'success')
+                        flash('Login successful!', 'login_success')  # Success message for login
                         return redirect(url_for('dashboard'))
                 except VerifyMismatchError:
-                    flash('Invalid login credentials. Please try again.', 'danger')
+                    flash('Wrong password', 'login_error')  # Error message for wrong password
                     return render_template('login.html')
 
-        flash('Invalid login credentials. Please try again.', 'danger')
+        flash('User does not exist', 'login_error')  # Error message if user doesn't exist
 
     return render_template('login.html')
+
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
     if request.method == 'POST':
