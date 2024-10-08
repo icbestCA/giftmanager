@@ -1,0 +1,9 @@
+services:
+  giftmanager:
+    image: icbest/giftmanager:latest
+    container_name: giftmanager
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data/
+    restart: unless-stopped
