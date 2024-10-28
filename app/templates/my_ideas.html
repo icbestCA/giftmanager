@@ -76,6 +76,7 @@
                 <li class="idea-item bg-white p-4 shadow-md rounded-lg flex flex-col sm:flex-row items-start sm:items-center" data-idea-id="{{ gift_idea.gift_idea_id }}" data-priority="{{ gift_idea.priority }}">
                     <span class="priority-number">{{ gift_idea.priority }}</span>
                     <span class="drag-handle hidden">☰</span>
+                    <input type="number" class="priority-input hidden border border-gray-300 rounded p-1" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
                     <div class="flex-1">
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
                         <p class="text-gray-600 description">{{ gift_idea.description }}</p>
@@ -111,45 +112,38 @@
     <script>
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {
-            window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+            window.location.href = '/dashboard'; // Replace with the actual URL of your dashboard page
         });
-        // Add the code for deleting an idea here
+
+        // Delete an idea
         document.querySelectorAll('.delete-idea-button').forEach(button => {
             button.addEventListener('click', () => {
                 const ideaId = button.getAttribute('data-idea-id');
                 deleteIdea(ideaId);
             });
         });
-    
+
         function deleteIdea(ideaId) {
             fetch(`/delete_idea/${ideaId}`, {
                 method: 'DELETE',
             })
             .then(response => {
                 if (response.ok) {
-                    // Remove the deleted idea from the page
-                    const ideaElement = document.querySelector(`[data-idea-id="${ideaId}"]`);
-                    ideaElement.remove();
+                    document.querySelector(`[data-idea-id="${ideaId}"]`).remove();
                 }
             })
-            .catch(error => {
-                console.error('Error deleting idea:', error);
-            });
+            .catch(error => console.error('Error deleting idea:', error));
         }
 
-    // Add the code for editing an idea here
-    document.querySelectorAll('.edit-idea-link').forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent the default link behavior (i.e., navigating to a new page)
-            const ideaId = link.getAttribute('data-idea-id');
-            editIdea(ideaId);
+        // Edit an idea
+        document.querySelectorAll('.edit-idea-link').forEach(link => {
+            link.addEventListener('click', event => {
+                event.preventDefault();
+                const ideaId = link.getAttribute('data-idea-id');
+                window.location.href = `/edit_idea/${ideaId}`;
+            });
         });
-    });
 
-    function editIdea(ideaId) {
-        // Redirect to the edit page for the specific idea
-        window.location.href = `/edit_idea/${ideaId}`;
-    }
         const reorderButton = document.getElementById('toggleReorder');
         const saveButton = document.getElementById('saveReorder');
         const ideasList = document.getElementById('ideasList');
@@ -167,23 +161,38 @@
                 saveButton.classList.remove('hidden');
                 ideasList.classList.add('drag-mode');
                 document.querySelectorAll('.drag-handle').forEach(handle => handle.classList.remove('hidden'));
+                document.querySelectorAll('.priority-input').forEach(input => {
+                    input.classList.remove('hidden');
+                    const parentItem = input.closest('.idea-item');
+                    input.value = parentItem.getAttribute('data-priority'); // Set the input to the current priority
+                });
+                document.querySelectorAll('.priority-number').forEach(label => label.classList.add('hidden'));
                 enableDragAndDrop();
             } else {
                 reorderButton.classList.remove('hidden');
                 saveButton.classList.add('hidden');
                 ideasList.classList.remove('drag-mode');
                 document.querySelectorAll('.drag-handle').forEach(handle => handle.classList.add('hidden'));
+                document.querySelectorAll('.priority-input').forEach(input => input.classList.add('hidden'));
+                document.querySelectorAll('.priority-number').forEach(label => label.classList.remove('hidden'));
             }
         }
 
-        // Enable drag-and-drop functionality
+        // Enable drag-and-drop functionality only in reorder mode
         function enableDragAndDrop() {
             Sortable.create(ideasList, {
                 handle: '.drag-handle',
                 animation: 150,
-                onEnd: function (evt) {
-                    updatePriorityNumbers();
+                onEnd: function () {
+                    updatePriorityInputs();
                 }
+            });
+        }
+
+        // Update priority inputs based on the current order after drag-and-drop
+        function updatePriorityInputs() {
+            document.querySelectorAll('.idea-item').forEach((item, index) => {
+                item.querySelector('.priority-input').value = index + 1;
             });
         }
 
@@ -191,28 +200,34 @@
         function updatePriorityNumbers() {
             document.querySelectorAll('.idea-item').forEach((item, index) => {
                 const priorityLabel = item.querySelector('.priority-number');
-                if (priorityLabel) {
-                    priorityLabel.textContent = index + 1; // Update the visible priority number
-                }
+                priorityLabel.textContent = index + 1;
+                item.querySelector('.priority-input').value = index + 1;
             });
         }
 
         // Event listener for saving the reordered ideas
-        saveButton.addEventListener('click', function () {
+        saveButton.addEventListener('click', () => {
             const reorderedIdeas = [];
 
-            document.querySelectorAll('.idea-item').forEach((idea, index) => {
+            // Sort ideas based on updated priority input values
+            const ideasArray = Array.from(document.querySelectorAll('.idea-item'));
+            ideasArray.sort((a, b) => a.querySelector('.priority-input').value - b.querySelector('.priority-input').value);
+
+            // Update the DOM order and prepare for saving to the server
+            ideasArray.forEach((idea, index) => {
+                ideasList.appendChild(idea); // Reorder DOM elements
                 reorderedIdeas.push({
                     gift_idea_id: idea.getAttribute('data-idea-id'),
-                    priority: index + 1 // Priority is the new order
+                    priority: index + 1 // Updated priority
                 });
+                idea.querySelector('.priority-number').textContent = index + 1; // Update displayed priority
+                idea.querySelector('.priority-input').value = index + 1;
             });
 
-                    fetch('/update_order', {
+            // Send updated order to the server
+            fetch('/update_order', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order: reorderedIdeas })
             })
             .then(response => response.json())
@@ -220,13 +235,10 @@
                 console.log('Success:', data);
                 toggleReorderMode(); // Exit reorder mode after saving
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            })
-            .finally(() => {
-                window.location.reload(); // Reload the page regardless of the response
-            });
+            .catch(error => console.error('Error:', error))
+            .finally(() => window.location.reload()); // Reload the page regardless of response
         });
+
     </script>
 </body>
 </html>
