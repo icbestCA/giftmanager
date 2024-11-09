@@ -4,7 +4,8 @@ from mailjet_rest import Client
 from datetime import datetime, timedelta
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-import json
+from authlib.integrations.flask_client import OAuth
+import json, secrets
 import subprocess
 import hashlib
 import os
@@ -17,7 +18,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 # Set SameSite attribute to Strict
-app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['DATA'] = "./data"  # Directory where files are stored
 app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
@@ -135,6 +136,81 @@ def utility_processor():
 
     return dict(get_full_name=get_full_name)
 
+#OIDC SUPPORT
+oauth = OAuth(app)
+oauth.register(
+    name="keycloak",
+    client_id=os.getenv("KEYCLOAK_CLIENT_ID"),
+    client_secret=os.getenv("KEYCLOAK_CLIENT_SECRET"),
+    server_metadata_url=os.getenv("KEYCLOAK_SERVER_METADATA_URL"),
+    client_kwargs={"scope": "openid profile email phone"},
+)
+
+@app.route('/login_oidc')
+def login_oidc():
+    redirect_uri = url_for("auth", _external=True)
+    nonce = secrets.token_urlsafe(16)
+    state = secrets.token_urlsafe(16)  # Generate a state token
+    session["nonce"] = nonce
+    session["state"] = state  # Store the state in the session
+    return oauth.keycloak.authorize_redirect(redirect_uri, nonce=nonce, state=state)
+
+@app.route("/auth")
+def auth():
+    # Verify state parameter to prevent CSRF only if the state exists in the request
+    state = request.args.get("state")
+    saved_state = session.pop("state", None)
+    
+    if state != saved_state:
+        flash("Authorization failed: invalid state.", "danger")
+        return redirect(url_for("login"))
+    
+    try:
+        # Try to retrieve the access token from OIDC provider
+        token = oauth.keycloak.authorize_access_token()
+    except Exception as e:
+        flash("OIDC authorization failed.", "danger")
+        return redirect(url_for("login"))
+    
+    # Pop the nonce after obtaining the token
+    nonce = session.pop("nonce", None)
+    
+    try:
+        # Parse ID token and retrieve user info
+        user_info = oauth.keycloak.parse_id_token(token, nonce=nonce)
+    except Exception as e:
+        flash("Failed to parse user information.", "danger")
+        return redirect(url_for("login"))
+    
+    # Retrieve fields dynamically from the OIDC user info
+    primary_oidc_field = os.getenv("PRIMARY_OIDC_FIELD").lower()
+    secondary_oidc_field = os.getenv("SECONDARY_OIDC_FIELD").lower()
+    primary_db_field = os.getenv("PRIMARY_DB_FIELD").lower()
+    secondary_db_field = os.getenv("SECONDARY_DB_FIELD").lower()
+
+    # Retrieve the values from the OIDC user info based on the environment settings
+    primary_oidc_value = user_info.get(primary_oidc_field)
+    secondary_oidc_value = user_info.get(secondary_oidc_field)
+
+    # Search for the user in the local database based on the primary OIDC field and DB field
+    user_in_db = None
+    if primary_oidc_value:
+        user_in_db = next((user for user in users if user[primary_db_field].lower() == primary_oidc_value.lower()), None)
+    
+    # If primary comparison fails, try secondary comparison
+    if not user_in_db and secondary_oidc_value:
+        user_in_db = next((user for user in users if user[secondary_db_field].lower() == secondary_oidc_value.lower()), None)
+    
+    if user_in_db:
+        # Set the session with the username (from the local database)
+        session["username"] = user_in_db["username"]
+        flash("Login successful with OIDC!", "login_success")
+        return redirect(url_for("dashboard"))
+    
+    flash("User not found in local database.", "danger")
+    return redirect(url_for("login"))
+
+#OIDC END
 
 @app.route('/')
 def index():
@@ -850,7 +926,16 @@ field_explanations = {
     "MAILJET_API_SECRET": "Mailjet API secret key",
     "SECRET_KEY": "Flask secret key for browser data",
     "SYSTEM_EMAIL": "System email that will send the mesaage related to the app, must be allowed in mailjet",
-    "DELETE_DAYS": "days delete"
+    "DELETE_DAYS":"days delete",
+    "KEYCLOAK_CLIENT_ID": "Client id of authenticator",
+    "KEYCLOAK_CLIENT_SECRET": "Client secret token",
+    "KEYCLOAK_SERVER_METADATA_URL": "",
+    "KEYCLOAK_LOGOUT_URL": "",
+    "PRIMARY_OIDC_FIELD": "Field provided by oicd",
+    "SECONDARY_OIDC_FIELD": "Field provided by oicd",
+    "PRIMARY_DB_FIELD": "Field to compare with json",
+    "SECONDARY_DB_FIELD": "Field to compare with json"
+
 }
 # Function to get current .env values
 
