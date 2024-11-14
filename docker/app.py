@@ -135,6 +135,148 @@ def utility_processor():
 
     return dict(get_full_name=get_full_name)
 
+#OIDC SUPPORT
+oauth = OAuth(app)
+oauth.register(
+    name="keycloak",
+    client_id=os.getenv("OIDC_CLIENT_ID"),
+    client_secret=os.getenv("OIDC_CLIENT_SECRET"),
+    server_metadata_url=os.getenv("OIDC_SERVER_METADATA_URL"),
+    client_kwargs={"scope": "openid profile email phone"},
+)
+
+@app.route('/login_oidc')
+def login_oidc():
+    redirect_uri = url_for("auth", _external=True)
+    nonce = secrets.token_urlsafe(16)
+    state = secrets.token_urlsafe(16)  # Generate a state token
+    session["nonce"] = nonce
+    session["state"] = state  # Store the state in the session
+    return oauth.keycloak.authorize_redirect(redirect_uri, nonce=nonce, state=state)
+
+@app.route("/auth")
+def auth():
+    # Verify state parameter to prevent CSRF only if the state exists in the request
+    state = request.args.get("state")
+    saved_state = session.pop("state", None)
+    
+    if state != saved_state:
+        flash("Authorization failed: invalid state.", "danger")
+        return redirect(url_for("login"))
+    
+    try:
+        # Try to retrieve the access token from OIDC provider
+        token = oauth.keycloak.authorize_access_token()
+    except Exception as e:
+        flash("OIDC authorization failed.", "danger")
+        return redirect(url_for("login"))
+    
+    # Pop the nonce after obtaining the token
+    nonce = session.pop("nonce", None)
+    
+    try:
+        # Parse ID token and retrieve user info
+        user_info = oauth.keycloak.parse_id_token(token, nonce=nonce)
+    except Exception as e:
+        flash("Failed to parse user information.", "danger")
+        return redirect(url_for("login"))
+    
+    # Retrieve fields dynamically from the OIDC user info
+    primary_oidc_field = os.getenv("PRIMARY_OIDC_FIELD").lower()
+    secondary_oidc_field = os.getenv("SECONDARY_OIDC_FIELD").lower()
+    primary_db_field = os.getenv("PRIMARY_DB_FIELD").lower()
+    secondary_db_field = os.getenv("SECONDARY_DB_FIELD").lower()
+
+    # Retrieve the values from the OIDC user info based on the environment settings
+    primary_oidc_value = user_info.get(primary_oidc_field)
+    secondary_oidc_value = user_info.get(secondary_oidc_field)
+
+    # Search for the user in the local database based on the primary OIDC field and DB field
+    user_in_db = None
+    if primary_oidc_value:
+        user_in_db = next(
+            (user for user in users if user.get(primary_db_field, "").lower() == primary_oidc_value.lower()), 
+            None
+        )
+
+    # If primary comparison fails, try secondary comparison
+    if not user_in_db and secondary_oidc_value:
+        user_in_db = next(
+            (user for user in users if user.get(secondary_db_field, "").lower() == secondary_oidc_value.lower()), 
+            None
+        )
+
+    if user_in_db:
+        # Set the session with the username (from the local database)
+        session["username"] = user_in_db["username"]
+        flash("Login successful with OIDC!", "login_success")
+        return redirect(url_for("dashboard"))
+    
+    if os.getenv("ENABLE_AUTO_REGISTRATION", "false").lower() == "true":
+    # If user not found, create a new user profile
+        new_user = {
+            "username": user_info.get("preferred_username"),
+            "email": user_info.get("email"),
+            "full_name": user_info.get("name"),
+        }
+        # Add new user to `users` (replace this with actual database insertion logic)
+        users.append(new_user)
+        session["username"] = new_user["username"]
+
+        # Redirect to profile setup page to complete additional information
+        flash("New profile created. Please complete your profile setup.", "info")
+        return redirect(url_for("setup_profile"))  # Redirect to profile setup route
+    else:
+        flash("User not found and auto-registration is disabled.", "danger")
+        return redirect(url_for("login"))
+@app.route("/setup_profile", methods=["GET", "POST"])
+def setup_profile():
+    # Assuming `session["username"]` is set after OIDC login
+    username = session.get("username")
+    
+    # Find the user in `users.json`
+    user = next((user for user in users if user["username"] == username), None)
+    
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for("login"))
+
+    # Redirect if avatar URL already exists
+    if user.get("avatar"):
+        flash("Profile setup not required. Avatar already set.", "info")
+        return redirect(url_for("dashboard"))
+    
+    if request.method == "POST":
+        # Handle form submission to update password, birthday, and avatar
+        user["password"] = password_hash(request.form["password"])
+        user["birthday"] = request.form["birthday"]
+        user["avatar"] = request.form["avatar"]
+        
+        # Update full_name if provided in the form
+        user["full_name"] = request.form.get("full_name", user.get("full_name"))
+        
+        # Save the updated user to `users.json`
+        with open("users.json", "w") as file:
+            json.dump(users, file, indent=4)
+        
+        flash("Profile setup complete!", "success")
+        return redirect(url_for("dashboard"))
+
+    # Retrieve the OIDC user data
+    oidc_user_info = {
+        'full_name': user.get('full_name', ''),
+        'email': user.get('email', '')
+    }
+
+    # Print the OIDC data to console for debugging
+    print("OIDC User Info:", oidc_user_info)
+
+    # Prefill data for the user (including OIDC data)
+    return render_template("setup_profile.html", user=user, oidc_user_info=oidc_user_info)
+
+#OIDC END
+
+
 
 @app.route('/')
 def index():
@@ -192,7 +334,9 @@ def login():
 
         flash('User does not exist', 'login_error')  # Error message if user doesn't exist
 
-    return render_template('login.html')
+    oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get the OIDC client ID from environment
+    oidc_enabled = bool(oidc_client_id)  # Check if OIDC Client ID is set
+    return render_template("login.html", oidc_enabled=oidc_enabled)
 
 
 @app.route('/feedback', methods=['GET', 'POST'])
@@ -252,8 +396,7 @@ def add2():
         added_by = session.get('username')
 
         # Find the largest gift idea ID
-        largest_gift_idea_id = max(idea['gift_idea_id']
-                                   for idea in gift_ideas_data)
+        largest_gift_idea_id = max(idea['gift_idea_id'] for idea in gift_ideas_data)
 
         # Create a new idea object
         new_idea = {
@@ -282,8 +425,7 @@ def add2():
         users = json.load(file)
 
     # Extract the user list from the JSON data
-    user_list = [{"full_name": user["full_name"],
-                  "username": user["username"]} for user in users]
+    user_list = [{"full_name": user["full_name"], "username": user["username"]} for user in users]
 
     # Render the "Add Idea" page with the user list and the selected user as default
     return render_template('add2.html', user_list=user_list)
@@ -850,14 +992,20 @@ field_explanations = {
     "MAILJET_API_SECRET": "Mailjet API secret key",
     "SECRET_KEY": "Flask secret key for browser data",
     "SYSTEM_EMAIL": "System email that will send the mesaage related to the app, must be allowed in mailjet",
-    "DELETE_DAYS": "days delete"
+    "DELETE_DAYS":"days delete",
+    "OIDC_CLIENT_ID": "Unique ID for your app registered with the OIDC provider.",
+    "OIDC_CLIENT_SECRET": "Secret key for secure communication with the OIDC provider.",
+    "OIDC_SERVER_METADATA_URL": "URL to fetch OIDC provider's configuration details.",
+    "OIDC_LOGOUT_URL": "URL for logging users out of the OIDC provider.",
+    "PRIMARY_OIDC_FIELD": "Field provided by oicd",
+    "SECONDARY_OIDC_FIELD": "Field provided by oicd",
+    "PRIMARY_DB_FIELD": "Field to compare with json",
+    "SECONDARY_DB_FIELD": "Field to compare with json",
+    "ENABLE_AUTO_REGISTRATION": "true or false"
 }
 # Function to get current .env values
-
-
 def get_env_values():
     return dotenv_values()
-
 
 @app.route('/setup', methods=['GET'])
 @login_required
