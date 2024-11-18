@@ -3,3 +3,4 @@ mailjet_rest
 python-dotenv
 argon2-cffi
 APScheduler
+authlib
