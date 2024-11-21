@@ -11,13 +11,14 @@ import os
 import random
 from pathlib import Path
 from dotenv import load_dotenv, set_key, dotenv_values
+from authlib.integrations.flask_client import OAuth
 load_dotenv()
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 # Set SameSite attribute to Strict
-app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['DATA'] = "./data"  # Directory where files are stored
 app.config['ALLOWED_EXTENSIONS'] = {'json'}
 

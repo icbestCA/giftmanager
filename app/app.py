@@ -8,12 +8,13 @@ import json, subprocess, hashlib
 import os
 import random
 from dotenv import load_dotenv, set_key, dotenv_values
+from authlib.integrations.flask_client import OAuth
 load_dotenv()
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Set SameSite attribute to Strict
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
 app.config['UPLOAD_FOLDER'] = './'  # Directory where files are stored
 app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
