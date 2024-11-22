@@ -6,6 +6,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import json, subprocess, hashlib
 import os
+import secrets
 import random
 from dotenv import load_dotenv, set_key, dotenv_values
 from authlib.integrations.flask_client import OAuth

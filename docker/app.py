@@ -12,6 +12,7 @@ import random
 from pathlib import Path
 from dotenv import load_dotenv, set_key, dotenv_values
 from authlib.integrations.flask_client import OAuth
+import secrets
 load_dotenv()
 
 
