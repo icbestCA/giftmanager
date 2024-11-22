@@ -231,6 +231,7 @@ def auth():
     else:
         flash("User not found and auto-registration is disabled.", "danger")
         return redirect(url_for("login"))
+    
 @app.route("/setup_profile", methods=["GET", "POST"])
 def setup_profile():
     # Assuming `session["username"]` is set after OIDC login
@@ -258,7 +259,7 @@ def setup_profile():
         user["full_name"] = request.form.get("full_name", user.get("full_name"))
         
         # Save the updated user to `users.json`
-        with open("users.json", "w") as file:
+        with open(app.config['USERS_FILE'], "w") as file:
             json.dump(users, file, indent=4)
         
         flash("Profile setup complete!", "success")
