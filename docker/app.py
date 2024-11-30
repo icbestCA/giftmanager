@@ -13,7 +13,9 @@ from pathlib import Path
 from dotenv import load_dotenv, set_key, dotenv_values
 from authlib.integrations.flask_client import OAuth
 import secrets
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), './data/.env') # Load the .env file from the specified path
+load_dotenv(dotenv_path)
+
 
 
 app = Flask(__name__)
@@ -46,6 +48,25 @@ def prepopulate_file(filename: str, data: str):
     with open(filename, 'w') as file:
         file.write(data)
 
+# Prepopulate .env file
+prepopulate_file('./data/.env', """
+FEED_SEND=''
+MAILJET_API_KEY=''
+MAILJET_API_SECRET=''
+SECRET_KEY='changethis'
+SYSTEM_EMAIL=''
+DELETE_DAYS='30'
+OIDC_CLIENT_ID=''
+OIDC_CLIENT_SECRET=''
+OIDC_SERVER_METADATA_URL=''
+OIDC_LOGOUT_URL=''
+PRIMARY_OIDC_FIELD='email'
+SECONDARY_OIDC_FIELD='preferred_username'
+PRIMARY_DB_FIELD='email'
+SECONDARY_DB_FIELD='username'
+ENABLE_AUTO_REGISTRATION='false'
+ENABLE_DEFAULT_LOGIN='true'
+""")
 
 prepopulate_file(app.config['USERS_FILE'], """
         [
@@ -229,7 +250,7 @@ def auth():
         flash("New profile created. Please complete your profile setup.", "info")
         return redirect(url_for("setup_profile"))  # Redirect to profile setup route
     else:
-        flash("User not found and auto-registration is disabled.", "danger")
+        flash("User not found and auto-registration is disabled.", "login")
         return redirect(url_for("login"))
     
 @app.route("/setup_profile", methods=["GET", "POST"])
@@ -249,9 +270,15 @@ def setup_profile():
         flash("Profile setup not required. Avatar already set.", "info")
         return redirect(url_for("dashboard"))
     
+    enable_default_login = os.getenv("ENABLE_DEFAULT_LOGIN", "True").lower() == "true"
+
     if request.method == "POST":
-        # Handle form submission to update password, birthday, and avatar
-        user["password"] = password_hash(request.form["password"])
+        # Update the password only if ENABLE_DEFAULT_LOGIN is True
+        password = request.form.get("password")
+        if enable_default_login and password:
+            user["password"] = password_hash(password)
+        
+        # Always update birthday, avatar, and full_name if provided
         user["birthday"] = request.form["birthday"]
         user["avatar"] = request.form["avatar"]
         
@@ -275,7 +302,7 @@ def setup_profile():
     print("OIDC User Info:", oidc_user_info)
 
     # Prefill data for the user (including OIDC data)
-    return render_template("setup_profile.html", user=user, oidc_user_info=oidc_user_info)
+    return render_template("setup_profile.html", user=user, oidc_user_info=oidc_user_info, enable_default_login=enable_default_login)
 
 #OIDC END
 
@@ -318,6 +345,12 @@ def run_email():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
+    
+    if not enable_default_login:
+        return render_template("oidc_only.html")
+    
     if request.method == 'POST':
         input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
@@ -1004,11 +1037,12 @@ field_explanations = {
     "SECONDARY_OIDC_FIELD": "Field provided by oicd",
     "PRIMARY_DB_FIELD": "Field to compare with json",
     "SECONDARY_DB_FIELD": "Field to compare with json",
-    "ENABLE_AUTO_REGISTRATION": "true or false"
+    "ENABLE_AUTO_REGISTRATION": "true or false",
+    "ENABLE_DEFAULT_LOGIN": "true false"
 }
 # Function to get current .env values
 def get_env_values():
-    return dotenv_values()
+    return dotenv_values(dotenv_path)
 
 @app.route('/setup', methods=['GET'])
 @login_required
@@ -1025,7 +1059,7 @@ def update_env():
     for key in field_explanations.keys():
         if key in request.form:
             new_value = request.form[key]
-            set_key('.env', key, new_value)
+            set_key(dotenv_path, key, new_value)
     return redirect(url_for('setup'))
 
 

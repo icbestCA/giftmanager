@@ -30,7 +30,11 @@
 
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-bold">Password:</label>
-                <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
+                {% if enable_default_login %}
+                    <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
+                {% else %}
+                    <p class="text-gray-500 italic">Password is not required because default login is disabled.</p>
+                {% endif %}
             </div>
 
             <div class="mb-4">

@@ -4,13 +4,13 @@ from mailjet_rest import Client
 from datetime import datetime, timedelta
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-import json, subprocess, hashlib
+from authlib.integrations.flask_client import OAuth
+import json, subprocess, hashlib, secrets
 import os
-import secrets
 import random
 from dotenv import load_dotenv, set_key, dotenv_values
-from authlib.integrations.flask_client import OAuth
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
+load_dotenv(dotenv_path)
 
 
 app = Flask(__name__)
@@ -176,8 +176,9 @@ def auth():
         flash("New profile created. Please complete your profile setup.", "info")
         return redirect(url_for("setup_profile"))  # Redirect to profile setup route
     else:
-        flash("User not found and auto-registration is disabled.", "danger")
+        flash("User not found and auto-registration is disabled.", "login")
         return redirect(url_for("login"))
+    
 @app.route("/setup_profile", methods=["GET", "POST"])
 def setup_profile():
     # Assuming `session["username"]` is set after OIDC login
@@ -195,9 +196,14 @@ def setup_profile():
         flash("Profile setup not required. Avatar already set.", "info")
         return redirect(url_for("dashboard"))
     
+    enable_default_login = os.getenv("ENABLE_DEFAULT_LOGIN", "True").lower() == "true"
+
     if request.method == "POST":
         # Handle form submission to update password, birthday, and avatar
-        user["password"] = password_hash(request.form["password"])
+        password = request.form.get("password")
+        if enable_default_login and password:
+            user["password"] = password_hash(password)
+
         user["birthday"] = request.form["birthday"]
         user["avatar"] = request.form["avatar"]
         
@@ -221,7 +227,7 @@ def setup_profile():
     print("OIDC User Info:", oidc_user_info)
 
     # Prefill data for the user (including OIDC data)
-    return render_template("setup_profile.html", user=user, oidc_user_info=oidc_user_info)
+    return render_template("setup_profile.html", user=user, oidc_user_info=oidc_user_info, enable_default_login=enable_default_login)
 
 #OIDC END
 
@@ -258,6 +264,12 @@ def run_email():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
+    
+    if not enable_default_login:
+        return render_template("oidc_only.html")
+
     if request.method == 'POST':
         input_username = request.form['username'].lower()  # Convert to lowercase
         password = request.form['password']
@@ -915,12 +927,13 @@ field_explanations = {
     "SECONDARY_OIDC_FIELD": "Field provided by oicd",
     "PRIMARY_DB_FIELD": "Field to compare with json",
     "SECONDARY_DB_FIELD": "Field to compare with json",
-    "ENABLE_AUTO_REGISTRATION": "true or false"
+    "ENABLE_AUTO_REGISTRATION": "true or false",
+    "ENABLE_DEFAULT_LOGIN": "true or false"
 
 }
 # Function to get current .env values
 def get_env_values():
-    return dotenv_values()
+    return dotenv_values(dotenv_path)
 
 @app.route('/setup', methods=['GET'])
 @login_required
@@ -937,7 +950,7 @@ def update_env():
     for key in field_explanations.keys():
         if key in request.form:
             new_value = request.form[key]
-            set_key('.env', key, new_value)
+            set_key(dotenv_path, key, new_value)
     return redirect(url_for('setup'))
 
 @app.route('/upload_files', methods=['POST'])
