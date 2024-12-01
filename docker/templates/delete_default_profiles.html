@@ -1,4 +1,3 @@
-<!-- delete_default_profiles.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,16 +7,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
 </head>
-<body class="text-gray-900 font-sans">
-    <main class="container mx-auto p-8">
-        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">Delete Default Profiles</h1>
-            <form action="{{ url_for('delete_default_profiles') }}" method="POST">
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700 font-bold">Enter Your Password:</label>
-                    <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
-                </div>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Delete Default Profiles</button>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <main class="container mx-auto p-8 flex justify-center items-center min-h-screen">
+        <section class="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
+            <h1 class="text-3xl font-bold text-red-600 mb-4 text-center">Delete Default Profiles</h1>
+            <form method="post" class="text-center">
+                <button type="submit" 
+                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                    Confirm Delete Default Profiles
+                </button>
             </form>
         </section>
     </main>

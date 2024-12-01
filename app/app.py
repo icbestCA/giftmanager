@@ -851,25 +851,19 @@ def delete_default_profiles():
     with open('users.json', 'r') as file:
         users = json.load(file)
     
+    current_user = session['username']
+
+    # Ensure the current user is not one of the default profiles
+    if current_user in ['user2', 'demo']:
+        flash('You cannot delete default profiles while logged in as a default profile.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Check if there are more than two profiles
+    if len(users) <= 2:
+        flash('Cannot delete default profiles. Less than or equal to two profiles exist.', 'danger')
+        return redirect(url_for('dashboard'))
+
     if request.method == 'POST':
-        password = request.form['password']
-        current_user = session['username']
-
-        # Ensure the current user is not one of the default profiles
-        if current_user in ['user2', 'demo']:
-            flash('You cannot delete default profiles while logged in as a default profile.', 'danger')
-            return redirect(url_for('dashboard'))
-
-        # Check if there are more than two profiles
-        if len(users) <= 2:
-            flash('Cannot delete default profiles. Less than or equal to two profiles exist.', 'danger')
-            return redirect(url_for('dashboard'))
-
-        # Verify the password
-        if not check_password(current_user, password):
-            flash('Incorrect password. Please try again.', 'danger')
-            return redirect(url_for('delete_default_profiles'))
-
         # Delete the default profiles
         users = [user for user in users if user['username'] not in ['user2', 'demo']]
 
