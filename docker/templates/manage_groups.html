@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Groups</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+    <script>
+        function validateNewGroupForm() {
+            const checkboxes = document.querySelectorAll('input[name="assigned_users"]:checked');
+            const groupName = document.querySelector('input[name="new_group_name"]').value;
+
+            if (!groupName) {
+                alert('Please enter a new group name.');
+                return false;
+            }
+
+            if (checkboxes.length === 0) {
+                alert('Please select at least one user to assign the new group.');
+                return false;
+            }
+
+            return true; // Form is valid, submit it
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <main class="container mx-auto p-8">
+        <section class="bg-white shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-6">Manage Groups</h1>
+
+            <!-- Form for adding a new group -->
+            <form method="post" class="mb-6" onsubmit="return validateNewGroupForm()">
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold mb-2">Add a New Group</h2>
+                    <div class="flex items-center gap-4">
+                        <input 
+                            type="text" 
+                            name="new_group_name" 
+                            placeholder="Enter new group name" 
+                            class="border rounded py-2 px-3 w-full" 
+                            required>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block font-medium mb-2">Assign to Users:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {% for user in users %}
+                            <label class="block">
+                                <input 
+                                    type="checkbox" 
+                                    name="assigned_users" 
+                                    value="{{ user['username'] }}" 
+                                    class="mr-2">
+                                {{ user['full_name'] }} ({{ user['username'] }})
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="mt-4 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                        Add Group
+                    </button>
+                </div>
+            </form>
+
+            <!-- Form for managing existing groups (checkbox assignments) -->
+            <form action="{{ url_for('update_group_assignments') }}" method="post">
+                <h2 class="text-xl font-semibold mb-4">Manage Existing Groups</h2>
+                <div class="overflow-auto">
+                    <table class="table-auto w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="border px-4 py-2 text-left">User</th>
+                                {% for group in groups %}
+                                <th class="border px-4 py-2 text-center">{{ group }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="border px-4 py-2">
+                                    {{ user['full_name'] }} ({{ user['username'] }})
+                                </td>
+                                {% for group in groups %}
+                                <td class="border px-4 py-2 text-center">
+                                    <input 
+                                        type="checkbox" 
+                                        name="{{ user['username'] }}[{{ group }}]" 
+                                        {% if group in user.get('groups', []) %}checked{% endif %}>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                    Save Changes
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

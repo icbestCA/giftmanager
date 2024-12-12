@@ -335,6 +335,39 @@ def feedback():
 @app.route('/add2/', methods=['GET', 'POST'])
 @login_required
 def add2():
+    # Read the gift ideas data (ensure this exists in your setup)
+    with open('ideas.json', 'r') as file:
+        gift_ideas_data = json.load(file)
+
+    # Read user data from the JSON file
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    # Get the current user's information
+    current_user = session['username']
+    current_user_data = next((user for user in users if user["username"] == current_user), None)
+
+    if not current_user_data:
+        flash("Current user not found.", "danger")
+        return redirect(url_for('dashboard'))
+
+    # Get the current user's groups (default to empty list if not present)
+    current_user_groups = current_user_data.get("groups", [])
+
+    # Filter users based on groups
+    if not current_user_groups:
+        # If the current user has no groups, allow them to see all users
+        user_list = [
+            {"full_name": user["full_name"], "username": user["username"]}
+            for user in users
+        ]
+    else:
+        # Filter the user list to include only those in the current user's groups
+        user_list = [
+            {"full_name": user["full_name"], "username": user["username"]}
+            for user in users
+            if not user.get("groups") or any(group in user.get("groups", []) for group in current_user_groups)
+        ]
 
     if request.method == 'POST':
         # Handle the form submission, process the data, and add the idea
@@ -344,13 +377,11 @@ def add2():
         link = request.form.get('link', '')
         value = request.form.get('value', None)  # Optional field
 
-        # You can customize how you retrieve the currently logged-in user here
-        # For example, if you're storing the username in the session:
+        # Retrieve the logged-in user's username
         added_by = session.get('username')
-        
-        # Find the largest gift idea ID
-        largest_gift_idea_id = max(idea['gift_idea_id'] for idea in gift_ideas_data)
 
+        # Find the largest gift idea ID
+        largest_gift_idea_id = max((idea['gift_idea_id'] for idea in gift_ideas_data), default=0)
 
         # Create a new idea object
         new_idea = {
@@ -368,20 +399,12 @@ def add2():
         gift_ideas_data.append(new_idea)
 
         # Update JSON file with the new data
-        update_gift_ideas_json(gift_ideas_data)
-
-        flash(f'Idea "{name}" added for user {user} by {added_by}!', 'success')
+        with open('ideas.json', 'w') as file:
+            json.dump(gift_ideas_data, file, indent=4)
 
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
 
-    # Read user data from the JSON file
-    with open('users.json', 'r') as file:
-        users = json.load(file)
-
-    # Extract the user list from the JSON data
-    user_list = [{"full_name": user["full_name"], "username": user["username"]} for user in users]
-
-    # Render the "Add Idea" page with the user list and the selected user as default
+    # Render the "Add Idea" page with the filtered user list
     return render_template('add2.html', user_list=user_list)
 
 
@@ -429,8 +452,35 @@ def add_idea(selected_user_id):
 
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
 
-    # Extract the user list for the dropdown from the users data
-    user_list = [{"full_name": user["full_name"], "username": user["username"]} for user in users]
+    # Read user data from the JSON file
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    # Get the current user's information
+    current_user = session['username']
+    current_user_data = next((user for user in users if user["username"] == current_user), None)
+
+    if not current_user_data:
+        flash("Current user not found.", "danger")
+        return redirect(url_for('dashboard'))
+
+    # Get the current user's groups (default to empty list if not present)
+    current_user_groups = current_user_data.get("groups", [])
+
+    # Filter users based on groups
+    if not current_user_groups:
+        # If the current user has no groups, allow them to see all users
+        user_list = [
+            {"full_name": user["full_name"], "username": user["username"]}
+            for user in users
+        ]
+    else:
+        # Filter the user list to include only those in the current user's groups
+        user_list = [
+            {"full_name": user["full_name"], "username": user["username"]}
+            for user in users
+            if not user.get("groups") or any(group in user.get("groups", []) for group in current_user_groups)
+        ]
 
     # Render the "Add Idea" page with the user list, gift ideas, and the selected user as default
     return render_template('add_idea.html', user_list=user_list, gift_ideas=gift_ideas_data, default_user=selected_user_id)
@@ -527,38 +577,52 @@ def dashboard():
     with open('users.json', 'r') as file:
         users = json.load(file)
 
-    # Sort the user list alphabetically by full_name
-    sorted_users = sorted(users, key=lambda x: x['full_name'].lower())
+    # Get the current user's data
+    current_user = next((user for user in users if user['username'] == session['username']), None)
 
-    current_user = next((user for user in sorted_users if user['username'] == session['username']), None)
-
-        # Move the current user to the top of the list
-    if current_user:
-        sorted_users.remove(current_user)
-        sorted_users.insert(0, current_user)
-
-    # Find the user's data by matching the username in the session
-    user_data = next((user for user in users if user['username'] == session['username']), None)
-
-    messages = get_flashed_messages()
-    password_messages = [msg for msg in messages if 'password' in msg.lower()]
-
-    assigned_users = None
-    if current_user and 'assigned_users' in current_user:
-        assigned_users = current_user['assigned_users']
-
-    if user_data:
-        # Display user information on the dashboard
-        profile_info = {
-            'full_name': user_data['full_name'],
-            'birthday': user_data['birthday']
-        }
-    else:
+    if not current_user:
         # Handle the case when user data is not found
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    return render_template('dashboard.html', profile_info=profile_info, users=sorted_users, password_messages=password_messages, assigned_users=assigned_users)
+    # Get the groups of the current user (default to empty list if not present)
+    current_user_groups = current_user.get('groups', [])
+
+    # Check if the current user has no groups
+    if not current_user_groups:
+        # If the current user has no groups, they can see all users
+        visible_users = users
+    else:
+        # Otherwise, filter users to include those in the same groups or without a "groups" field
+        visible_users = [
+            user for user in users
+            if not user.get('groups') or any(group in current_user_groups for group in user['groups'])
+        ]
+
+    # Sort the filtered user list alphabetically by full_name
+    sorted_users = sorted(visible_users, key=lambda x: x['full_name'].lower())
+
+    # Move the current user to the top of the sorted list
+    sorted_users.insert(0, sorted_users.pop(sorted_users.index(current_user)))
+
+    # Prepare profile information for the current user
+    profile_info = {
+        'full_name': current_user.get('full_name'),
+        'birthday': current_user.get('birthday'),
+    }
+
+    # Get flash messages related to passwords
+    messages = get_flashed_messages()
+    password_messages = [msg for msg in messages if 'password' in msg.lower()]
+
+    # Pass data to the template
+    return render_template(
+        'dashboard.html',
+        profile_info=profile_info,
+        users=sorted_users,
+        password_messages=password_messages,
+    )
+
 
 @app.route('/change_password', methods=['POST'])
 @login_required
@@ -1101,6 +1165,70 @@ def secret_santa_assignments():
 
     # Pass the 'assigned_users' and 'pool_instructions' to the template
     return render_template('secret_santa_assignment.html', assigned_users=assigned_users, pool_instructions=pool_instructions)
+
+# Families 
+# Start
+@app.route('/families', methods=['GET', 'POST'])
+@admin_required
+@login_required
+def manage_groups():
+    # Read user data from the JSON file
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    # Extract existing groups
+    groups = sorted(set(group for user in users for group in user.get('groups', [])))
+
+    if request.method == 'POST':
+        # Handle adding a new group
+        new_group_name = request.form.get('new_group_name')
+        assigned_users = request.form.getlist('assigned_users')
+
+        if new_group_name:
+            for user in users:
+                # Add the new group to selected users
+                if user['username'] in assigned_users:
+                    if 'groups' not in user:
+                        user['groups'] = []
+                    if new_group_name not in user['groups']:
+                        user['groups'].append(new_group_name)
+
+            # Save updated user data after adding the group
+            with open('users.json', 'w') as file:
+                json.dump(users, file, indent=4)
+
+            flash('New group added successfully!', 'success')
+            return redirect(url_for('manage_groups'))
+
+    return render_template('manage_groups.html', users=users, groups=groups)
+
+@app.route('/update_group_assignments', methods=['POST'])
+@admin_required
+@login_required
+def update_group_assignments():
+    # Read user data from the JSON file
+    with open('users.json', 'r') as file:
+        users = json.load(file)
+
+    # Extract existing groups
+    groups = sorted(set(group for user in users for group in user.get('groups', [])))
+
+    # Handle group assignments (checkboxes)
+    for user in users:
+        user_groups = []
+        for group in groups:
+            checkbox_name = f"{user['username']}[{group}]"
+            if request.form.get(checkbox_name):
+                user_groups.append(group)
+        user['groups'] = user_groups
+
+    # Save updated user data after assignments
+    with open('users.json', 'w') as file:
+        json.dump(users, file, indent=4)
+
+    flash('Group assignments updated successfully!', 'success')
+    return redirect(url_for('manage_groups'))
+
 
 
 if __name__ == "__main__":
