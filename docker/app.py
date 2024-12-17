@@ -707,6 +707,10 @@ def dashboard():
         'birthday': current_user.get('birthday'),
     }
 
+    assigned_users = None
+    if current_user and 'assigned_users' in current_user:
+        assigned_users = current_user['assigned_users']
+
     # Get flash messages related to passwords
     messages = get_flashed_messages()
     password_messages = [msg for msg in messages if 'password' in msg.lower()]
@@ -716,7 +720,7 @@ def dashboard():
         'dashboard.html',
         profile_info=profile_info,
         users=sorted_users,
-        password_messages=password_messages,
+        password_messages=password_messages, assigned_users=assigned_users
     )
 
 
