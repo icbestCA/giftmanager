@@ -926,37 +926,48 @@ def noidea():
 @app.route('/add_user', methods=['GET', 'POST'])
 @login_required
 def add_user():
+    global users  # Use the in-memory `users` list to keep the data in sync
+
     if request.method == 'POST':
+        # Load the latest state from the JSON file to ensure consistency
+        with open(app.config['USERS_FILE'], 'r') as file:
+            users = json.load(file)
+
+        # Retrieve form data
         username = request.form['username']
         password = request.form['password']
         full_name = request.form['full_name']
         birthday = request.form['birthday']
-        # Use request.form.get to handle optional fields
-        email = request.form.get('email')
+        email = request.form.get('email')  # Optional field
         avatar = request.form.get('avatar')
 
+        # Hash the password
         hashed = password_hash(password)
-        # Validate the form data, e.g., check for duplicate usernames, password requirements, etc.
 
-        # Create a new user object with the provided data
+        # Check for duplicate usernames
+        if any(user['username'] == username for user in users):
+            flash('Username already exists!', 'error')
+            return redirect(url_for('add_user'))
+
+        # Create a new user object with default groups
         new_user = {
             "username": username,
             "password": hashed,
             "full_name": full_name,
             "birthday": birthday,
-            "email": email if email else "",  # Add email if provided, else empty string
-            "avatar": avatar if avatar else "",  # Add avatar if provided, else empty string
+            "email": email if email else "",
+            "avatar": avatar if avatar else "",
+            "groups": []  # New user starts with no groups
         }
 
-        # Add the new user to your user database (users list)
+        # Append the new user to the in-memory list
         users.append(new_user)
 
-        # Update the JSON file with the new user data
+        # Save the updated users list back to the JSON file
         with open(app.config['USERS_FILE'], 'w') as file:
             json.dump(users, file, indent=4)
 
-        # Redirect to the dashboard or another appropriate page
-        flash(f'User "{username}" added successfully!', 'success')
+        flash('User added successfully!', 'success')
         return redirect(url_for('dashboard'))
 
     return render_template('add_user.html')
