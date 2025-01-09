@@ -6,22 +6,171 @@
     <title>New Ideas</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+        .inputer{
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+    </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+        // Function to extract the og:image URL from the webpage
+        async function fetchOGImage(url) {
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+
+                // Create a temporary DOM to parse the response
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                // Try to get the og:image tag
+                const ogImage = doc.querySelector('meta[property="og:image"]');
+                if (ogImage) {
+                    return ogImage.getAttribute('content');
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error fetching OG image:', error);
+                return null;
+            }
+        }
+
+        // Event listener for link input change
+        document.addEventListener('DOMContentLoaded', function() {
+            const linkInput = document.getElementById('link');
+            const imageContainer = document.getElementById('imageContainer');
+
+            linkInput.addEventListener('input', async () => {
+                const url = linkInput.value.trim();
+                if (url) {
+                    const ogImage = await fetchOGImage(url);
+                    if (ogImage) {
+                        imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
+                        document.getElementById('imagePath').value = ogImage; // Store the image URL in a hidden input
+                    } else {
+                        imageContainer.innerHTML = '<p class="text-red-500">No OG image found.</p>';
+                        document.getElementById('imagePath').value = ''; // Clear the hidden input
+                    }
+                } else {
+                    imageContainer.innerHTML = ''; // Clear image container
+                    document.getElementById('imagePath').value = ''; // Clear the hidden input
+                }
+            });
+        });
+    </script>
 </head>
-<body class="text-gray-900 font-sans">
-    <header class="bg-white text-gray-900 p-4">
+<body class="body font-sans">
+    <header class="header text-gray-900 p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
                 Back
             </button>
         </nav>
     </header>
-    <main class="container mx-auto p-8">
-        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+    <main class="main container mx-auto p-8">
+        <section class="section shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-semibold mb-4">Add Ideas</h1>
-            <form action="{{ url_for('add2', selected_user_id=selected_user_id) }}" method="post">
+            <form action="{{ url_for('add2', selected_user_id=selected_user_id) }}" method="post" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label for="user" class="block text-gray-700 font-bold">Add to:</label>
-                    <select name="user" id="user" class="border rounded py-2 px-3 w-full" required>
+                    <label for="user" class="block sec-text font-bold">Add to:</label>
+                    <select name="user" id="user" class="border inputer rounded py-2 px-3 w-full" required>
                         <option disabled selected value> -- Choose here -- </option>
                         {% for user in user_list %}
                         <option value="{{ user['username'] }}">{{ user['full_name'] }}</option>
@@ -29,26 +178,30 @@
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="name" class="block text-gray-700 font-bold">Title:</label>
-                    <input type="text" name="name" id="name" class="border rounded py-2 px-3 w-full" required>
+                    <label for="name" class="block sec-text font-bold">Title:</label>
+                    <input type="text" name="name" id="name" class="border inputer rounded py-2 px-3 w-full" required>
                 </div>
                 <div class="mb-4">
-                    <label for="description" class="block text-gray-700 font-bold">Description (Optional):</label>
-                    <textarea name="description" id="description" class="border rounded py-2 px-3 w-full"></textarea>
+                    <label for="description" class="block sec-text font-bold">Description (Optional):</label>
+                    <textarea name="description" id="description" class="border inputer rounded py-2 px-3 w-full"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="link" class="block text-gray-700 font-bold">Link (Optional):</label>
-                    <input type="url" name="link" id="link" class="border rounded py-2 px-3 w-full">
+                    <label for="link" class="block sec-text font-bold">Link (Optional):</label>
+                    <input type="url" name="link" id="link" class="border inputer rounded py-2 px-3 w-full">
                 </div>
+                {% if imgenabled %}
+                <div id="imageContainer"></div> <!-- Display the OG image here -->
+                {% endif %}
+                <input type="hidden" id="imagePath" name="imagePath"> <!-- Hidden input to store the image URL -->
                 <div class="mb-4">
-                    <label for="value" class="block text-gray-700 font-bold">Estimated Value (Optional):</label>
+                    <label for="value" class="block sec-text font-bold">Estimated Value (Optional):</label>
                     <input type="number" id="value" name="value" step="1" placeholder="Estimated Value" 
-                        class="border rounded py-2 px-3 w-full">
+                        class="border rounded inputer py-2 px-3 w-full">
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Submit</button>
             </form>
         </section>
-    </main>       
+    </main>      
     <script>
     const backButton = document.getElementById('backButton');
     backButton.addEventListener('click', () => {

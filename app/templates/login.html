@@ -51,6 +51,8 @@
             text-align: left;
         }
 
+        
+
         input[type="text"],
         input[type="password"] {
             width: 100%;
@@ -78,27 +80,10 @@
             background-color: #ffae82; /* Darker shade on hover */
         }
 
-        .oidc-login {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff; /* Blue button */
-            border: none;
-            border-radius: 20px; /* Fully rounded button */
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .oidc-login:hover {
-            background-color: #0056b3; /* Darker shade on hover */
-        }
-
         p {
             color: #fff; /* White text for the footer */
             margin-top: 10px;
         }
-        
         .alert {
             padding: 15px;
             margin-bottom: 20px;
@@ -117,7 +102,6 @@
             background-color: #f2dede;
             border-color: #ebccd1;
         }
-
         .info-box {
             background-color: #d0f0ff; /* Light blue box */
             padding: 10px;
@@ -125,13 +109,29 @@
             border-radius: 10px;
             color: #000; /* Black text */
         }
+        .oidc-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff; /* Blue button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .oidc-login:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
     </style>
 </head>
 <body>
     <form method="post" action="/login">
         <h1>Connexion</h1>
         <div class="info-box">
-            No account? Contact a family member to create account.
+            {{ login_message }}
         </div>
         <!-- Displaying flashed messages for the login route only -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -152,14 +152,12 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
         <input type="submit" value="SIGN IN">
-        
-        <!-- Display OIDC Login Button if enabled -->
-        {% if oidc_enabled %}
-            <a href="{{ url_for('login_oidc') }}">
-                <button type="button" class="oidc-login">Login with OIDC</button>
-            </a>
-        {% endif %}
-        
+                <!-- Display OIDC Login Button if enabled -->
+                {% if oidc_enabled %}
+                <a href="{{ url_for('login_oidc') }}">
+                    <button type="button" class="oidc-login">Login with OIDC</button>
+                </a>
+            {% endif %}
         <p>Contact the administrator to reset your password.</p>
     </form>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Groups</title>
+    <title>Edit Login Message</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
 </head>
@@ -92,9 +92,6 @@
         color: var(--button-text-color);
         background-color: var(--card-bg-color);
     }
-    .max-w-3xl {
-        max-width: 60rem;
-    }
     .sidebar {
             overflow-y: scroll;
     }
@@ -116,22 +113,6 @@
         const theme = getThemeFromCookie();
         document.documentElement.setAttribute('data-theme', theme);
     })();
-    function validateNewGroupForm() {
-            const checkboxes = document.querySelectorAll('input[name="assigned_users"]:checked');
-            const groupName = document.querySelector('input[name="new_group_name"]').value;
-
-            if (!groupName) {
-                alert('Please enter a new group name.');
-                return false;
-            }
-
-            if (checkboxes.length === 0) {
-                alert('Please select at least one user to assign the new group.');
-                return false;
-            }
-
-            return true; // Form is valid, submit it
-        }
 </script>
 <body class="body font-sans">
     <div class="flex h-screen">
@@ -186,87 +167,34 @@
         <div class="flex-1 overflow-auto">
             <header class="header shadow p-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold">Manage Groups</h2>
+                    <h2 class="text-xl font-semibold">Edit Login Message</h2>
                     <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
                 </div>
             </header>
 
             <main class="p-6">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl mx-auto section">
-                    <h3 class="text-2xl font-semibold text-center mb-6">Manage Groups</h3>
+                    <h3 class="text-2xl font-semibold text-center mb-6">Edit Login Message</h3>
 
-                    <!-- Form for adding a new group -->
-                    <form method="post" class="mb-6" onsubmit="return validateNewGroupForm()">
-                        <div class="mb-4">
-                            <h2 class="text-xl font-semibold mb-2">Add a New Group</h2>
-                            <div class="flex items-center gap-4">
-                                <input 
-                                    type="text" 
-                                    name="new_group_name" 
-                                    placeholder="Enter new group name" 
-                                    class="border rounded py-2 px-3 w-full inputer" 
-                                    required>
-                            </div>
-                            <div class="mt-4">
-                                <label class="block font-medium mb-2">Assign to Users:</label>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    {% for user in users %}
-                                    <label class="block">
-                                        <input 
-                                            type="checkbox" 
-                                            name="assigned_users" 
-                                            value="{{ user['username'] }}" 
-                                            class="mr-2">
-                                        {{ user['full_name'] }} ({{ user['username'] }})
-                                    </label>
-                                    {% endfor %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} mb-4 p-4 rounded text-white
+                                    {{ 'bg-green-500' if 'success' in category else 'bg-red-500' }}">
+                                    {{ message }}
                                 </div>
-                            </div>
-                            <button 
-                                type="submit" 
-                                class="mt-4 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-                                Add Group
-                            </button>
-                        </div>
-                    </form>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
 
-                    <!-- Form for managing existing groups (checkbox assignments) -->
-                    <form action="{{ url_for('update_group_assignments') }}" method="post">
-                        <h2 class="text-xl font-semibold mb-4">Manage Existing Groups</h2>
-                        <div class="overflow-auto">
-                            <table class="table-auto w-full border-collapse border border-gray-300">
-                                <thead>
-                                    <tr class="header">
-                                        <th class="border px-4 py-2 text-left">User</th>
-                                        {% for group in groups %}
-                                        <th class="border px-4 py-2 text-center">{{ group }}</th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for user in users %}
-                                    <tr>
-                                        <td class="border px-4 py-2">
-                                            {{ user['full_name'] }} ({{ user['username'] }})
-                                        </td>
-                                        {% for group in groups %}
-                                        <td class="border px-4 py-2 text-center">
-                                            <input 
-                                                type="checkbox" 
-                                                name="{{ user['username'] }}[{{ group }}]" 
-                                                {% if group in user.get('groups', []) %}checked{% endif %}>
-                                        </td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
-                            Save Changes
+                    <form method="post">
+                        <textarea name="login_message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4 resize-none inputer">{{ current_message }}</textarea>
+                        
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                            Update Message
                         </button>
                     </form>
-                </section>
+                </div>
             </main>
         </div>
     </div>

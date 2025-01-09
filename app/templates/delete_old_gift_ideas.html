@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Gift Ideas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+</head>
+<style>
+    :root {
+        --bg-color: #f0f0f0;
+        --text-color: #333;
+        --button-bg-color: rgb(42, 42, 218);
+        --button-hover-bg-color: rgb(10, 10, 190);
+        --button-text-color: black;
+        --card-bg-color: white;
+        --card-border-color: #ebebeb;
+        --card-hover-bg-color: #ddd;
+        --sidebar-bg-color: #f0f0f0;
+        --overlay-bg-color: rgba(0, 0, 0, 0.5);
+        --hr-border-color: #333;
+        --alert-bg-color: #ffe6e6;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #b30000;
+        --primary-text-color: #333;
+        --secondary-text-color: rgba(75,85,99);
+        --header-bg-color: #ffffff;
+        --header-text-color: #333;
+        --main-bg-color: #ffffff;
+        --section-bg-color: #f3f4f6;
+        --helplogo-color: #333;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: rgb(38 38 38);
+        --text-color: #e0e0e0;
+        --button-bg-color: rgb(218, 42, 42);
+        --button-hover-bg-color: rgb(190, 10, 10);
+        --button-text-color: white;
+        --card-bg-color: black;
+        --card-border-color: #333;
+        --card-hover-bg-color: #2e2e2e;
+        --sidebar-bg-color: #1e1e1e;
+        --overlay-bg-color: rgba(0, 0, 0, 0.8);
+        --hr-border-color: #e0e0e0;
+        --alert-bg-color: #4d1919;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #ffb3b3;
+        --primary-text-color: #e0e0e0;
+        --secondary-text-color: #aaaaaa;
+        --header-bg-color: rgb(18, 18, 18);
+        --header-text-color: #e0e0e0;
+        --main-bg-color: #121212;
+        --section-bg-color: #1e1e1e;
+        --helplogo-color: #e0e0e0;
+    }
+
+    .header {
+        background-color: var(--header-bg-color);
+        color: var(--header-text-color);
+    }
+
+    .main {
+        background-color: var(--bg-color);
+    }
+
+    .section {
+        background-color: var(--section-bg-color);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 24px;
+    }
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .helplogo {
+        fill: var(--helplogo-color);
+        width: 24px;
+        height: 24px;
+    }
+
+    [data-theme="dark"] .helplogo {
+        filter: invert(1) brightness(1.5);
+    }
+    .sec-text{
+        color: var(--secondary-text-color);
+    }
+    .inputer{
+        color: var(--button-text-color);
+        background-color: var(--card-bg-color);
+    }
+    .sidebar {
+            overflow-y: scroll;
+    }
+</style>
+<script>
+    // Inline script to apply the theme from the cookie immediately
+    (function() {
+        function getThemeFromCookie() {
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'theme') {
+                    return value;
+                }
+            }
+            return 'light'; // Default to light mode if no cookie is found
+        }
+
+        const theme = getThemeFromCookie();
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script>
+<body class="body font-sans">
+    <div class="flex h-screen">
+                <!-- Sidebar -->
+                <div class="bg-gray-800 text-white w-64 flex flex-col sidebar">
+                    <div class="px-6 py-4">
+                        <a href="/admin" class="text-2xl font-semibold">
+                            Admin Dashboard
+                        </a>
+                        
+                    </div>
+                    <nav class="flex-1 px-4 py-6 space-y-6">
+                        <!-- Group 1 -->
+                        <div>
+                            <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Management</h2>
+                            <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-users"></i> Users
+                            </a>
+                            <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-gift"></i> Secret Santa
+                            </a>
+                            <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-gift"></i> Add User
+                            </a>
+                            <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-user-cog"></i> Families
+                            </a>
+                        </div>
+                        <!-- Group 2 -->
+                        <div>
+                            <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
+                            <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-cog"></i> Deletion Script
+                            </a>
+                            <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-user-cog"></i> Email Settings
+                            </a>
+                            <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-user-cog"></i> Login Settings
+                            </a>
+                            <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-user-cog"></i> OIDC Settings
+                            </a>
+                            <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                                <i class="fas fa-user-cog"></i> Advanced
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <header class="header shadow p-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold">Deletion Script</h2>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                </div>
+            </header>
+
+            <main class="p-6">
+                <!-- Display result or flash messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} p-4 mb-4 rounded text-white bg-green-500">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Form to delete old gift ideas -->
+                <div class="section p-6 rounded shadow mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Delete Old Gift Ideas</h3>
+                    <form method="POST" action="{{ url_for('delete_old_gift_ideas_page') }}">
+                        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+                            Delete Gift Ideas Older Than {{ current_days | default(30) }} Days
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Form to change the number of days for deletion -->
+                <div class="section p-6 rounded shadow">
+                    <h3 class="text-lg font-semibold mb-4">Change Days for Deleting Old Gift Ideas</h3>
+                    <form method="POST" action="{{ url_for('change_delete_days') }}">
+                        <label for="days" class="block text-sm font-semibold sec-text">New Number of Days:</label>
+                        <input type="number" id="days" name="days" value="{{ current_days }}" min="1" required
+                               class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 inputer">
+                        <button type="submit" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition">
+                            Update Days
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

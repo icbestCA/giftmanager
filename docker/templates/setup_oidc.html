@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Login Message</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+</head>
+<style>
+    :root {
+        --bg-color: #f0f0f0;
+        --text-color: #333;
+        --button-bg-color: rgb(42, 42, 218);
+        --button-hover-bg-color: rgb(10, 10, 190);
+        --button-text-color: black;
+        --card-bg-color: white;
+        --card-border-color: #ebebeb;
+        --card-hover-bg-color: #ddd;
+        --sidebar-bg-color: #f0f0f0;
+        --overlay-bg-color: rgba(0, 0, 0, 0.5);
+        --hr-border-color: #333;
+        --alert-bg-color: #ffe6e6;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #b30000;
+        --primary-text-color: #333;
+        --secondary-text-color: rgba(75,85,99);
+        --header-bg-color: #ffffff;
+        --header-text-color: #333;
+        --main-bg-color: #ffffff;
+        --section-bg-color: #f3f4f6;
+        --helplogo-color: #333;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: rgb(38 38 38);
+        --text-color: #e0e0e0;
+        --button-bg-color: rgb(218, 42, 42);
+        --button-hover-bg-color: rgb(190, 10, 10);
+        --button-text-color: white;
+        --card-bg-color: black;
+        --card-border-color: #333;
+        --card-hover-bg-color: #2e2e2e;
+        --sidebar-bg-color: #1e1e1e;
+        --overlay-bg-color: rgba(0, 0, 0, 0.8);
+        --hr-border-color: #e0e0e0;
+        --alert-bg-color: #4d1919;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #ffb3b3;
+        --primary-text-color: #e0e0e0;
+        --secondary-text-color: #aaaaaa;
+        --header-bg-color: rgb(18, 18, 18);
+        --header-text-color: #e0e0e0;
+        --main-bg-color: #121212;
+        --section-bg-color: #1e1e1e;
+        --helplogo-color: #e0e0e0;
+    }
+
+    .header {
+        background-color: var(--header-bg-color);
+        color: var(--header-text-color);
+    }
+
+    .main {
+        background-color: var(--bg-color);
+    }
+
+    .section {
+        background-color: var(--section-bg-color);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 24px;
+    }
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .helplogo {
+        fill: var(--helplogo-color);
+        width: 24px;
+        height: 24px;
+    }
+
+    [data-theme="dark"] .helplogo {
+        filter: invert(1) brightness(1.5);
+    }
+    .sec-text{
+        color: var(--secondary-text-color);
+    }
+    .inputer{
+        color: var(--button-text-color);
+        background-color: var(--card-bg-color);
+    }
+    .sidebar {
+            overflow-y: scroll;
+    }
+</style>
+<script>
+    // Inline script to apply the theme from the cookie immediately
+    (function() {
+        function getThemeFromCookie() {
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'theme') {
+                    return value;
+                }
+            }
+            return 'light'; // Default to light mode if no cookie is found
+        }
+
+        const theme = getThemeFromCookie();
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script>
+<body class="body font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="bg-gray-800 text-white w-64 flex flex-col sidebar">
+            <div class="px-6 py-4">
+                <a href="/admin" class="text-2xl font-semibold">
+                    Admin Dashboard
+                </a>
+                
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-6">
+                <!-- Group 1 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Management</h2>
+                    <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                    <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-gift"></i> Secret Santa
+                    </a>
+                    <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-gift"></i> Add User
+                    </a>
+                    <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Families
+                    </a>
+                </div>
+                <!-- Group 2 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
+                    <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-cog"></i> Deletion Script
+                    </a>
+                    <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Email Settings
+                    </a>
+                    <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Login Settings
+                    </a>
+                    <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> OIDC Settings
+                    </a>
+                    <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Advanced
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <header class="header shadow p-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold">Setup OIDC Configuration</h2>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                </div>
+            </header>
+
+            <main class="p-6">
+                <body class="bg-gray-100 font-sans">
+                    <div class="container mx-auto p-8">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mb-6">
+                                {% for category, message in messages %}
+                                    <div class="p-4 rounded bg-{{ 'green-100' if category == 'success' else 'red-100' }} text-{{ 'green-800' if category == 'success' else 'red-800' }} mb-4">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                
+                        <form method="POST" class="bg-white shadow-lg rounded-lg p-8 space-y-6 section">
+                            <!-- OIDC Client ID -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="OIDC_CLIENT_ID" class="text-lg sec-text">OIDC Client ID:</label>
+                                <div class="flex items-center">
+                                    <input type="text" id="OIDC_CLIENT_ID" name="OIDC_CLIENT_ID" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_CLIENT_ID'] }}" required>
+                                    <a href="https://example.com/documentation/oidc-client-id" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- OIDC Client Secret -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="OIDC_CLIENT_SECRET" class="text-lg sec-text">OIDC Client Secret:</label>
+                                <div class="flex items-center">
+                                    <input type="password" id="OIDC_CLIENT_SECRET" name="OIDC_CLIENT_SECRET" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_CLIENT_SECRET'] }}" required>
+                                    <a href="https://example.com/documentation/oidc-client-secret" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- OIDC Server Metadata URL -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="OIDC_SERVER_METADATA_URL" class="text-lg sec-text">OIDC Server Metadata URL:</label>
+                                <div class="flex items-center">
+                                    <input type="text" id="OIDC_SERVER_METADATA_URL" name="OIDC_SERVER_METADATA_URL" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_SERVER_METADATA_URL'] }}" required>
+                                    <a href="https://example.com/documentation/oidc-server-metadata" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- OIDC Logout URL -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="OIDC_LOGOUT_URL" class="text-lg sec-text">OIDC Logout URL:</label>
+                                <div class="flex items-center">
+                                    <input type="text" id="OIDC_LOGOUT_URL" name="OIDC_LOGOUT_URL" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_LOGOUT_URL'] }}">
+                                    <a href="https://example.com/documentation/oidc-logout-url" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Primary OIDC Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="PRIMARY_OIDC_FIELD" class="text-lg sec-text">Primary OIDC Field:</label>
+                                <div class="flex items-center">
+                                    <input type="text" id="PRIMARY_OIDC_FIELD" name="PRIMARY_OIDC_FIELD" value="{{ current_values['PRIMARY_OIDC_FIELD'] }}" class="p-3 w-full border rounded-lg inputer" placeholder="Enter the primary OIDC field">
+                                    <a href="https://example.com/documentation/primary-oidc-field" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                
+                            <!-- Secondary OIDC Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="SECONDARY_OIDC_FIELD" class="text-lg sec-text">Secondary OIDC Field:</label>
+                                <div class="flex items-center">
+                                    <input type="text" id="SECONDARY_OIDC_FIELD" name="SECONDARY_OIDC_FIELD" value="{{ current_values['SECONDARY_OIDC_FIELD'] }}" class="p-3 w-full border rounded-lg inputer" placeholder="Enter the secondary OIDC field">
+                                    <a href="https://example.com/documentation/secondary-oidc-field" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                
+                            <!-- Primary DB Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="PRIMARY_DB_FIELD" class="text-lg sec-text">Primary DB Field:</label>
+                                <div class="flex items-center">
+                                    <select id="PRIMARY_DB_FIELD" name="PRIMARY_DB_FIELD" class="p-3 w-full border rounded-lg inputer">
+                                        <option value="email" {% if current_values['PRIMARY_DB_FIELD'] == 'email' %}selected{% endif %}>Email</option>
+                                        <option value="username" {% if current_values['PRIMARY_DB_FIELD'] == 'username' %}selected{% endif %}>Username</option>
+                                        <option value="full_name" {% if current_values['PRIMARY_DB_FIELD'] == 'full_name' %}selected{% endif %}>Full Name</option>
+                                    </select>
+                                    <a href="https://example.com/documentation/primary-db-field" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Secondary DB Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="SECONDARY_DB_FIELD" class="text-lg sec-text">Secondary DB Field:</label>
+                                <div class="flex items-center">
+                                    <select id="SECONDARY_DB_FIELD" name="SECONDARY_DB_FIELD" class="p-3 w-full border rounded-lg inputer">
+                                        <option value="username" {% if current_values['SECONDARY_DB_FIELD'] == 'username' %}selected{% endif %}>Username</option>
+                                        <option value="email" {% if current_values['SECONDARY_DB_FIELD'] == 'email' %}selected{% endif %}>Email</option>
+                                        <option value="full_name" {% if current_values['SECONDARY_DB_FIELD'] == 'full_name' %}selected{% endif %}>Full Name</option>
+                                    </select>
+                                    <a href="https://example.com/documentation/secondary-db-field" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Enable Auto Registration -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="ENABLE_AUTO_REGISTRATION" class="text-lg sec-text">Enable Auto Registration:</label>
+                                <div class="flex items-center">
+                                    <select id="ENABLE_AUTO_REGISTRATION" name="ENABLE_AUTO_REGISTRATION" class="p-3 w-full border rounded-lg inputer">
+                                        <option value="true" {% if current_values['ENABLE_AUTO_REGISTRATION'] == 'true' %}selected{% endif %}>True</option>
+                                        <option value="false" {% if current_values['ENABLE_AUTO_REGISTRATION'] == 'false' %}selected{% endif %}>False</option>
+                                    </select>
+                                    <a href="https://example.com/documentation/auto-registration" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                
+                            <!-- Enable Default Login -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="ENABLE_DEFAULT_LOGIN" class="text-lg sec-text">Enable Default Login:</label>
+                                <div class="flex items-center">
+                                    <select id="ENABLE_DEFAULT_LOGIN" name="ENABLE_DEFAULT_LOGIN" class="p-3 w-full border rounded-lg inputer">
+                                        <option value="true" {% if current_values['ENABLE_DEFAULT_LOGIN'] == 'true' %}selected{% endif %}>True</option>
+                                        <option value="false" {% if current_values['ENABLE_DEFAULT_LOGIN'] == 'false' %}selected{% endif %}>False</option>
+                                    </select>
+                                    <a href="https://example.com/documentation/default-login" target="_blank" class="ml-4 text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </a>
+                                </div>
+                            </div>
+                
+                            <!-- Submit Button -->
+                            <div class="flex justify-end mt-8">
+                                <button type="submit" class="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </body>
+            </main>
+        </div>
+    </div>
+
+<!-- Font Awesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

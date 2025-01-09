@@ -55,10 +55,133 @@
             flex-wrap: wrap;
             gap: 0.5rem;
         }
+        :root {
+        --bg-color: #f0f0f0;
+        --text-color: #333;
+        --button-bg-color: rgb(42, 42, 218);
+        --button-hover-bg-color: rgb(10, 10, 190);
+        --button-text-color: black;
+        --card-bg-color: white;
+        --card-border-color: #ebebeb;
+        --card-hover-bg-color: #ddd;
+        --sidebar-bg-color: #f0f0f0;
+        --overlay-bg-color: rgba(0, 0, 0, 0.5);
+        --hr-border-color: #333;
+        --alert-bg-color: #ffe6e6;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #b30000;
+        --primary-text-color: #333;
+        --secondary-text-color: rgba(75,85,99);
+        --header-bg-color: #ffffff;
+        --header-text-color: #333;
+        --main-bg-color: #ffffff;
+        --section-bg-color: #f3f4f6;
+        --helplogo-color: #333;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: rgb(38 38 38);
+        --text-color: #e0e0e0;
+        --button-bg-color: rgb(218, 42, 42);
+        --button-hover-bg-color: rgb(190, 10, 10);
+        --button-text-color: white;
+        --card-bg-color: black;
+        --card-border-color: #333;
+        --card-hover-bg-color: #2e2e2e;
+        --sidebar-bg-color: #1e1e1e;
+        --overlay-bg-color: rgba(0, 0, 0, 0.8);
+        --hr-border-color: #e0e0e0;
+        --alert-bg-color: #4d1919;
+        --alert-border-color: #ff4d4d;
+        --alert-text-color: #ffb3b3;
+        --primary-text-color: #e0e0e0;
+        --secondary-text-color: #aaaaaa;
+        --header-bg-color: rgb(18, 18, 18);
+        --header-text-color: #e0e0e0;
+        --main-bg-color: #121212;
+        --section-bg-color: #1e1e1e;
+        --helplogo-color: #e0e0e0;
+    }
+
+    .header {
+        background-color: var(--header-bg-color);
+        color: var(--header-text-color);
+    }
+
+    .main {
+        background-color: var(--bg-color);
+    }
+
+    .section {
+        background-color: var(--section-bg-color);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 24px;
+    }
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .helplogo {
+        fill: var(--helplogo-color);
+        width: 24px;
+        height: 24px;
+    }
+
+    [data-theme="dark"] .helplogo {
+        filter: invert(1) brightness(1.5);
+    }
+    .sec-text{
+        color: var(--secondary-text-color);
+    }
+    .inputer{
+        color: var(--button-text-color);
+        background-color: var(--card-bg-color);
+    }
+    .image{
+        justify-self: center;
+        width: 100%;
+        height: auto;
+    }
+    .divimage{
+        width: 10%;
+        height: fit-content;
+    }
+
+    @media screen and (max-width: 640px){
+        .image{
+            width: 100%;
+            height: 100%;
+            margin-top: 5px;
+        }
+        .divimage{
+            display: flex;
+            justify-content: center;
+        }
+    }
     </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+    
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
-<body class="text-gray-900 font-sans">
-    <header class="bg-white text-gray-900 p-4">
+<body class="body font-sans">
+    <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
                 Back
@@ -66,25 +189,37 @@
             <a href="{{ url_for('add_idea', selected_user_id=session['username']) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add ideas</a>
         </nav>
     </header>
-    <main class="container mx-auto p-8">
-        <section class="bg-gray-100 shadow-lg rounded-lg p-6">
+    <main class="main container mx-auto p-8">
+        <section class="section shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-semibold mb-4">My List of Ideas</h1>
-            <button id="toggleReorder" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Reorder</button>
-            <button id="saveReorder" class="bg-green-500 text-white px-4 py-2 rounded mb-4 hidden">Save Order</button>
+            {% if reordering %}
+                <button id="toggleReorder" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Reorder</button>
+                <button id="saveReorder" class="bg-green-500 text-white px-4 py-2 rounded mb-4 hidden">Save Order</button>
+            {% endif %}
             <ul id="ideasList" class="space-y-4">
                 {% for gift_idea in my_gift_ideas %}
-                <li class="idea-item bg-white p-4 shadow-md rounded-lg flex flex-col sm:flex-row items-start sm:items-center" data-idea-id="{{ gift_idea.gift_idea_id }}" data-priority="{{ gift_idea.priority }}">
+                <li class="idea-item bg-white p-4 shadow-md rounded-lg flex flex-col sm:flex-row items-start sm:items-center" style="background-color: var(--card-bg-color);" data-idea-id="{{ gift_idea.gift_idea_id }}" data-priority="{{ gift_idea.priority }}">
                     <span class="priority-number">{{ gift_idea.priority }}</span>
                     <span class="drag-handle hidden">☰</span>
-                    <input type="number" class="priority-input hidden border border-gray-300 rounded p-1" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
+                    <input type="number" class="priority-input hidden border border-gray-300 rounded p-1 inputer" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
                     <div class="flex-1">
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
-                        <p class="text-gray-600 description">{{ gift_idea.description }}</p>
+                        <p class="sec-text description">{{ gift_idea.description }}</p>
                         {% if gift_idea.value %}
-                        <p class="text-gray-600">Estimated Value: ${{ gift_idea.value }}</p>
+                        <p class="sec-text">Estimated Value: ${{ gift_idea.value }}</p>
                         {% endif %}
-                        <p class="text-gray-600">Added By: {{ gift_idea.added_by }}</p>
+                        <p class="sec-text">Added By: {{ gift_idea.added_by }}</p>
                     </div>
+
+                    {% if imgenabled %}
+                        <div class="divimage">
+                            <!-- Display image if available -->
+                            {% if gift_idea.image_path %}
+                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="w-16 h-16 object-cover rounded-lg shadow-sm image">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
                     <div class="idea-actions flex items-center space-x-2 mt-4 sm:mt-0 sm:ml-4">
                         {% if gift_idea.added_by == session['username'] %}
                         <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">

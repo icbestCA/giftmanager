@@ -1,6 +1,12 @@
 # Use the official Python 3.11 image with Alpine
 FROM python:3.11-alpine
 
+# Install Docker dependencies
+RUN apk add --no-cache \
+    curl \
+    bash \
+    docker-cli
+
 # Set the working directory
 WORKDIR /app
 

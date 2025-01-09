@@ -1,99 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Gift Ideas</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
-        <link rel="icon" href="/favicon.ico" type="image/png">
-        <style>
-            /* Custom styles for better mobile responsiveness */
-            .description {
-                max-width: 400px;
-                word-wrap: break-word;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideas List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: white;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .description {
+            max-width: 400px;
+            word-wrap: break-word;
+            color: var(--secondary-text-color);
+        }
+
+        /* Responsive layout adjustments */
+        @media (max-width: 640px) {
+            .idea-container {
+                flex-direction: column;
+                align-items: flex-start;
             }
-    
-            /* Responsive layout adjustments */
-            @media (max-width: 640px) {
-                .idea-container {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-    
-                .idea-actions {
-                    flex-direction: row;
-                    gap: 0.5rem;
-                    margin-top: 1rem;
-                    width: 100%;
-                    justify-content: flex-start;
-                }
-    
-                .idea-actions button,
-                .idea-actions a {
-                    flex: 1;
-                    text-align: center;
-                }
+
+            .idea-actions {
+                flex-direction: row;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-start;
             }
-        </style>
-    </head>
-    
-    <body class="text-gray-900 font-sans">
-        <header class="bg-white text-gray-900 p-4">
-            <nav class="container mx-auto flex justify-between items-center">
-                <button id="backButton" class="text-2xl px-4 py-2">Back</button>
-                <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
-            </nav>
-        </header>
-        <main class="container mx-auto p-8">
-            <section class="bg-gray-100 shadow-lg rounded-lg p-6">
-                <h1 class="text-2xl font-semibold mb-4">Ideas list for {{ user_namels }}</h1>
-                <ul class="space-y-4">
-                    {% for gift_idea in user_gift_ideas %}
-                    <li class="bg-white p-4 shadow-md rounded-lg">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center idea-container">
-                            <div class="flex-1 min-w-0 mb-2 sm:mb-0">
-                                <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
-                                <p class="text-gray-600 description">{{ gift_idea.description }}</p>
-                                {% if gift_idea.value %}
-                                <p class="text-gray-600">Estimated Value: ${{ gift_idea.value }}</p>
-                                {% endif %}
-                                <p class="text-gray-600">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
-                                {% if gift_idea.added_by == session['username'] %}
-                                <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                    <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5">
-                                </button>
-                                <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                    <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5">
-                                </a>
-                                {% endif %}
-                                {% if gift_idea.link %}
-                                {% set link = gift_idea.link %}
-                                {% if not link.startswith('http://') and not link.startswith('https://') %}
-                                {% set link = 'https://' + link %}
-                                {% endif %}
-                                <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
-                                    <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5">
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% if gift_idea.bought_by %}
-                        <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
-                        {% if gift_idea.bought_by == session['username'] %}
-                        <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
-                        {% endif %}
-                        {% else %}
-                        <strong>Available idea</strong>
-                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </section>
-        </main>   
+
+            .idea-actions button,
+            .idea-actions a {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+        .actions-container{
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+        .image{
+            width: 100%;
+            height: auto;
+        }
+        .divimage{
+            width: 10%;
+            height: fit-content;
+        }
+
+        @media screen and (max-width: 640px){
+            .image{
+                width: 100%;
+                height: 100%;
+                margin-top: 5px;
+            }
+            .divimage{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+
+    </style>
     <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body class="body font-sans">
+    <header class="header p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
+            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
+        </nav>
+    </header>
+    <main class="main container mx-auto p-8">
+        <section class="section shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-4 text-primary">Ideas list for {{ user_namels }}</h1>
+            <ul class="space-y-4">
+                {% for gift_idea in user_gift_ideas %}
+                <li class="actions-container p-4 shadow-md rounded-lg">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center idea-container" style="margin-bottom: 5px">
+                        <div class="min-w-0 mb-2 sm:mb-0">
+                            <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
+                            <p class="text-gray-600 description">{{ gift_idea.description }}</p>
+                            {% if gift_idea.value %}
+                            <p class="text-gray-600 sec-text">Estimated Value: ${{ gift_idea.value }}</p>
+                            {% endif %}
+                            <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                        </div>
+
+                        {% if imgenabled %}
+                        <div class="divimage">
+                            <!-- Display image if available -->
+                            {% if gift_idea.image_path %}
+                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="w-16 h-16 object-cover rounded-lg shadow-sm image">
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
+                            {% if gift_idea.added_by == session['username'] %}
+                            <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5 helplogo">
+                            </button>
+                            <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5 helplogo">
+                            </a>
+                            {% endif %}
+                            {% if gift_idea.link %}
+                            {% set link = gift_idea.link %}
+                            {% if not link.startswith('http://') and not link.startswith('https://') %}
+                            {% set link = 'https://' + link %}
+                            {% endif %}
+                            <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
+                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5 helplogo">
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+    
+                    {% if gift_idea.bought_by %}
+                    <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
+                    {% if gift_idea.bought_by == session['username'] %}
+                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
+                    {% endif %}
+                    {% else %}
+                    <strong>Available idea</strong>
+                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+    <script>
+    function toggleDarkMode() {
+        const htmlElement = document.documentElement;
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        // Set the new theme
+        htmlElement.setAttribute('data-theme', newTheme);
+
+        // Store the theme preference in a cookie
+        document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}`; // 1 year
+    }
+
+    // Function to get the theme preference from the cookie
+    function getThemeFromCookie() {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'theme') {
+                return value;
+            }
+        }
+        return 'light'; // Default to light mode if no cookie is found
+    }
+
+    // Apply the theme preference from the cookie on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const htmlElement = document.documentElement;
+        const theme = getThemeFromCookie();
+        htmlElement.setAttribute('data-theme', theme);
+    });
+
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {
             window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
@@ -163,16 +330,27 @@
                 method: 'DELETE',
             })
             .then(response => {
-                if (response.ok) {
+                if (response.status === 204) {  // Check for 204 No Content
+                    console.log("Idea successfully deleted. Removing from the page...");
+
                     // Remove the deleted idea from the page
                     const ideaElement = document.querySelector(`[data-idea-id="${ideaId}"]`);
-                    ideaElement.remove();
+                    if (ideaElement) {
+                        ideaElement.remove();
+                    }
+                    
+                    // Log and attempt to reload the page
+                    console.log("Reloading the page...");
+                    location.reload();  // This should trigger the page reload
+                } else {
+                    console.error('Failed to delete idea. Status:', response.status);
                 }
             })
             .catch(error => {
                 console.error('Error deleting idea:', error);
             });
         }
+
     // Add the code for editing an idea here
     document.querySelectorAll('.edit-idea-link').forEach(link => {
         link.addEventListener('click', (event) => {
