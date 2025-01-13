@@ -204,7 +204,7 @@
                     <input type="number" class="priority-input hidden border border-gray-300 rounded p-1 inputer" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
                     <div class="flex-1">
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
-                        <p class="sec-text description">{{ gift_idea.description }}</p>
+                        <p class="sec-text description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                         {% if gift_idea.value %}
                         <p class="sec-text">Estimated Value: ${{ gift_idea.value }}</p>
                         {% endif %}
