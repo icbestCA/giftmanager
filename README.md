@@ -14,10 +14,13 @@ You can check out the live demo here: [Giftmanager Demo](https://giftmanagerdemo
   <img src="https://r2.icbest.ca/firefox_U5WWHHElTf.png" alt="project-screenshot" width="48%">
   <img src="https://r2.icbest.ca/firefox_JiKT8FWU86.png" alt="project-screenshot" width="48%">
 </p>
-
 <p align="center">
   <img src="https://r2.icbest.ca/firefox_QH6LjO2Nvs.png" alt="project-screenshot" width="48%">
   <img src="https://r2.icbest.ca/firefox_H5fG4nF7uL.png" alt="project-screenshot" width="48%">
+</p>
+<p align="center">
+  <img src="https://r2.icbest.ca/firefox_b0H0gE2DrY.png" alt="project-screenshot" width="48%">
+  <img src="https://r2.icbest.ca/firefox_ptKiDfrz6J.png" alt="project-screenshot" width="48%">
 </p>
 
 ## Installation
