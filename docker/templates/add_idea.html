@@ -109,51 +109,89 @@
             const theme = getThemeFromCookie();
             document.documentElement.setAttribute('data-theme', theme);
         })();
-        // Function to extract the og:image URL from the webpage
-        async function fetchOGImage(url) {
+        // Function to extract the og:image URL from the webpage using the server-side endpoint
+async function fetchOGImage(url) {
+    try {
+        const response = await fetch(`/fetch_og_image?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        if (data.og_image_url) {
+            return data.og_image_url;
+        } else {
+            console.error('No OG image found:', data.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching OG image:', error);
+        return null;
+    }
+}
+
+// Debounce function to limit the rate of function execution
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Event listener for link input change
+document.addEventListener('DOMContentLoaded', function() {
+    const linkInput = document.getElementById('link');
+    const imageContainer = document.getElementById('imageContainer');
+    const manualImageUrlContainer = document.getElementById('manualImageUrlContainer');
+    const manualImageUrlInput = document.getElementById('manualImageUrl');
+
+    const handleInput = debounce(async () => {
+        const url = linkInput.value.trim();
+        if (url) {
             try {
-                const response = await fetch(url);
-                const text = await response.text();
-
-                // Create a temporary DOM to parse the response
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-
-                // Try to get the og:image tag
-                const ogImage = doc.querySelector('meta[property="og:image"]');
+                const ogImage = await fetchOGImage(url);
                 if (ogImage) {
-                    return ogImage.getAttribute('content');
+                    imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
+                    document.getElementById('imagePath').value = ogImage; // Store the image URL in a hidden input
+                    manualImageUrlContainer.style.display = 'none'; // Hide the manual image URL container
                 } else {
-                    return null;
+                    imageContainer.innerHTML = '<p class="text-red-500">No OG image found. Enter an image URL below.</p>';
+                    document.getElementById('imagePath').value = ''; // Clear the hidden input
+                    manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
                 }
             } catch (error) {
-                console.error('Error fetching OG image:', error);
-                return null;
+                console.error('Error:', error);
+                imageContainer.innerHTML = '<p class="text-red-500">Error fetching OG image. Enter an image URL below.</p>';
+                document.getElementById('imagePath').value = ''; // Clear the hidden input
+                manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
             }
+        } else {
+            imageContainer.innerHTML = ''; // Clear image container
+            document.getElementById('imagePath').value = ''; // Clear the hidden input
+            manualImageUrlContainer.style.display = 'none'; // Hide the manual image URL container
         }
+    }, 500); // 500ms debounce time
 
-        // Event listener for link input change
-        document.addEventListener('DOMContentLoaded', function() {
-            const linkInput = document.getElementById('link');
-            const imageContainer = document.getElementById('imageContainer');
+    linkInput.addEventListener('input', handleInput);
 
-            linkInput.addEventListener('input', async () => {
-                const url = linkInput.value.trim();
-                if (url) {
-                    const ogImage = await fetchOGImage(url);
-                    if (ogImage) {
-                        imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
-                        document.getElementById('imagePath').value = ogImage; // Store the image URL in a hidden input
-                    } else {
-                        imageContainer.innerHTML = '<p class="text-red-500">No OG image found.</p>';
-                        document.getElementById('imagePath').value = ''; // Clear the hidden input
-                    }
-                } else {
-                    imageContainer.innerHTML = ''; // Clear image container
-                    document.getElementById('imagePath').value = ''; // Clear the hidden input
-                }
-            });
-        });
+    // Handle manual image URL input
+    manualImageUrlInput.addEventListener('input', () => {
+        const manualImageUrl = manualImageUrlInput.value.trim();
+        if (manualImageUrl) {
+            // Validate the URL (basic check)
+            if (manualImageUrl.startsWith('http')) {
+                // Display the image preview
+                imageContainer.innerHTML = `<img src="${manualImageUrl}" alt="Manual Image" class="w-full rounded shadow-lg mt-4">`;
+                document.getElementById('imagePath').value = manualImageUrl; // Store the manual image URL in the hidden input
+            } else {
+                // Invalid URL, clear the preview
+                imageContainer.innerHTML = '<p class="text-red-500">Invalid image URL. Please enter a valid URL.</p>';
+                document.getElementById('imagePath').value = ''; // Clear the hidden input
+            }
+        } else {
+            // Clear the preview if the input is empty
+            imageContainer.innerHTML = '';
+            document.getElementById('imagePath').value = ''; // Clear the hidden input
+        }
+    });
+});
     </script>
 </head>
 <body class="body font-sans">
@@ -189,7 +227,11 @@
                     <input type="url" name="link" id="link" class="border inputer rounded py-2 px-3 w-full">
                 </div>
                 {% if imgenabled %}
-                <div id="imageContainer"></div> <!-- Display the OG image here -->
+                <div id="imageContainer" style="width: 32%;"></div> <!-- Display the OG image here -->
+                <div id="manualImageUrlContainer" class="mb-4" style="display: none;">
+                    <label for="manualImageUrl" class="block sec-text font-bold">Enter Image URL (Optional):</label>
+                    <input type="url" name="manualImageUrl" id="manualImageUrl" class="border inputer rounded py-2 px-3 w-full">
+                </div>
                 {% endif %}
                 <input type="hidden" id="imagePath" name="imagePath"> <!-- Hidden input to store the image URL -->
                 <div class="mb-4">

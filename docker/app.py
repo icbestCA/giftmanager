@@ -1,24 +1,25 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort, make_response, get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify
+import requests
 from functools import wraps
 from mailjet_rest import Client
 from datetime import datetime, timedelta
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from authlib.integrations.flask_client import OAuth
-import json, subprocess, jsonify, secrets
+import json, subprocess, secrets
 import os
 import random
 from pathlib import Path
 from dotenv import load_dotenv, set_key
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 dotenv_path = os.path.join(os.path.dirname(__file__), './data/.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
-app.config['UPLOAD_FOLDER'] = './'  # Directory where files are stored
 app.config['DATA'] = "./data"  # Directory where files are stored
-app.config['ALLOWED_EXTENSIONS'] = {'json'}
 
 
 app.config['IDEAS_FILE'] = Path(app.config['DATA'], 'ideas.json')
@@ -326,6 +327,9 @@ def setup_profile():
 
 @app.route('/')
 def index():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return redirect(url_for('need_restart'))
+
     # Redirect logged-in users to the dashboard
     if 'username' in session:
         return redirect(url_for('dashboard'))
@@ -460,6 +464,13 @@ def add2():
     imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the filtered user list
     return render_template('add2.html', user_list=user_list, imgenabled=imgenabled)
+
+@app.route('/need_restart', methods=['GET'])
+def need_restart():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return render_template('restartneeded.html')
+    else:
+        return redirect(url_for('setup'))    
 
 
 @app.route('/add_idea/<selected_user_id>', methods=['GET', 'POST'])
@@ -663,7 +674,7 @@ def dashboard():
         'admin': current_user.get('admin'),
     }
 
-    app_version = "v2.0.1"
+    app_version = "v2.1.0"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1620,5 +1631,55 @@ def run_script():
         error_message = f"Error occurred while running delete_old_gift_ideas: {e}\n\n"
         return render_template('script_output.html', script_output=error_message)
     
+def fetch_og_image(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for bad status codes
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Try to get the og:image tag
+        og_image = soup.find('meta', property='og:image')
+        if og_image:
+            image_url = og_image.get('content')
+            # Convert relative URL to absolute URL if necessary
+            if not image_url.startswith('http'):
+                image_url = urljoin(url, image_url)
+            return image_url
+
+        # Fallback to twitter:image if og:image is not found
+        twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+        if twitter_image:
+            image_url = twitter_image.get('content')
+            if not image_url.startswith('http'):
+                image_url = urljoin(url, image_url)
+            return image_url
+
+        # Fallback to image_src if og:image and twitter:image are not found
+        image_src = soup.find('link', rel='image_src')
+        if image_src:
+            image_url = image_src.get('href')
+            if not image_url.startswith('http'):
+                image_url = urljoin(url, image_url)
+            return image_url
+
+        return None  # No image found
+    except Exception as e:
+        print(f"Error fetching OG image: {e}")
+        return None
+
+@app.route('/fetch_og_image', methods=['GET'])
+def get_og_image():
+    url = request.args.get('url')
+    if not url:
+        return jsonify({"error": "URL parameter is required"}), 400
+
+    og_image_url = fetch_og_image(url)
+    if og_image_url:
+        return jsonify({"og_image_url": og_image_url})
+    else:
+        return jsonify({"error": "No OG image found"}), 404    
+
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

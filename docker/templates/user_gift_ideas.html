@@ -119,25 +119,30 @@
         [data-theme="dark"] .helplogo {
             filter: invert(1) brightness(1.5);
         }
-        .image{
-            width: 100%;
-            height: auto;
-        }
-        .divimage{
-            width: 10%;
-            height: fit-content;
-        }
-
-        @media screen and (max-width: 640px){
-            .image{
-                width: 100%;
-                height: 100%;
-                margin-top: 5px;
+        /* Base styles for the image and container */
+    .image{
+        justify-self: center;
+        width: 100%;
+        height: auto;
+    }
+    .divimage{
+        width: 10%;
+        height: fit-content;
+    }
+        /* Mobile-specific styles */
+        @media screen and (max-width: 640px) {
+            .image {
+                width: 100%; /* Full width on mobile */
+                height: auto; /* Maintain aspect ratio */
+                margin-top: 10px; /* Add some spacing */
             }
-            .divimage{
-                width: 100%;
+
+            .divimage {
+                width: 48%; /* Full width on mobile */
+                max-width: none; /* Remove max-width restriction */
                 display: flex;
-                justify-content: center;
+                margin-bottom: 1rem; /* Add spacing below the image */
+                margin-left: 0;
             }
         }
 
@@ -189,7 +194,7 @@
                         <div class="divimage">
                             <!-- Display image if available -->
                             {% if gift_idea.image_path %}
-                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="w-16 h-16 object-cover rounded-lg shadow-sm image">
+                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="image">
                             {% endif %}
                         </div>
                         {% endif %}

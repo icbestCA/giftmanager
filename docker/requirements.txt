@@ -3,4 +3,6 @@ mailjet_rest
 python-dotenv
 argon2-cffi
 authlib
-jsonify
+gunicorn
+requests
+beautifulsoup4
