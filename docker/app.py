@@ -674,7 +674,7 @@ def dashboard():
         'admin': current_user.get('admin'),
     }
 
-    app_version = "v2.1.0"
+    app_version = "v2.1.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
