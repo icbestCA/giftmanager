@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OIDC Login Only</title>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <style>
         /* Apply the background image */
         body {
@@ -102,5 +104,18 @@
             Login with OIDC
         </a>
     </div>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+    </script>
 </body>
 </html>

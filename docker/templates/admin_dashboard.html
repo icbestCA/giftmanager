@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
         :root {
@@ -86,7 +87,70 @@
         }
         .sidebar {
             overflow-y: scroll;
-    }
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Mobile sidebar styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 50;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: var(--overlay-bg-color);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+            
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+        
+        /* Desktop styles */
+        @media (min-width: 769px) {
+            .menu-toggle {
+                display: none;
+            }
+            
+            .overlay {
+                display: none;
+            }
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--button-text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -107,10 +171,13 @@
         })();
     </script>
 </head>
-<body class=" font-sans">
+<body class="font-sans">
     <div class="flex h-screen">
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay" id="sidebarOverlay"></div>
+        
         <!-- Sidebar -->
-        <div class="bg-gray-800 text-white w-64 flex flex-col sidebar">
+        <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
                 <a href="/admin" class="text-2xl font-semibold">
                     Admin Dashboard
@@ -127,26 +194,26 @@
                         <i class="fas fa-gift"></i> Secret Santa
                     </a>
                     <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-gift"></i> Add User
+                        <i class="fas fa-user-plus"></i> Add User
                     </a>
                     <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Families
+                        <i class="fas fa-people-group"></i> Families
                     </a>
                 </div>
                 <!-- Group 2 -->
                 <div>
                     <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
                     <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-cog"></i> Deletion Script
+                        <i class="fas fa-trash"></i> Deletion Script
                     </a>
                     <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Email Settings
+                        <i class="fas fa-envelope"></i> Email Settings
                     </a>
                     <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
                         <i class="fas fa-user-cog"></i> Login Settings
                     </a>
                     <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> OIDC Settings
+                        <i class="fas fa-shield-halved"></i> OIDC Settings
                     </a>
                     <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
                         <i class="fas fa-user-cog"></i> Advanced
@@ -156,10 +223,15 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
+        <div class="flex-1 overflow-auto main-content">
             <header class="header shadow p-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold">Welcome!</h2>
+                    <div class="flex items-center space-x-4">
+                        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold">Welcome!</h2>
+                    </div>
                     <div class="flex items-center space-x-4">
                         <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
                     </div>
@@ -206,6 +278,31 @@
             // Store the theme preference in a cookie
             document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}`; // 1 year
         }
+        
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+            
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when a navigation link is clicked (on mobile)
+            const navLinks = document.querySelectorAll('.sidebar a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

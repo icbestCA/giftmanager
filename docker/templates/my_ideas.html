@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <style>
         .drag-handle {
             cursor: move;
@@ -374,7 +376,17 @@
             .catch(error => console.error('Error:', error))
             .finally(() => window.location.reload()); // Reload the page regardless of response
         });
-
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
     </script>
 </body>
 </html>

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>No gift ideas?</title>
     <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <style>
         body {
             text-align: center;
@@ -170,6 +172,17 @@
         backButton.addEventListener('click', () => {
             window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
         });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }    
     </script>      
 </body>
 </html>
