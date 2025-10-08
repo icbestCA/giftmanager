@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/favicon.ico" type="image/png">
-
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <title>Login</title>
     <style>
         body {
@@ -74,6 +75,7 @@
             color: #000;
             font-weight: bold;
             cursor: pointer;
+            height: 40px;
         }
 
         input[type="submit"]:hover {
@@ -148,9 +150,9 @@
 
         <!-- Your form fields here -->
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username"  style="font-size: 17px;" required>
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" style="font-size: 17px;" required>
         <input type="submit" value="SIGN IN">
                 <!-- Display OIDC Login Button if enabled -->
                 {% if oidc_enabled %}
@@ -160,5 +162,18 @@
             {% endif %}
         <p>Contact the administrator to reset your password.</p>
     </form>
+    <script>
+        if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+    </script>
 </body>
 </html>

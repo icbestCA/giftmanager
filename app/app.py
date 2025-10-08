@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify, send_from_directory
 import requests
 from functools import wraps
 from mailjet_rest import Client
@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
@@ -23,6 +24,8 @@ mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
 mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
 ph = PasswordHasher()
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def load_gift_ideas():
@@ -76,11 +79,21 @@ def admin_required(f):
     
     return decorated_function
 
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('static', 'manifest.json')
+
+@app.route('/sw.js')
+def service_worker():
+    response = make_response(send_from_directory('static', 'sw.js'))
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
 
 @app.route('/favicon.ico')
 def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
+
 
 @app.route('/change_email', methods=['POST'])
 @login_required
@@ -607,7 +620,7 @@ def dashboard():
         'admin': current_user.get('admin'),
     }
 
-    app_version = "v2.1.1"
+    app_version = "v2.2.0"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1551,7 +1564,7 @@ def run_script():
 
 def fetch_og_image(url):
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         response.raise_for_status()  # Raise an error for bad status codes
         soup = BeautifulSoup(response.text, 'html.parser')
 

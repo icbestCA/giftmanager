@@ -6,6 +6,8 @@
     <title>New Ideas</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <style>
         :root {
             --bg-color: #f0f0f0;
@@ -249,6 +251,17 @@ document.addEventListener('DOMContentLoaded', function() {
         backButton.addEventListener('click', () => {
             window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
         });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
     </script>
 </body>
 </html>

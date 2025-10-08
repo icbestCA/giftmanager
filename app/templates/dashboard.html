@@ -6,7 +6,8 @@
     <title>Gift Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
-
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
         :root {
@@ -277,7 +278,7 @@
                     </form>
                     <br>
                 </li>
-                <a href="/logout" class="helplogo"><img src="{{ url_for('static', filename='icons/log-out.svg') }}" alt="Logout"></a> <br>
+                <a href="/logout" ><img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout"></a> <br>
             </ul>
             <button class="theme-toggle" onclick="toggleDarkMode()"><i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme</button>
             <br> <br>
@@ -395,6 +396,17 @@
         const theme = getThemeFromCookie();
         htmlElement.setAttribute('data-theme', theme);
     });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
     </script>
 </body>
 </html>
