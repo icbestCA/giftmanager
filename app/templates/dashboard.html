@@ -253,7 +253,7 @@
                     <p class="text-secondary">Name: {{ profile_info['full_name'] }}</p>
                     <p class="text-secondary">Birthday: {{ profile_info['birthday'] }}</p>
                     <br>
-
+                    {% if not profile_info.guest %}
                     <!-- Password Change Form -->
                     <h2><strong class="text-primary">Change password</strong></h2>
                     <form method="POST" action="/change_password">
@@ -278,6 +278,7 @@
                     </form>
                     <br>
                 </li>
+                {% endif %}
                 <a href="/logout" ><img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout"></a> <br>
             </ul>
             <button class="theme-toggle" onclick="toggleDarkMode()"><i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme</button>

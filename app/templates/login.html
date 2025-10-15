@@ -127,10 +127,66 @@
             background-color: #0056b3; /* Darker shade on hover */
         }
 
+        .guest-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Green button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .guest-login:hover {
+            background-color: #218838; /* Darker shade on hover */
+        }
+
+        .secondary-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #6c757d; /* Gray button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .secondary-button:hover {
+            background-color: #545b62; /* Darker shade on hover */
+        }
+
+        .separator {
+            color: #fff;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #fff;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+
     </style>
 </head>
 <body>
-    <form method="post" action="/login">
+    <!-- Regular Login Form -->
+    <form method="post" action="/login" id="regular-login">
         <h1>Connexion</h1>
         <div class="info-box">
             {{ login_message }}
@@ -154,26 +210,81 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" style="font-size: 17px;" required>
         <input type="submit" value="SIGN IN">
-                <!-- Display OIDC Login Button if enabled -->
-                {% if oidc_enabled %}
-                <a href="{{ url_for('login_oidc') }}">
-                    <button type="button" class="oidc-login">Login with OIDC</button>
-                </a>
-            {% endif %}
+        {% if guests_exist %}
+        <div class="separator">or</div>
+        
+        <!-- Guest Login Button -->
+        
+        <button type="button" class="guest-login" onclick="showGuestLogin()">
+            I have a guest password
+        </button>
+        {% endif %}
+        
+        <!-- Display OIDC Login Button if enabled -->
+        {% if oidc_enabled %}
+            <a href="{{ url_for('login_oidc') }}">
+                <button type="button" class="oidc-login">Login with OIDC</button>
+            </a>
+        {% endif %}
+        
         <p>Contact the administrator to reset your password.</p>
     </form>
+
+    <!-- Guest Login Form (Initially Hidden) -->
+    <form method="post" action="/guest_login" id="guest-login" style="display: none;">
+        <h1>Guest Login</h1>
+        <div class="info-box">
+            Enter your guest password to access limited features
+        </div>
+        <!-- Displaying flashed messages for guest login -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category.startswith('login') %}
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }}">
+                    {{ message }}
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <label for="guest_password">Guest Password</label>
+        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required 
+               placeholder="Enter guest password">
+        
+        <input type="submit" value="LOGIN AS GUEST" style="background-color: #28a745;">
+        
+        <button type="button" class="secondary-button" onclick="showRegularLogin()">
+            Back to regular login
+        </button>
+        
+        <p>Contact the administrator for guest access.</p>
+    </form>
+
     <script>
+        function showGuestLogin() {
+            document.getElementById('regular-login').style.display = 'none';
+            document.getElementById('guest-login').style.display = 'block';
+        }
+
+        function showRegularLogin() {
+            document.getElementById('guest-login').style.display = 'none';
+            document.getElementById('regular-login').style.display = 'block';
+        }
+
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>

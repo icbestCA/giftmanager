@@ -109,6 +109,14 @@ def login_required(f):
         if 'username' not in session:
             flash('Please log in first.', 'warning')
             return redirect(url_for('login'))
+        
+        # Check if user is a guest and route doesn't allow guests
+        if is_guest_user(session['username']):
+            # Check if the route has @guest_allowed decorator
+            if not getattr(f, '_guest_allowed', False):
+                flash('This feature is not available for guest users.', 'danger')
+                return redirect(url_for('dashboard'))
+        
         return f(*args, **kwargs)
     return decorated_function
 
@@ -136,6 +144,31 @@ def admin_required(f):
     
     return decorated_function
 
+def is_guest_user(username):
+    """Check if a user is a guest"""
+    users = load_users()
+    user = next((u for u in users if u['username'] == username), None)
+    return user and user.get('guest', False)
+
+def guest_allowed(f):
+    """Decorator to allow guest users access to specific routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            flash('Please log in first.', 'warning')
+            return redirect(url_for('login'))
+        
+        # Check if user is a guest
+        if is_guest_user(session['username']):
+            return f(*args, **kwargs)
+        else:
+            # Regular users can always access guest-allowed routes
+            return f(*args, **kwargs)
+    
+    # Mark this function as guest allowed
+    decorated_function._guest_allowed = True
+    return decorated_function
+
 @app.route('/manifest.json')
 def manifest():
     return send_from_directory('static', 'manifest.json')
@@ -150,6 +183,7 @@ def service_worker():
 def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
+
 
 @app.route('/change_email', methods=['POST'])
 @login_required
@@ -397,13 +431,17 @@ def login():
             flash('User does not exist', 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
             flash(f"Error reading users.json: {e}", 'login_error')
-
+    guests_exist_flag = guests_exist()
     # For GET requests, render the login page
     oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
     oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
     login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "No account? Contact a family member to create an account."
-    return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message)
+    return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
 
+def guests_exist():
+    """Check if any guest users exist in the system"""
+    users = load_users()
+    return any(user.get('guest') for user in users)
 
 @app.route('/add2/', methods=['GET', 'POST'])
 @login_required
@@ -654,6 +692,7 @@ def logout():
 
 @app.route('/dashboard')
 @login_required
+@guest_allowed
 def dashboard():
     
     # Read user data from the JSON file
@@ -666,29 +705,62 @@ def dashboard():
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
-    # Get the groups of the current user, default to empty list if not present
-    current_user_groups = current_user.get('groups', [])
-
-    # Filter users based on groups
-    visible_users = [
-        user for user in users
-        if not user.get('groups') or any(group in current_user_groups for group in user['groups'])
-    ]
+    # Check if current user is a guest
+    is_guest = current_user.get('guest', False)
+    
+    # Initialize visible_users
+    visible_users = []
+    
+    if is_guest:
+        # Handle guest user access
+        access_type = current_user.get('access_type', 'family')
+        
+        if access_type == 'family':
+            # Show users in guest's assigned groups (including guest groups)
+            guest_groups = current_user.get('groups', [])
+            visible_users = [
+                user for user in users
+                if user.get('groups') and any(group in guest_groups for group in user['groups'])
+                and not user.get('guest')  # Don't show other guests
+            ]
+        else:  # people access
+            # Show specific users assigned to guest
+            access_users = current_user.get('access_users', [])
+            visible_users = [
+                user for user in users
+                if user['username'] in access_users and not user.get('guest')
+            ]
+    else:
+        # Regular user logic - SIMPLE VERSION
+        current_user_groups = current_user.get('groups', [])
+        
+        # If current user has no groups, show all non-guest users
+        if not current_user_groups:
+            visible_users = [user for user in users if not user.get('guest')]
+        else:
+            # If current user has groups, show users who share groups OR have no groups
+            visible_users = [
+                user for user in users
+                if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
+                and not user.get('guest')
+            ]
+        
+        # Move current user to top
+        if current_user in visible_users:
+            visible_users.insert(0, visible_users.pop(visible_users.index(current_user)))
 
     # Sort the users alphabetically by full name
     sorted_users = sorted(visible_users, key=lambda x: x['full_name'].lower())
-
-    # Move the current user to the top of the sorted list
-    sorted_users.insert(0, sorted_users.pop(sorted_users.index(current_user)))
 
     # Prepare the profile information for the current user
     profile_info = {
         'full_name': current_user.get('full_name'),
         'birthday': current_user.get('birthday'),
         'admin': current_user.get('admin'),
+        'guest': is_guest
     }
 
-    app_version = "v2.2.0"
+    app_version = "v2.3.0"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -759,6 +831,7 @@ def find_idea_by_id(ideas, idea_id):
 
 @app.route('/mark_as_bought/<int:idea_id>', methods=['POST'])
 @login_required
+@guest_allowed
 def mark_as_bought(idea_id):
     # Load the current gift ideas from the JSON file
     gift_ideas_data = load_gift_ideas()
@@ -787,6 +860,7 @@ def mark_as_bought(idea_id):
 
 @app.route('/mark_as_not_bought/<int:idea_id>', methods=['POST'])
 @login_required
+@guest_allowed
 def mark_as_not_bought(idea_id):
     # Load the current gift ideas from the JSON file
     gift_ideas_data = load_gift_ideas()
@@ -814,6 +888,7 @@ def mark_as_not_bought(idea_id):
 
 @app.route('/bought_items')
 @login_required
+@guest_allowed
 def bought_items():
     # Load the current gift ideas and users from the JSON files
     gift_ideas_data = load_gift_ideas()
@@ -839,6 +914,7 @@ def get_full_name(username):
 
 @app.route('/user_gift_ideas/<selected_user_id>')
 @login_required
+@guest_allowed
 def user_gift_ideas(selected_user_id):
     # Check if the selected user is the same as the connected user
     connected_user = session.get('username')
@@ -853,7 +929,7 @@ def user_gift_ideas(selected_user_id):
     # Sort the gift ideas by priority, with ideas that have no priority appearing at the bottom
     user_gift_ideas.sort(key=lambda x: (x.get('priority', float('inf')), x['gift_idea_id']))
 
-    # Check if there are no ideas and redirect to the dashboard
+    # Check if there are no ideas and redirect to the NOIDEA page
     if not user_gift_ideas:
         flash('No gift ideas for this user.', 'info')
         return redirect(url_for('noidea'))
@@ -912,6 +988,7 @@ def update_order():
 
 @app.route('/noidea')
 @login_required
+@guest_allowed
 def noidea():
     return render_template('noideas.html')
 
@@ -1107,6 +1184,7 @@ def secret_santa():
 
 @app.route('/secret_santa_assignments', methods=['GET'])
 @login_required
+@guest_allowed
 def secret_santa_assignments():
     current_user = session['username']
 
@@ -1545,7 +1623,7 @@ def manage_groups():
     users = load_users()
 
     # Extract existing groups from the users
-    groups = sorted(set(group for user in users for group in user.get('groups', [])))
+    groups = get_visible_groups(users)
 
     if request.method == 'POST':
         # Handle adding a new group
@@ -1645,6 +1723,8 @@ def run_script():
         error_message = f"Error occurred while running delete_old_gift_ideas: {e}\n\n"
         return render_template('script_output.html', script_output=error_message)
     
+
+
 def fetch_og_image(url):
     try:
         response = requests.get(url, verify=False)
@@ -1693,6 +1773,157 @@ def get_og_image():
     else:
         return jsonify({"error": "No OG image found"}), 404    
 
+@app.route('/manage_guest_users', methods=['GET', 'POST'])
+@admin_required
+def manage_guest_users():
+    users = load_users()
+    
+    if request.method == 'POST':
+        display_name = request.form.get('display_name')
+        password = request.form.get('password')
+        access_type = request.form.get('access_type', 'family')
+        
+        # Generate guest username
+        base_username = "guest_" + display_name.lower().replace(' ', '_').replace("'", "")
+        username = base_username
+        counter = 1
+        
+        # Ensure unique username
+        while any(user['username'] == username for user in users):
+            username = f"{base_username}_{counter}"
+            counter += 1
+        
+        # Create guest user
+        new_guest = {
+            "username": username,
+            "password": password_hash(password),
+            "full_name": display_name,
+            "admin": False,
+            "guest": True,
+            "access_type": access_type,
+            "groups": [],
+            "access_users": []
+        }
+        
+        # Set access based on type
+        if access_type == 'family':
+            new_guest['groups'] = request.form.getlist('access_groups')
+        else:  # people access
+            new_guest['access_users'] = request.form.getlist('access_users')
+            
+            # Create private family groups for each selected person
+            private_groups = []
+            for selected_username in new_guest['access_users']:
+                # Create a unique private family name
+                private_family_name = f"guest_{username}_{selected_username}"
+                private_groups.append(private_family_name)
+                
+                # Add this private family to the guest user
+                if private_family_name not in new_guest['groups']:
+                    new_guest['groups'].append(private_family_name)
+                
+                # Add the private family to the selected user WITHOUT removing them from global access
+                for user in users:
+                    if user['username'] == selected_username:
+                        if 'groups' not in user:
+                            user['groups'] = []
+                        if private_family_name not in user['groups']:
+                            user['groups'].append(private_family_name)
+                        # User keeps their existing groups and remains in global access
+        
+        users.append(new_guest)
+        save_users(users)
+        flash('Guest user created successfully!', 'success')
+        return redirect(url_for('manage_guest_users'))
+    
+    # Get all available groups and users for the form
+    all_groups = sorted(set(
+        group for user in users 
+        for group in user.get('groups', [])
+    ))
+    
+    # Get non-guest users for people access
+    all_users = [user for user in users if not user.get('guest')]
+    
+    # Get existing guest users
+    guest_users = [user for user in users if user.get('guest')]
+    
+    return render_template('manage_guest_users.html', 
+                         guest_users=guest_users,
+                         all_groups=all_groups,
+                         all_users=all_users)
+
+
+@app.route('/delete_guest_user/<username>', methods=['POST'])
+@admin_required
+def delete_guest_user(username):
+    users = load_users()
+    gift_ideas_data = load_gift_ideas()
+    
+    # Find the guest user before deleting to get their details
+    guest_user = next((user for user in users if user['username'] == username), None)
+    
+    if guest_user:
+        # 1. Remove ALL guest's private family groups from all users
+        for user in users:
+            if 'groups' in user:
+                # Remove any group that starts with "guest_{username}_"
+                user['groups'] = [group for group in user['groups'] 
+                                if not group.startswith(f"guest_{username}_")]
+                # Also remove the main guest family group if it exists
+                user['groups'] = [group for group in user['groups'] 
+                                if group != f"guest_{username}"]
+        
+        # 2. Delete entirely the gift ideas that were bought by this guest
+        updated_gift_ideas = []
+        deleted_count = 0
+        
+        for idea in gift_ideas_data:
+            if idea.get('bought_by') == username:
+                # Skip adding this idea to the updated list (effectively deleting it)
+                deleted_count += 1
+                continue
+            updated_gift_ideas.append(idea)
+        
+        # 3. Remove the guest user
+        users = [user for user in users if user['username'] != username]
+        
+        # Save both updated datasets
+        save_users(users)
+        save_gift_ideas(updated_gift_ideas)
+        
+        flash(f'Guest user {username} deleted successfully! All private groups removed and {deleted_count} purchased gift ideas deleted.', 'success')
+    else:
+        flash('Guest user not found.', 'danger')
+    
+    return redirect(url_for('manage_guest_users'))
+
+
+@app.route('/guest_login', methods=['POST'])
+def guest_login():
+    password = request.form['password']
+    
+    users = load_users()
+    
+    # Look for a guest user with matching password
+    for user in users:
+        if user.get('guest') and verify_password(user['password'], password):
+            session['username'] = user['username']
+            flash('Guest login successful!', 'login_success')
+            return redirect(url_for('dashboard'))
+    
+    flash('Invalid guest password', 'login_error')
+    return redirect(url_for('login'))
+
+def get_visible_groups(users):
+    """Get all groups except guest private families"""
+    all_groups = set()
+    for user in users:
+        for group in user.get('groups', []):
+            # Exclude guest private families (they start with 'guest_')
+            if not group.startswith('guest_'):
+                all_groups.add(group)
+    return sorted(all_groups)
 
 
 if __name__ == "__main__":
