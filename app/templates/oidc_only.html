@@ -67,6 +67,8 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 70%;
+            margin-bottom: 10px;
         }
 
         .login-button:hover {
@@ -76,6 +78,37 @@
 
         .login-button:active {
             transform: translateY(0);
+        }
+
+        .guest-button {
+            background-color: #28a745;
+        }
+
+        .guest-button:hover {
+            background-color: #218838;
+        }
+
+        .separator {
+            color: #fff;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #fff;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
         }
 
         a {
@@ -103,19 +136,55 @@
         <a href="{{ url_for('login_oidc') }}" class="login-button">
             Login with OIDC
         </a>
+
+        {% if guests_exist %}
+        <div class="separator">or</div>
+        
+        <button type="button" class="login-button guest-button" onclick="showGuestLogin()">
+            I have a guest password
+        </button>
+
+        <!-- Guest login form (initially hidden) -->
+        <form method="POST" action="/guest_login" id="guest-login" style="display: none;">
+            <div style="margin: 15px 0;">
+                <input type="password" name="password" placeholder="Enter guest password" 
+                       style="width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 16px;" required>
+            </div>
+            <button type="submit" class="login-button guest-button">Login as Guest</button>
+            <button type="button" class="login-button" onclick="showOidcLogin()" 
+                    style="background-color: #6c757d; margin-top: 5px;">
+                Back to OIDC Login
+            </button>
+        </form>
+        {% endif %}
+        
     </div>
     <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+        function showGuestLogin() {
+            document.querySelector('.login-button').style.display = 'none';
+            document.querySelector('.guest-button').style.display = 'none';
+            document.querySelector('.separator').style.display = 'none';
+            document.getElementById('guest-login').style.display = 'block';
+        }
+
+        function showOidcLogin() {
+            document.querySelector('.login-button').style.display = 'block';
+            document.querySelector('.guest-button').style.display = 'block';
+            document.querySelector('.separator').style.display = 'flex';
+            document.getElementById('guest-login').style.display = 'none';
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>

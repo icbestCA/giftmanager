@@ -339,11 +339,12 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    guests_exist_flag = guests_exist()
     enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
 
     # If default login is disabled, render an OIDC-only login page
     if not enable_default_login:
-        return render_template("oidc_only.html")
+        return render_template("oidc_only.html", guests_exist=guests_exist_flag)
 
     if request.method == 'POST':
         input_username = request.form['username'].lower()  # Ensure case-insensitivity
@@ -691,7 +692,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.3.0"
+    app_version = "v2.3.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
