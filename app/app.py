@@ -153,16 +153,31 @@ def change_email():
     return redirect(url_for('dashboard'))
 
 
+def get_currency_symbol():
+    return os.getenv('CURRENCY_SYMBOL', '$')
+
+def get_currency_position():
+    return os.getenv('CURRENCY_POSITION', 'before')
+
+def format_currency(amount):
+    symbol = get_currency_symbol()
+    position = get_currency_position()
+    
+    if position == 'after':
+        return f"{amount}{symbol}"
+    else:  # before (default)
+        return f"{symbol}{amount}"
+
+
 @app.context_processor
 def utility_processor():
-    def get_full_name(username):
-        users = load_users()
-        for user in users:
-            if user['username'] == username:
-                return user.get('full_name', username)  # Fallback to username if full_name is missing
-        return username  # Return the username if no matching user is found
-
-    return dict(get_full_name=get_full_name)
+    # Use the existing get_full_name function that's already defined
+    return dict(
+        get_full_name=get_full_name,  # This uses the function you already have
+        format_currency=format_currency,
+        get_currency_symbol=get_currency_symbol,
+        get_currency_position=get_currency_position
+    )
 
 
 #OIDC SUPPORT
@@ -370,7 +385,7 @@ def login():
             flash('User does not exist', 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
             flash(f"Error reading users.json: {e}", 'login_error')
-    guests_exist_flag = guests_exist()
+            
     # For GET requests, render the login page
     oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
     oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
@@ -1595,7 +1610,10 @@ def setup_advanced():
     current_ID = read_env_variable("CONTAINER_ID")
     current_reorder = read_env_variable("REORDERING")
     images = read_env_variable("IMGENABLED")
-    return render_template('advanced.html', current_ID=current_ID, current_reorder=current_reorder, images=images)
+    current_currency_symbol = get_currency_symbol()
+    current_currency_position = get_currency_position()
+    return render_template('advanced.html', current_ID=current_ID, current_reorder=current_reorder, images=images, current_currency_symbol=current_currency_symbol,
+                         current_currency_position=current_currency_position)
 
 # Route to update CONTAINER_ID (POST request)
 @app.route('/update_containerid', methods=['POST'])
@@ -1840,6 +1858,17 @@ def get_visible_groups(users):
                 all_groups.add(group)
     return sorted(all_groups)
 
+@app.route('/update_currency_settings', methods=['POST'])
+@admin_required
+def update_currency_settings():
+    symbol = request.form.get('currency_symbol', '$')
+    position = request.form.get('currency_position', 'before')
+    
+    set_key(".env", "CURRENCY_SYMBOL", symbol)
+    set_key(".env", "CURRENCY_POSITION", position)
+    
+    flash('Currency settings updated! Please restart to see changes', 'success')
+    return redirect(url_for('setup_advanced'))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

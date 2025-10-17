@@ -209,7 +209,7 @@
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
                         <p class="sec-text description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                         {% if gift_idea.value %}
-                        <p class="sec-text">Estimated Value: ${{ gift_idea.value }}</p>
+                        <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
                         {% endif %}
                         <p class="sec-text">Added By: {{ gift_idea.added_by }}</p>
                     </div>

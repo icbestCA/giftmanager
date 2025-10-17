@@ -158,6 +158,15 @@
             text-align: center;
             margin-right: 12px;
         }
+
+        .preview-box {
+            background-color: var(--card-bg-color);
+            border: 2px dashed var(--card-border-color);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -176,6 +185,36 @@
             const theme = getThemeFromCookie();
             document.documentElement.setAttribute('data-theme', theme);
         })();
+
+        function updateCurrencyPreview() {
+            const symbol = document.getElementById('currency_symbol').value || '$';
+            const position = document.querySelector('input[name="currency_position"]:checked').value;
+            
+            let preview;
+            if (position === 'before') {
+                preview = symbol + '50';
+            } else {
+                preview = '50' + symbol;
+            }
+            
+            document.getElementById('currency_preview').textContent = preview;
+        }
+
+        // Initialize preview on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrencyPreview();
+            
+            // Add event listeners for real-time preview
+            const symbolInput = document.getElementById('currency_symbol');
+            if (symbolInput) {
+                symbolInput.addEventListener('input', updateCurrencyPreview);
+            }
+            
+            const positionRadios = document.querySelectorAll('input[name="currency_position"]');
+            positionRadios.forEach(radio => {
+                radio.addEventListener('change', updateCurrencyPreview);
+            });
+        });
     </script>
 </head>
 <body class="font-sans">
@@ -247,7 +286,19 @@
             </header>
 
             <main class="p-6">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
                 <div class="main p-6 rounded shadow section">
+                    <!-- Container ID Section -->
                     <form method="post" action="{{ url_for('update_containerid') }}">
                         <div class="mb-4">
                             <p class="mb-2">Set the ID or name of your docker container so you can restart it from the admin dashboard page. You must mount this /var/run/docker.sock:/var/run/docker.sock as a volume.</p>
@@ -268,6 +319,7 @@
                     
                     <div class="my-6 border-t border-gray-300"></div>
                     
+                    <!-- Reordering Section -->
                     <form method="post" action="{{ url_for('update_reordering') }}">  
                         <div class="mb-4">
                             <p class="mb-2">Enable reordering button on the myideas page.</p>
@@ -286,6 +338,7 @@
                     
                     <div class="my-6 border-t border-gray-300"></div>
                     
+                    <!-- Images Section -->
                     <form method="post" action="{{ url_for('update_images') }}">  
                         <div class="mb-4">
                             <p class="mb-2">Enable images</p>
@@ -300,6 +353,64 @@
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Save
                         </button>
+                    </form>
+
+                    <div class="my-6 border-t border-gray-300"></div>
+
+                    <!-- Currency Settings Section -->
+                    <form method="post" action="{{ url_for('update_currency_settings') }}">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Currency Settings</h3>
+                            
+                            <!-- Currency Symbol -->
+                            <div class="mb-4">
+                                <label for="currency_symbol" class="block sec-text font-medium mb-2">
+                                    Currency Symbol
+                                </label>
+                                <input type="text" 
+                                       id="currency_symbol" 
+                                       name="currency_symbol" 
+                                       value="{{ current_currency_symbol }}"
+                                       maxlength="5"
+                                       class="w-full px-3 py-2 border rounded-md inputer"
+                                       placeholder="e.g., $, €, £, ¥">
+                                <p class="text-sm text-gray-500 mt-1">Enter the currency symbol (max 5 characters)</p>
+                            </div>
+
+                            <!-- Currency Position -->
+                            <div class="mb-4">
+                                <label class="block sec-text font-medium mb-2">
+                                    Symbol Position
+                                </label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="currency_position" value="before" 
+                                               class="mr-2" {{ 'checked' if current_currency_position == 'before' }}>
+                                        <span>Before amount (e.g., $50)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="currency_position" value="after" 
+                                               class="mr-2" {{ 'checked' if current_currency_position == 'after' }}>
+                                        <span>After amount (e.g., 50€)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Preview -->
+                            <div class="preview-box">
+                                <h4 class="font-medium mb-2">Preview:</h4>
+                                <div class="text-2xl font-bold" id="currency_preview"></div>
+                                <p class="text-sm text-gray-500 mt-2">This is how gift values will appear</p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
+                                    Save Currency Settings
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </main>
