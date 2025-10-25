@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup OIDC Configuration</title>
+    <title>Modifer les paramètres Email</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -187,46 +187,46 @@
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
                 <a href="/admin" class="text-2xl font-semibold">
-                    Admin Dashboard
+                    Tableau de bord admin
                 </a>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-6">
                 <!-- Group 1 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Management</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Gestion</h2>
                     <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-users"></i> Users
+                        <i class="fas fa-users"></i> Utilisateurs
                     </a>
                     <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
                         <i class="fas fa-gift"></i> Secret Santa
                     </a>
                     <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-plus"></i> Add User
+                        <i class="fas fa-user-plus"></i> Nouvel Utilisateur
                     </a>
                     <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-people-group"></i> Families
+                        <i class="fas fa-people-group"></i> Familles
                     </a>
                     <a href="{{ url_for('manage_guest_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-clock"></i> Guest Users
+                        <i class="fas fa-user-clock"></i> Utilisateurs invités
                     </a>
                 </div>
                 <!-- Group 2 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration et maintenance</h2>
                     <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-trash"></i> Deletion Script
+                        <i class="fas fa-trash"></i> Script de suppression
                     </a>
                     <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-envelope"></i> Email Settings
+                        <i class="fas fa-envelope"></i> Paramètres Email
                     </a>
                     <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Login Settings
+                        <i class="fas fa-user-cog"></i> Paramètres de connexion
                     </a>
                     <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-shield-halved"></i> OIDC Settings
+                        <i class="fas fa-shield-halved"></i> Paramètres OIDC
                     </a>
                     <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Advanced
+                        <i class="fas fa-user-cog"></i> Avancé
                     </a>
                 </div>
             </nav>
@@ -240,129 +240,68 @@
                         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Setup OIDC Configuration</h2>
+                        <h2 class="text-xl font-semibold">Modifer les paramètres Email</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">Vers page principale</a>
                 </div>
             </header>
 
             <main class="p-6">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="mb-6">
-                        {% for category, message in messages %}
-                            <div class="p-4 rounded bg-{{ 'green-100' if category == 'success' else 'red-100' }} text-{{ 'green-800' if category == 'success' else 'red-800' }} mb-4">
-                                {{ message }}
+                <!-- Edit Email Settings Content -->
+                <div class="main p-6 rounded shadow section">
+                    <h3 class="text-lg font-semibold mb-4">Modifer les paramètres Email</h3>
+                    <form method="post" action="{{ url_for('edit_email_settings') }}">
+                        <div class="mb-4">
+                            <label for="MAILJET_API_KEY" class="block sec-text font-medium">Clé API Mailjet:</label>
+                            <input 
+                                type="text" 
+                                id="MAILJET_API_KEY" 
+                                name="MAILJET_API_KEY" 
+                                placeholder="Laisser vide pour conserver la valeur actuelle"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                            >
+                        </div>
+                        <div class="mb-4">
+                            <label for="MAILJET_API_SECRET" class="block sec-text font-medium">Secret API Mailjet:</label>
+                            <input 
+                                type="text" 
+                                id="MAILJET_API_SECRET" 
+                                name="MAILJET_API_SECRET" 
+                                placeholder="Laisser vide pour conserver la valeur actuelle"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                            >
+                        </div>
+                        <div class="mb-4">
+                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">Email du système:</label>
+                            <input 
+                                type="email" 
+                                id="SYSTEM_EMAIL" 
+                                name="SYSTEM_EMAIL" 
+                                value="{{ settings['SYSTEM_EMAIL'] }}"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                        >
+                            Enregistrer les modifications
+                        </button>
+                    </form>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mt-4">
+                                {% for category, message in messages %}
+                                    <div 
+                                        class="p-4 rounded mb-2 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
                             </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                {% endwith %}
-        
-                <form method="POST" class="bg-white shadow-lg rounded-lg p-8 space-y-6 section">
-                    <!-- OIDC Client ID -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="OIDC_CLIENT_ID" class="text-lg sec-text">OIDC Client ID:</label>
-                        <div class="flex items-center">
-                            <input type="text" id="OIDC_CLIENT_ID" name="OIDC_CLIENT_ID" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_CLIENT_ID'] }}" required>
-
-                        </div>
-                    </div>
-                    
-                    <!-- OIDC Client Secret -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="OIDC_CLIENT_SECRET" class="text-lg sec-text">OIDC Client Secret:</label>
-                        <div class="flex items-center">
-                            <input type="password" id="OIDC_CLIENT_SECRET" name="OIDC_CLIENT_SECRET" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_CLIENT_SECRET'] }}" required>
-
-                        </div>
-                    </div>
-                    
-                    <!-- OIDC Server Metadata URL -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="OIDC_SERVER_METADATA_URL" class="text-lg sec-text">OIDC Server Metadata URL:</label>
-                        <div class="flex items-center">
-                            <input type="text" id="OIDC_SERVER_METADATA_URL" name="OIDC_SERVER_METADATA_URL" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_SERVER_METADATA_URL'] }}" required>
- 
-                        </div>
-                    </div>
-                    
-                    <!-- OIDC Logout URL -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="OIDC_LOGOUT_URL" class="text-lg sec-text">OIDC Logout URL:</label>
-                        <div class="flex items-center">
-                            <input type="text" id="OIDC_LOGOUT_URL" name="OIDC_LOGOUT_URL" class="p-3 w-full border rounded-lg inputer" value="{{ current_values['OIDC_LOGOUT_URL'] }}">
-
-                        </div>
-                    </div>
-                    
-                    <!-- Primary OIDC Field -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="PRIMARY_OIDC_FIELD" class="text-lg sec-text">Primary OIDC Field:</label>
-                        <div class="flex items-center">
-                            <input type="text" id="PRIMARY_OIDC_FIELD" name="PRIMARY_OIDC_FIELD" value="{{ current_values['PRIMARY_OIDC_FIELD'] }}" class="p-3 w-full border rounded-lg inputer" placeholder="Enter the primary OIDC field">
-                        </div>
-                    </div>
-        
-                    <!-- Secondary OIDC Field -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="SECONDARY_OIDC_FIELD" class="text-lg sec-text">Secondary OIDC Field:</label>
-                        <div class="flex items-center">
-                            <input type="text" id="SECONDARY_OIDC_FIELD" name="SECONDARY_OIDC_FIELD" value="{{ current_values['SECONDARY_OIDC_FIELD'] }}" class="p-3 w-full border rounded-lg inputer" placeholder="Enter the secondary OIDC field">
-                        </div>
-                    </div>
-        
-                    <!-- Primary DB Field -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="PRIMARY_DB_FIELD" class="text-lg sec-text">Primary DB Field:</label>
-                        <div class="flex items-center">
-                            <select id="PRIMARY_DB_FIELD" name="PRIMARY_DB_FIELD" class="p-3 w-full border rounded-lg inputer">
-                                <option value="email" {% if current_values['PRIMARY_DB_FIELD'] == 'email' %}selected{% endif %}>Email</option>
-                                <option value="username" {% if current_values['PRIMARY_DB_FIELD'] == 'username' %}selected{% endif %}>Username</option>
-                                <option value="full_name" {% if current_values['PRIMARY_DB_FIELD'] == 'full_name' %}selected{% endif %}>Full Name</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Secondary DB Field -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="SECONDARY_DB_FIELD" class="text-lg sec-text">Secondary DB Field:</label>
-                        <div class="flex items-center">
-                            <select id="SECONDARY_DB_FIELD" name="SECONDARY_DB_FIELD" class="p-3 w-full border rounded-lg inputer">
-                                <option value="username" {% if current_values['SECONDARY_DB_FIELD'] == 'username' %}selected{% endif %}>Username</option>
-                                <option value="email" {% if current_values['SECONDARY_DB_FIELD'] == 'email' %}selected{% endif %}>Email</option>
-                                <option value="full_name" {% if current_values['SECONDARY_DB_FIELD'] == 'full_name' %}selected{% endif %}>Full Name</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Enable Auto Registration -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="ENABLE_AUTO_REGISTRATION" class="text-lg sec-text">Enable Auto Registration:</label>
-                        <div class="flex items-center">
-                            <select id="ENABLE_AUTO_REGISTRATION" name="ENABLE_AUTO_REGISTRATION" class="p-3 w-full border rounded-lg inputer">
-                                <option value="true" {% if current_values['ENABLE_AUTO_REGISTRATION'] == 'true' %}selected{% endif %}>True</option>
-                                <option value="false" {% if current_values['ENABLE_AUTO_REGISTRATION'] == 'false' %}selected{% endif %}>False</option>
-                            </select>
-                        </div>
-                    </div>
-        
-                    <!-- Enable Default Login -->
-                    <div class="flex flex-col space-y-2">
-                        <label for="ENABLE_DEFAULT_LOGIN" class="text-lg sec-text">Enable Default Login Form:</label>
-                        <div class="flex items-center">
-                            <select id="ENABLE_DEFAULT_LOGIN" name="ENABLE_DEFAULT_LOGIN" class="p-3 w-full border rounded-lg inputer">
-                                <option value="true" {% if current_values['ENABLE_DEFAULT_LOGIN'] == 'true' %}selected{% endif %}>True</option>
-                                <option value="false" {% if current_values['ENABLE_DEFAULT_LOGIN'] == 'false' %}selected{% endif %}>False</option>
-                            </select>
-                        </div>
-                    </div>
-        
-                    <!-- Submit Button -->
-                    <div class="flex justify-end mt-8">
-                        <button type="submit" class="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600">Save Changes</button>
-                    </div>
-                </form>
+                        {% endif %}
+                    {% endwith %}
+                </div>
             </main>
         </div>
     </div>

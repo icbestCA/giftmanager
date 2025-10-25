@@ -50,14 +50,14 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash('Connectez-vous d\'abord.', 'warning')
             return redirect(url_for('login'))
         
         # Check if user is a guest and route doesn't allow guests
         if is_guest_user(session['username']):
             # Check if the route has @guest_allowed decorator
             if not getattr(f, '_guest_allowed', False):
-                flash('This feature is not available for guest users.', 'danger')
+                flash('Cette fonctionnalité n\'est pas disponible pour les utilisateurs invités.', 'danger')
                 return redirect(url_for('dashboard'))
         
         return f(*args, **kwargs)
@@ -68,7 +68,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         # Check if the user is logged in
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash('Connectez-vous d\'abord.', 'warning')
             return redirect(url_for('login'))
 
         # Load users from the JSON file
@@ -79,7 +79,7 @@ def admin_required(f):
 
         # Check if the user exists and is an admin
         if not user or not user.get('admin'):
-            flash('Admin access required.', 'danger')
+            flash('Accès administrateur requis.', 'danger')
             return redirect(url_for('dashboard'))
 
         # Continue to the original function if the user is an admin
@@ -98,7 +98,7 @@ def guest_allowed(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash('Connectez-vous d\'abord.', 'warning')
             return redirect(url_for('login'))
         
         # Check if user is a guest
@@ -143,13 +143,13 @@ def change_email():
             user['email'] = new_email
             break
     else:
-        flash('User not found.', 'danger')
+        flash('Utilisateur introuvable.', 'danger')
         return redirect(url_for('dashboard'))
 
     # Save the updated data back to the JSON file
     save_users(users)
 
-    flash('Email updated successfully.', 'success')
+    flash('Courriel mis à jour avec succès.', 'success')
     return redirect(url_for('dashboard'))
 
 
@@ -206,14 +206,14 @@ def auth():
     state = request.args.get("state")
     saved_state = session.pop("state", None)
     if state != saved_state:
-        flash("Authorization failed: invalid state.", "danger")
+        flash("Échec de l\'autorisation: état invalide.", "danger")
         return redirect(url_for("login"))
     
     try:
         # Retrieve the access token from OIDC provider
         token = oauth.keycloak.authorize_access_token()
     except Exception as e:
-        flash("OIDC authorization failed.", "danger")
+        flash("L\'autorisation OIDC a échoué.", "danger")
         return redirect(url_for("login"))
     
     # Pop nonce from session after use
@@ -223,7 +223,7 @@ def auth():
         # Parse ID token and retrieve user info
         user_info = oauth.keycloak.parse_id_token(token, nonce=nonce)
     except Exception as e:
-        flash("Failed to parse user information.", "danger")
+        flash("Impossible d\'analyser les informations de l\'utilisateur.", "danger")
         return redirect(url_for("login"))
     
     # Retrieve fields dynamically from the environment
@@ -255,7 +255,7 @@ def auth():
     if user_in_db:
         # Log in the user by setting the session
         session["username"] = user_in_db["username"]
-        flash("Login successful with OIDC!", "login_success")
+        flash("Connexion réussie avec OIDC!", "login_success")
         return redirect(url_for("dashboard"))
     
     # Handle auto-registration if enabled
@@ -271,10 +271,10 @@ def auth():
         save_users(users)  # Save the updated users list
         session["username"] = new_user["username"]
         
-        flash("New profile created. Please complete your profile setup.", "info")
+        flash("Nouveau profil créé. Veuillez compléter la configuration de votre profil.", "info")
         return redirect(url_for("setup_profile"))  # Redirect to profile setup page
 
-    flash("User not found and auto-registration is disabled.", "danger")
+    flash("L\'utilisateur est introuvable et l\'enregistrement automatique est désactivé.", "danger")
     return redirect(url_for("login"))
     
 
@@ -291,12 +291,12 @@ def setup_profile():
     user = next((u for u in users if u["username"] == username), None)
     
     if not user:
-        flash("User not found.", "danger")
+        flash("Utilisateur introuvable.", "danger")
         return redirect(url_for("login"))
 
     # Redirect if the avatar URL is already set
     if user.get("avatar"):
-        flash("Profile setup not required. Avatar already set.", "info")
+        flash("Configuration du profil non requise. L\'avatar est déjà défini.", "info")
         return redirect(url_for("dashboard"))
     
     # Check if default login is enabled
@@ -317,7 +317,7 @@ def setup_profile():
         # Save the updated user list to `users.json`
         save_users(users)
         
-        flash("Profile setup complete!", "success")
+        flash("Configuration du profil terminée !", "success")
         return redirect(url_for("dashboard"))
 
     # Prefill data for the user (including OIDC data)
@@ -345,7 +345,7 @@ def index():
             return redirect(url_for('setup'))
     except (json.JSONDecodeError, FileNotFoundError) as e:
         # Handle errors and redirect to setup if user file is missing or corrupted
-        flash(f"Error reading users.json: {e}", 'danger')
+        flash(f"Erreur lors de la lecture de users.json : {e}", 'danger')
         return redirect(url_for('setup'))
 
     # Redirect to login if no session exists and setup is complete
@@ -375,21 +375,21 @@ def login():
                     # Verify the password hash
                     if verify_password(user['password'], password):
                         session['username'] = user['username']
-                        flash('Login successful!', 'login_success')
+                        flash('Connexion réussie!', 'login_success')
                         return redirect(url_for('dashboard'))
                     else:
-                        flash('Wrong password', 'login_error')
+                        flash('Mauvais mot de passe', 'login_error')
                         return render_template('login.html')
 
             # No matching username found
-            flash('User does not exist', 'login_error')
+            flash('L\'utilisateur n\'existe pas', 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
-            flash(f"Error reading users.json: {e}", 'login_error')
+            flash(f"Erreur lors de la lecture de users.json : {e}", 'login_error')
             
     # For GET requests, render the login page
     oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
     oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
-    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "No account? Contact a family member to create an account."
+    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "Pas de compte ? Contactez un membre de la famille pour créer un compte."
     return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
 
 def guests_exist():
@@ -409,7 +409,7 @@ def add2():
     current_user_data = next((user for user in users if user["username"] == current_user), None)
 
     if not current_user_data:
-        flash("Current user not found.", "danger")
+        flash("L\'utilisateur actuel est introuvable.", "danger")
         return redirect(url_for('dashboard'))
 
     # Get the current user's groups (default to empty list if not present)
@@ -484,7 +484,7 @@ def add_idea(selected_user_id):
     current_user_data = next((user for user in users if user["username"] == current_user), None)
 
     if not current_user_data:
-        flash("Current user not found.", "danger")
+        flash("L\'utilisateur actuel est introuvable.", "danger")
         return redirect(url_for('dashboard'))
 
     # Get the current user's groups (default to empty list if not present)
@@ -540,7 +540,7 @@ def add_idea(selected_user_id):
         save_gift_ideas(gift_ideas_data)
 
         # Flash success message and redirect
-        flash(f'Idea "{name}" added for user {user} by {added_by}!', 'success')
+        flash(f'Idée "{name}" ajoutée pour l\'utilisateur {user} par {added_by}!', 'success')
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
     imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the user list, gift ideas, and the selected user as default
@@ -574,9 +574,9 @@ def delete_idea(idea_id):
 
             return '', 204  # Return a response with HTTP status code 204 (no content)
         else:
-            flash('You are not authorized to delete this idea.', 'danger')
+            flash('Vous n\'êtes pas autorisé à supprimer cette idée.', 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash('Idée introuvable', 'danger')
 
     return '', 403  # Return a response with HTTP status code 403 (forbidden)
 
@@ -596,7 +596,7 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
             buyer_email = get_user_email_by_username(buyer_username)
             
             if buyer_email:
-                text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
+                text_part = f"Cette idée, « {idea_name} », a été supprimée mais vous l’avez déjà ACHETÉE."
 
                 # Send an email to the buyer using Mailjet
                 data = {
@@ -649,7 +649,7 @@ def dashboard():
     current_user = next((user for user in users if user['username'] == session['username']), None)
     
     if not current_user:
-        flash('User data not found', 'danger')
+        flash('Données utilisateur non trouvées', 'danger')
         return redirect(url_for('login'))
 
     # Check if current user is a guest
@@ -744,17 +744,17 @@ def change_password():
     current_user = next((user for user in users if user['username'] == session['username']), None)
 
     if not current_user:
-        flash('User not found', 'danger')
+        flash('Utilisateur introuvable', 'danger')
         return redirect(url_for('dashboard'))
 
     # Verify the current password
     if not verify_password(current_user['password'], current_password):
-        flash('Current password is incorrect', 'danger')
+        flash('Le mot de passe actuel est incorrect', 'danger')
         return redirect(url_for('dashboard'))
 
     # Check if the new password and confirmation match
     if new_password != confirm_password:
-        flash('New password and confirmation do not match', 'danger')
+        flash('Le nouveau mot de passe et la confirmation ne correspondent pas', 'danger')
         return redirect(url_for('dashboard'))
 
     # Update the password in the user data
@@ -763,7 +763,7 @@ def change_password():
     # Save the updated user data back to the JSON file
     save_users(users)
 
-    flash('Password successfully changed', 'success')
+    flash('Mot de passe modifié avec succès', 'success')
     return redirect(url_for('dashboard'))
 
 def find_idea_by_id(ideas, idea_id):
@@ -791,15 +791,15 @@ def mark_as_bought(idea_id):
             # Mark the idea as bought by the current user
             idea['bought_by'] = session['username']
             idea['date_bought'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Record the current date and time
-            flash(f'Marked "{idea["gift_name"]}" as bought!', 'success')
+            flash(f'Marqué "{idea["gift_name"]}" comme acheté!', 'success')
 
             # Save the updated gift ideas back to the JSON file
             save_gift_ideas(gift_ideas_data)  # Save the updated list
         else:
             # If already bought, display a warning
-            flash(f'"{idea["gift_name"]}" has already been bought by {idea["bought_by"]}.', 'warning')
+            flash(f'"{idea["gift_name"]}" a déjà été acheté par {idea["bought_by"]}.', 'warning')
     else:
-        flash('Idea not found', 'danger')
+        flash('Idée introuvable', 'danger')
 
     # Redirect to the user's gift ideas page
     return redirect(url_for('user_gift_ideas', selected_user_id=session['username']))
@@ -821,14 +821,14 @@ def mark_as_not_bought(idea_id):
             # Mark the idea as not bought by setting 'bought_by' to None (or '' if preferred)
             idea['bought_by'] = None  # Using None is semantically clearer than ''
             idea.pop('date_bought', None)  # Remove the date_bought field if it exists
-            flash(f'Marked "{idea["gift_name"]}" as not bought.', 'success')
+            flash(f'"{idea["gift_name"]}" marqué comme non acheté.', 'success')
 
             # Save the updated gift ideas back to the JSON file
             save_gift_ideas(gift_ideas_data)  # Save the updated list
         else:
-            flash(f'You did not buy "{idea["gift_name"]}", so you cannot mark it as not bought.', 'danger')
+            flash(f'Vous n\'avez pas acheté "{idea["gift_name"]}", vous ne pouvez donc pas le marquer comme non acheté.', 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash('Idée introuvable', 'danger')
 
     return '', 204  # Return a response with HTTP status code 204 (no content)
 
@@ -878,7 +878,7 @@ def user_gift_ideas(selected_user_id):
 
     # Check if there are no ideas and redirect to the NOIDEA page
     if not user_gift_ideas:
-        flash('No gift ideas for this user.', 'info')
+        flash('Aucune idée cadeau pour cet utilisateur.', 'info')
         return redirect(url_for('noidea'))
 
     # Call get_full_name function to fetch the user's full name directly in the route
@@ -906,7 +906,7 @@ def my_ideas():
     imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
     # Check if there are no ideas and redirect to a different page
     if not my_gift_ideas:
-        flash('You haven\'t added any gift ideas.', 'info')
+        flash('Vous n\'avez ajouté aucune idée cadeau.', 'info')
         return redirect(url_for('noidea'))
 
     return render_template('my_ideas.html', my_gift_ideas=my_gift_ideas, reordering=reordering, imgenabled=imgenabled)
@@ -959,7 +959,7 @@ def add_user():
 
         # Check for duplicate usernames
         if any(user['username'] == username for user in users):
-            flash('Username already exists!', 'error')
+            flash('Ce nom d\'utilisateur existe déjà !', 'error')
             return redirect(url_for('add_user'))
 
         # Create a new user object with default groups
@@ -980,7 +980,7 @@ def add_user():
         # Save the updated users list back to the JSON file
         save_users(users)  # Using save_users function to write the users to file
 
-        flash('User added successfully!', 'success')
+        flash('Utilisateur ajouté avec succès !', 'success')
         return redirect(url_for('admin_dashboard'))
 
     return render_template('add_user.html')
@@ -1021,16 +1021,16 @@ def edit_idea(idea_id):
                 # Save the updated gift ideas data back to the JSON file
                 save_gift_ideas(gift_ideas_data)
 
-                flash('Idea updated successfully!', 'success')
+                flash('Idée mise à jour avec succès !', 'success')
                 return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
             
             imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
             # Render the edit idea form with pre-filled data
             return render_template('edit_idea.html', idea=idea, imgenabled=imgenabled)
         else:
-            flash('You are not authorized to edit this idea.', 'danger')
+            flash('Vous n\'êtes pas autorisé à modifier cette idée.', 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash('Idée introuvable', 'danger')
 
     return redirect(url_for('dashboard'))
 
@@ -1072,7 +1072,7 @@ def secret_santa():
                     del user['assigned_users'][pool_name_to_delete]
 
             if not pool_exists:
-                flash(f'Pool "{pool_name_to_delete}" does not exist.', 'error')
+                flash(f'Le pool "{pool_name_to_delete}" n\'existe pas.', 'error')
             else:
                 # Remove the corresponding instructions file if it exists
                 try:
@@ -1082,7 +1082,7 @@ def secret_santa():
 
                 # Save the updated users list
                 save_users(users)
-                flash(f'Pool "{pool_name_to_delete}" has been deleted!', 'success')
+                flash(f'Le pool "{pool_name_to_delete}" a été supprimé !', 'success')
 
             return redirect(url_for('dashboard'))  # Redirect to dashboard after deletion
 
@@ -1093,11 +1093,11 @@ def secret_santa():
             pool_name = request.form.get('pool_name')
 
             if not pool_name:
-                flash('Pool name is required!', 'error')
+                flash('Le nom du pool est requis !', 'error')
                 return redirect(url_for('secret_santa'))
 
             if len(selected_participants) < 2:
-                flash('You need at least 2 participants for Secret Santa!', 'error')
+                flash('Vous avez besoin d\'au moins 2 participants pour le Secret Santa!', 'error')
                 return redirect(url_for('secret_santa'))
 
             # Shuffle and assign participants
@@ -1123,7 +1123,7 @@ def secret_santa():
             with open(f'santa_inst_{pool_name}.txt', 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
-            flash('Secret Santa assignments have been made!', 'success')
+            flash('Les assignations du Secret Santa ont été fait!', 'success')
             return redirect(url_for('secret_santa_assignments'))
 
     return render_template('secret_santa.html', users=users, existing_pools=sorted(existing_pools))
@@ -1144,7 +1144,7 @@ def secret_santa_assignments():
             assigned_users = user['assigned_users']  # Dictionary of pool names and assigned users
 
     if not assigned_users:
-        flash("You don't have any Secret Santa assignments yet.", "error")
+        flash("Vous n\'avez pas encore d\'assignation Secret Santa.", "error")
         return redirect(url_for('secret_santa'))
 
     # Load instructions for each pool
@@ -1180,14 +1180,14 @@ def manage_users():
         # Handle delete
         if 'delete_user' in request.form:
             users = [user for user in users if user['username'] != username]
-            flash('User deleted successfully!', 'success')
+            flash('Utilisateur supprimé avec succès !', 'success')
 
         # Handle toggle admin
         elif 'toggle_admin' in request.form:
             for user in users:
                 if user['username'] == username:
                     user['admin'] = bool(int(request.form['toggle_admin']))
-                    flash('Admin status updated successfully!', 'success')
+                    flash('Le statut de l\'administrateur a été mis à jour avec succès !', 'success')
                     break
 
         # Handle user details update
@@ -1204,7 +1204,7 @@ def manage_users():
                     user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')  # Default avatar if missing
                     if updated_password:
                         user['password'] = ph.hash(updated_password)  # Hash the new password
-                    flash('User updated successfully!', 'success')
+                    flash('Utilisateur mis à jour avec succès !', 'success')
                     break
 
         # Save updated users to the JSON file using the pre-defined function
@@ -1259,9 +1259,9 @@ def edit_email_settings():
             # Reload the .env file to reflect changes
             load_dotenv(dotenv_path, override=True)
 
-            flash("Email settings updated successfully!", "success")
+            flash("Paramètres d\'Email ont été mis à jour avec succès !", "success")
         except Exception as e:
-            flash(f"An error occurred: {e}", "danger")
+            flash(f"Une erreur est survenue : {e}", "danger")
         return redirect(url_for('edit_email_settings'))
 
     # Reload the .env file before fetching current settings
@@ -1301,16 +1301,16 @@ def edit_login_message():
                         else:
                             file.write(line)
 
-                flash("Login message updated successfully!", "success")
+                flash("Message de connexion mis à jour avec succès !", "success")
             except Exception as e:
-                flash(f"Error updating login message: {e}", "danger")
+                flash(f"Erreur lors de la mise à jour du message de connexion : {e}", "danger")
         else:
-            flash("Message cannot be empty.", "danger")
+            flash("Le message ne peut pas être vide.", "danger")
 
         return redirect(url_for('edit_login_message'))
 
     # Fetch the current login message directly from .env
-    current_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "No account? Contact a family member to create an account."
+    current_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "Pas de compte ? Contactez un membre de la famille pour créer un compte."
     return render_template('edit_login_message.html', current_message=current_message)
 
 def delete_old_gift_ideas():
@@ -1367,13 +1367,13 @@ def delete_old_gift_ideas_page():
             deleted_count = delete_old_gift_ideas()
 
             # Flash success message with the number of deleted rows
-            flash(f"{deleted_count} gift ideas older than the threshold have been successfully deleted.", "success")
+            flash(f"Les idées cadeau {deleted_count} plus anciennes que le seuil ont été supprimées avec succès.", "success")
 
             # Render the result to the template
             return render_template('delete_old_gift_ideas.html', deleted_count=deleted_count)
 
         except Exception as e:
-            flash(f"Error deleting old gift ideas: {e}", "danger")
+            flash(f"Erreur lors de la suppression des anciennes idées cadeaux : {e}", "danger")
             return render_template('delete_old_gift_ideas.html', deleted_count=0, error_message=str(e))
 
     # GET request: Just display the page
@@ -1394,13 +1394,13 @@ def change_delete_days():
                 # Update the .env file with the new value
                 set_key(".env", "DELETE_DAYS", str(new_days))  # Update the DELETE_DAYS value
 
-                flash(f"The number of days to delete old gift ideas has been updated to {new_days}.", "success")
+                flash(f"Le nombre de jours pour supprimer les anciennes idées cadeaux a été mis à jour pour {new_days}.", "success")
                 return redirect(url_for('change_delete_days'))
 
             except ValueError:
-                flash("Invalid number of days entered. Please enter a valid number.", "danger")
+                flash("Nombre de jours invalide. Veuillez saisir un nombre valide.", "danger")
         else:
-            flash("Please provide a value for the number of days.", "danger")
+            flash("Veuillez fournir une valeur pour le nombre de jours.", "danger")
 
     # Get the current value of the DELETE_OLD_GIFTS_DAYS from the .env file
     current_days = read_env_variable("DELETE_DAYS", dotenv_path) or 30
@@ -1413,7 +1413,7 @@ def setup():
     # Check if users.json already exists and contains users
     users_data = load_users()
     if users_data:  # If there are any users in the file
-        flash('Users are already configured. Setup page is unavailable.', 'info')
+        flash('Les utilisateurs sont déjà configurés. La page de configuration est indisponible.', 'info')
         return redirect(url_for('login'))  # Redirect to the login page or another appropriate route
 
     if request.method == 'POST':
@@ -1445,7 +1445,7 @@ def setup():
         # Save the updated users list
         save_users(users_data)
 
-        flash('Admin account created successfully. Please configure the environment variables.', 'success')
+        flash('Compte administrateur créé avec succès. Veuillez configurer les variables d\'environnement.', 'success')
         return redirect(url_for('setupenv'))  # Redirect to the setupenv route
 
     return render_template('setupadmin.html')
@@ -1455,7 +1455,7 @@ def setup():
 def setupenv():
     referer = request.headers.get('Referer')
     if not referer or '/setupadmin' not in referer:
-        flash('You must access this page from the setupadmin route.', 'error')
+        flash('Vous devez accéder à cette page à partir de la page setupadmin.', 'error')
         return redirect(url_for('login'))  # Redirect to login if not accessed correctly
 
     if request.method == 'POST':
@@ -1481,7 +1481,7 @@ def setupenv():
         for key, value in env_variables.items():
             set_key(".env", key, value)
 
-        flash('Environment variables saved successfully!', 'success')
+        flash('Variables d\'environnement enregistrées avec succès !', 'success')
         return redirect(url_for('index'))
 
     # Render the setup environment page
@@ -1508,7 +1508,7 @@ def setup_oidc():
         # Check for missing fields
         missing_fields = [key for key, value in oidc_env_variables.items() if not value]
         if missing_fields:
-            flash(f"Missing required fields: {', '.join(missing_fields)}", 'danger')
+            flash(f"Champs obligatoires manquants :  {', '.join(missing_fields)}", 'danger')
             return render_template('setup_oidc.html', current_values=oidc_env_variables)
 
         try:
@@ -1516,10 +1516,10 @@ def setup_oidc():
             for key, value in oidc_env_variables.items():
                 set_key(dotenv_path, key, value)
 
-            flash('OIDC settings saved successfully!', 'success')
+            flash('Paramètres OIDC enregistrés avec succès !', 'success')
             return redirect(url_for('setup_oidc'))  # Redirect to home page after saving
         except Exception as e:
-            flash(f"Error saving OIDC settings: {e}", "danger")
+            flash(f"Erreur lors de l\'enregistrement des paramètres OIDC : {e}", "danger")
             return render_template('setup_oidc.html', current_values=oidc_env_variables)
 
     # For GET requests, load the current values of OIDC-related environment variables
@@ -1527,7 +1527,7 @@ def setup_oidc():
         # Load the .env file directly using the path
         load_dotenv(dotenv_path, override=True)
     except FileNotFoundError:
-        flash("Environment file not found. Creating a new one.", "warning")
+        flash("Fichier d\'environnement introuvable. Créer un nouveau.", "warning")
     
     current_values = {
         "OIDC_CLIENT_ID": os.getenv("OIDC_CLIENT_ID", ''),
@@ -1572,7 +1572,7 @@ def manage_groups():
             # Save updated user data after adding the group using the helper function
             save_users(users)
 
-            flash('New group added successfully!', 'success')
+            flash('Nouveau groupe ajouté avec succès !', 'success')
             return redirect(url_for('manage_groups'))
 
     return render_template('manage_groups.html', users=users, groups=groups)
@@ -1599,7 +1599,7 @@ def update_group_assignments():
     # Save updated user data after assignments using the helper function
     save_users(users)
 
-    flash('Group assignments updated successfully!', 'success')
+    flash('Assignations des groupes mis à jour avec succès !', 'success')
     return redirect(url_for('manage_groups'))
 
 # Families 
@@ -1766,7 +1766,7 @@ def manage_guest_users():
         
         users.append(new_guest)
         save_users(users)
-        flash('Guest user created successfully!', 'success')
+        flash('Utilisateur invité créé avec succès !', 'success')
         return redirect(url_for('manage_guest_users'))
     
     # Get all available groups and users for the form
@@ -1825,9 +1825,9 @@ def delete_guest_user(username):
         save_users(users)
         save_gift_ideas(updated_gift_ideas)
         
-        flash(f'Guest user {username} deleted successfully! All private groups removed and {deleted_count} purchased gift ideas deleted.', 'success')
+        flash(f'L\'utilisateur invité {username} a été supprimé avec succès ! Tous les groupes privés supprimés et {deleted_count} idées cadeaux achetées ont été supprimés.', 'success')
     else:
-        flash('Guest user not found.', 'danger')
+        flash('Utilisateur invité introuvable.', 'danger')
     
     return redirect(url_for('manage_guest_users'))
 
@@ -1842,10 +1842,10 @@ def guest_login():
     for user in users:
         if user.get('guest') and verify_password(user['password'], password):
             session['username'] = user['username']
-            flash('Guest login successful!', 'login_success')
+            flash('Connexion d\'invité réussie!', 'login_success')
             return redirect(url_for('dashboard'))
     
-    flash('Invalid guest password', 'login_error')
+    flash('Mot de passe d\'invité invalide', 'login_error')
     return redirect(url_for('login'))
 
 def get_visible_groups(users):
@@ -1867,7 +1867,7 @@ def update_currency_settings():
     set_key(".env", "CURRENCY_SYMBOL", symbol)
     set_key(".env", "CURRENCY_POSITION", position)
     
-    flash('Currency settings updated! Please restart to see changes', 'success')
+    flash('Paramètres des devises mis à jour ! Veuillez redémarrer pour voir les changements', 'success')
     return redirect(url_for('setup_advanced'))
 
 if __name__ == "__main__":

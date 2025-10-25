@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
-    <title>Login</title>
+    <title>Connexion</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -187,7 +187,7 @@
 <body>
     <!-- Regular Login Form -->
     <form method="post" action="/login" id="regular-login">
-        <h1>Login</h1>
+        <h1>Connexion</h1>
         <div class="info-box">
             {{ login_message }}
         </div>
@@ -205,36 +205,36 @@
         {% endwith %}
 
         <!-- Your form fields here -->
-        <label for="username">Username</label>
+        <label for="username">Nom d'utilisateur</label>
         <input type="text" id="username" name="username"  style="font-size: 17px;" required>
-        <label for="password">Password</label>
+        <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" style="font-size: 17px;" required>
-        <input type="submit" value="SIGN IN">
+        <input type="submit" value="S'identifier">
         {% if guests_exist %}
-        <div class="separator">or</div>
+        <div class="separator">ou</div>
         
         <!-- Guest Login Button -->
         
         <button type="button" class="guest-login" onclick="showGuestLogin()">
-            I have a guest password
+            J'ai un mot de passe d'invité
         </button>
         {% endif %}
         
         <!-- Display OIDC Login Button if enabled -->
         {% if oidc_enabled %}
             <a href="{{ url_for('login_oidc') }}">
-                <button type="button" class="oidc-login">Login with OIDC</button>
+                <button type="button" class="oidc-login">Connexion avec OIDC</button>
             </a>
         {% endif %}
         
-        <p>Contact the administrator to reset your password.</p>
+        <p>Contactez l'administrateur pour réinitialiser votre mot de passe.</p>
     </form>
 
     <!-- Guest Login Form (Initially Hidden) -->
     <form method="post" action="/guest_login" id="guest-login" style="display: none;">
-        <h1>Guest Login</h1>
+        <h1>Connexion d'invité</h1>
         <div class="info-box">
-            Enter your guest password to access limited features
+            Entrez votre mot de passe invité pour accéder à des fonctionnalités limitées
         </div>
         <!-- Displaying flashed messages for guest login -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -249,17 +249,16 @@
             {% endif %}
         {% endwith %}
 
-        <label for="guest_password">Guest Password</label>
-        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required 
-               placeholder="Enter guest password">
+        <label for="guest_password">Mot de passe invité</label>
+        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required placeholder="Entrez le mot de passe invité">
         
-        <input type="submit" value="LOGIN AS GUEST" style="background-color: #28a745;">
+        <input type="submit" value="Se connecter en tant qu'invité" style="background-color: #28a745;">
         
         <button type="button" class="secondary-button" onclick="showRegularLogin()">
-            Back to regular login
+            Retour à la connexion régulière
         </button>
         
-        <p>Contact the administrator for guest access.</p>
+        <p>Contactez l'administrateur pour obtenir l'accès invité.</p>
     </form>
 
     <script>
