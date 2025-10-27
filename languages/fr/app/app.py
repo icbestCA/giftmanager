@@ -357,6 +357,11 @@ def login():
     guests_exist_flag = guests_exist()
     enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
 
+
+    # For GET requests, render the login page
+    oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
+    oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
+    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "No account? Contact a family member to create an account."
     # If default login is disabled, render an OIDC-only login page
     if not enable_default_login:
         return render_template("oidc_only.html", guests_exist=guests_exist_flag)
@@ -379,17 +384,14 @@ def login():
                         return redirect(url_for('dashboard'))
                     else:
                         flash('Mauvais mot de passe', 'login_error')
-                        return render_template('login.html')
+                        return render_template('login.html', oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
 
             # No matching username found
             flash('L\'utilisateur n\'existe pas', 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
             flash(f"Erreur lors de la lecture de users.json : {e}", 'login_error')
             
-    # For GET requests, render the login page
-    oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
-    oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
-    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "Pas de compte ? Contactez un membre de la famille pour créer un compte."
+    
     return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
 
 def guests_exist():
@@ -421,6 +423,7 @@ def add2():
         user_list = [
             {"full_name": user["full_name"], "username": user["username"]}
             for user in users
+            if not user.get('guest')
         ]
     else:
         # Filter the user list to include only those in the current user's groups
@@ -428,6 +431,7 @@ def add2():
             {"full_name": user["full_name"], "username": user["username"]}
             for user in users
             if not user.get("groups") or any(group in user.get("groups", []) for group in current_user_groups)
+            and not user.get('guest')
         ]
 
     if request.method == 'POST':
@@ -496,6 +500,7 @@ def add_idea(selected_user_id):
         user_list = [
             {"full_name": user["full_name"], "username": user["username"]}
             for user in users
+            if not user.get('guest')
         ]
     else:
         # Filter the user list to include only those in the current user's groups
@@ -503,6 +508,7 @@ def add_idea(selected_user_id):
             {"full_name": user["full_name"], "username": user["username"]}
             for user in users
             if not user.get("groups") or any(group in user.get("groups", []) for group in current_user_groups)
+            and not user.get('guest')
         ]
 
     if request.method == 'POST':
@@ -707,7 +713,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.4.1"
+    app_version = "v2.4.2"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
