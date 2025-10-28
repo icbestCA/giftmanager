@@ -159,6 +159,23 @@
             background-color: #545b62; /* Darker shade on hover */
         }
 
+        .register-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #17a2b8; /* Teal button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-button:hover {
+            background-color: #138496; /* Darker shade on hover */
+        }
+
+
         .separator {
             color: #fff;
             margin: 15px 0;
@@ -210,6 +227,18 @@
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" style="font-size: 17px;" required>
         <input type="submit" value="S'identifier">
+
+        {% if enable_self_registration %}
+        <div class="separator">ou</div>
+        
+        <!-- Registration Button -->
+        <a href="{{ url_for('register') }}">
+            <button type="button" class="register-button">
+                Créer un nouveau compte
+            </button>
+        </a>
+        {% endif %}
+
         {% if guests_exist %}
         <div class="separator">ou</div>
         

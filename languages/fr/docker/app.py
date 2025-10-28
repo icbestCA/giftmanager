@@ -446,7 +446,7 @@ def login():
                         return redirect(url_for('dashboard'))
                     else:
                         flash('Mauvais mot de passe', 'login_error')
-                        return render_template('login.html', oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
+                        return render_template('login.html', oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag, enable_self_registration=enable_self_registration)
 
             # No matching username found
             flash('L\'utilisateur n\'existe pas', 'login_error')
@@ -454,12 +454,87 @@ def login():
             flash(f"Erreur lors de la lecture de users.json : {e}", 'login_error')
             
     
-    return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag)
+    return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag, enable_self_registration=enable_self_registration)
 
 def guests_exist():
     """Check if any guest users exist in the system"""
     users = load_users()
     return any(user.get('guest') for user in users)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Self-registration page for new users"""
+    # Check if self-registration is enabled
+    if not os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true':
+        flash('L\'auto-inscription n\'est pas activée. Veuillez contacter un administrateur.', 'danger')
+        return redirect(url_for('login'))
+    
+    # Get joining code for template
+    joining_code = os.getenv('JOINING_CODE', '')
+    
+    if request.method == 'POST':
+        # Get form data
+        username = request.form['username'].lower().strip()
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        full_name = request.form['full_name'].strip()
+        email = request.form.get('email', '').strip()
+        birthday = request.form.get('birthday', '')
+        avatar = request.form.get('avatar', 'icons/avatar1.png')
+        submitted_joining_code = request.form.get('joining_code', '')
+        
+        # Validate joining code if one is set in environment
+        if joining_code and submitted_joining_code != joining_code:
+            flash('Code d\'inscription invalide. Veuillez vérifier auprès de votre famille.', 'danger')
+            return render_template('register.html', joining_code=joining_code)
+        
+        # Validate required input
+        if not username or not password or not full_name:
+            flash('Veuillez remplir tous les champs obligatoires.', 'danger')
+            return render_template('register.html', joining_code=joining_code)
+        
+        if password != confirm_password:
+            flash('Les mots de passe ne correspondent pas.', 'danger')
+            return render_template('register.html', joining_code=joining_code)
+        
+        # No password complexity requirements
+        
+        # Load existing users
+        users = load_users()
+        
+        # Check for duplicate username
+        if any(user['username'].lower() == username for user in users):
+            flash('Ce nom d\'utilisateur existe déjà. Veuillez en choisir un autre.', 'danger')
+            return render_template('register.html', joining_code=joining_code)
+        
+        # Check for duplicate email only if email is provided
+        if email and any(user.get('email', '').lower() == email.lower() for user in users):
+            flash('E-mail déjà enregistré. Veuillez utiliser un autre e-mail ou contacter le support.', 'danger')
+            return render_template('register.html', joining_code=joining_code)
+        
+        # Create new user
+        new_user = {
+            "username": username,
+            "password": password_hash(password),
+            "full_name": full_name,
+            "email": email,  # Can be empty
+            "birthday": birthday,  # Can be empty
+            "avatar": avatar,
+            "admin": False,
+            "guest": False,
+            "groups": []  # New users start with no groups by default
+        }
+        
+        # Add user to database
+        users.append(new_user)
+        save_users(users)
+        
+        flash('Inscription réussie! Vous pouvez maintenant vous connecter.', 'success')
+        return redirect(url_for('login'))
+    
+    # GET request - show registration form
+    return render_template('register.html', joining_code=joining_code)
+
 
 @app.route('/add2/', methods=['GET', 'POST'])
 @login_required
@@ -782,7 +857,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.4.2"
+    app_version = "v2.4.3"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1703,8 +1778,11 @@ def setup_advanced():
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()
     current_currency_position = get_currency_position()
+    enable_self_registration = os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true'
+    joining_code = os.getenv('JOINING_CODE', '')
     return render_template('advanced.html', current_ID=current_ID, current_reorder=current_reorder, images=images, current_currency_symbol=current_currency_symbol,
-                         current_currency_position=current_currency_position)
+                         current_currency_position=current_currency_position, enable_self_registration=enable_self_registration,
+                         joining_code=joining_code)
 
 # Route to update CONTAINER_ID (POST request)
 @app.route('/update_containerid', methods=['POST'])
@@ -1959,6 +2037,19 @@ def update_currency_settings():
     set_key(dotenv_path, "CURRENCY_POSITION", position)
     
     flash('Paramètres des devises mis à jour ! Veuillez redémarrer pour voir les changements', 'success')
+    return redirect(url_for('setup_advanced'))
+
+@app.route('/update_self_registration_settings', methods=['POST'])
+@admin_required
+def update_self_registration_settings():
+    """Update self-registration settings"""
+    enable_self_registration = request.form.get('enable_self_registration', 'false')
+    joining_code = request.form.get('joining_code', '')
+    
+    set_key(dotenv_path, "ENABLE_SELF_REGISTRATION", enable_self_registration)
+    set_key(dotenv_path, "JOINING_CODE", joining_code)
+    
+    flash('Paramètres d\'auto-inscription mis à jour avec succès!', 'success')
     return redirect(url_for('setup_advanced'))
 
 if __name__ == "__main__":

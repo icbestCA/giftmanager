@@ -412,6 +412,48 @@
                             </div>
                         </div>
                     </form>
+                    <div class="my-6 border-t border-gray-300"></div>
+
+                    <!-- Self-Registration Settings Section -->
+                    <form method="post" action="{{ url_for('update_self_registration_settings') }}">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Paramètres d'auto-inscription</h3>
+                            
+                            <!-- Enable Self Registration -->
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="enable_self_registration" value="actif" 
+                                        class="mr-2" {{ 'checked' if enable_self_registration }}>
+                                    <span class="font-medium">Activer l'auto-inscription</span>
+                                </label>
+                                <p class="text-sm text-gray-500 mt-1 ml-6">Permettre aux nouveaux utilisateurs de créer leurs propres comptes</p>
+                            </div>
+
+                            <!-- Joining Code -->
+                            <div class="mb-4 ml-6">
+                                <label for="joining_code" class="block sec-text font-medium mb-2">
+                                    Code d'inscription (facultatif)
+                                </label>
+                                <input type="text" 
+                                    id="joining_code" 
+                                    name="joining_code" 
+                                    value="{{ joining_code }}"
+                                    class="w-full px-3 py-2 border rounded-md inputer"
+                                    placeholder="Laisser vide pour permettre à tout le monde de s'inscrire">
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Si défini, les utilisateurs doivent fournir ce code pour s'inscrire. Laisser vide pour une inscription ouverte.
+                                </p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
+                                    Enregistrer les paramètres d'inscription
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </main>
         </div>
