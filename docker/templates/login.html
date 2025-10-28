@@ -158,6 +158,23 @@
         .secondary-button:hover {
             background-color: #545b62; /* Darker shade on hover */
         }
+        
+        .register-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #17a2b8; /* Teal button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-button:hover {
+            background-color: #138496; /* Darker shade on hover */
+        }
+
 
         .separator {
             color: #fff;
@@ -210,6 +227,18 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" style="font-size: 17px;" required>
         <input type="submit" value="SIGN IN">
+
+        {% if enable_self_registration %}
+        <div class="separator">or</div>
+        
+        <!-- Registration Button -->
+        <a href="{{ url_for('register') }}">
+            <button type="button" class="register-button">
+                Create New Account
+            </button>
+        </a>
+        {% endif %}
+
         {% if guests_exist %}
         <div class="separator">or</div>
         
@@ -220,12 +249,12 @@
         </button>
         {% endif %}
         
-                <!-- Display OIDC Login Button if enabled -->
-                {% if oidc_enabled %}
-                <a href="{{ url_for('login_oidc') }}">
-                    <button type="button" class="oidc-login">Login with OIDC</button>
-                </a>
-            {% endif %}
+        <!-- Display OIDC Login Button if enabled -->
+        {% if oidc_enabled %}
+            <a href="{{ url_for('login_oidc') }}">
+                <button type="button" class="oidc-login">Login with OIDC</button>
+            </a>
+        {% endif %}
         
         <p>Contact the administrator to reset your password.</p>
     </form>
@@ -275,16 +304,16 @@
 
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
