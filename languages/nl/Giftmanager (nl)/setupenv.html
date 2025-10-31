@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omgeving setup</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body class="text-gray-900 font-sans">
+    <div class="container mx-auto p-8">
+        <h1 class="text-2xl font-semibold mb-4">Omgevingsvariabele Setup</h1>
+
+        <form action="{{ url_for('setupenv') }}" method="POST">
+            <div class="mb-4">
+                <label for="MAILJET_API_KEY" class="block text-gray-700 font-bold">Mailjet API Key:</label>
+                <input type="text" name="MAILJET_API_KEY" id="MAILJET_API_KEY" class="border rounded py-2 px-3 w-full" placeholder="Mailjet API Key">
+            </div>
+
+            <div class="mb-4">
+                <0>Mailjet API Secret:</0>
+                <input type="text" name="MAILJET_API_SECRET" id="MAILJET_API_SECRET" class="border rounded py-2 px-3 w-full" placeholder="Mailjet API wachtwoord">
+            </div>
+
+            <div class="mb-4">
+                <label for="SYSTEM_EMAIL" class="block text-gray-700 font-bold">Systeem E-mail:</label>
+                <input type="email" name="SYSTEM_EMAIL" id="SYSTEM_EMAIL" class="border rounded py-2 px-3 w-full" placeholder="Systeem E-mail">
+            </div>
+
+            <div class="mb-4">
+                <label for="DELETE_DAYS" class="block text-gray-700 font-bold">Verwijderen dagen:</label>
+                <input type="number" name="DELETE_DAYS" id="DELETE_DAYS" class="border rounded py-2 px-3 w-full" placeholder="Standaard: 30" value="{{ DELETE_DAYS }}">
+            </div>            
+
+            <div class="mb-4">
+                <label for="OIDC_CLIENT_ID" class="block text-gray-700 font-bold">OIDC Client ID:</label>
+                <input type="text" name="OIDC_CLIENT_ID" id="OIDC_CLIENT_ID" class="border rounded py-2 px-3 w-full" placeholder="OIDC Client ID">
+            </div>
+
+            <div class="mb-4">
+                <label for="OIDC_CLIENT_SECRET" class="block text-gray-700 font-bold">OIDC Client Secret:</label>
+                <input type="text" name="OIDC_CLIENT_SECRET" id="OIDC_CLIENT_SECRET" class="border rounded py-2 px-3 w-full" placeholder="OIDC Client Secret">
+            </div>
+
+            <div class="mb-4">
+                <label for="OIDC_SERVER_METADATA_URL" class="block text-gray-700 font-bold">OIDC Server Metadata URL:</label>
+                <input type="url" name="OIDC_SERVER_METADATA_URL" id="OIDC_SERVER_METADATA_URL" class="border rounded py-2 px-3 w-full" placeholder="OIDC Server metadata URL">
+            </div>
+
+            <div class="mb-4">
+                <label for="OIDC_LOGOUT_URL" class="block text-gray-700 font-bold">OIDC Logout URL:</label>
+                <input type="url" name="OIDC_LOGOUT_URL" id="OIDC_LOGOUT_URL" class="border rounded py-2 px-3 w-full" placeholder="OIDC Logout URL">
+            </div>
+
+            <div class="mb-4">
+                <0>Primaire OIDC veld:</0>
+                <input type="text" name="PRIMARY_OIDC_FIELD" id="PRIMARY_OIDC_FIELD" class="border rounded py-2 px-3 w-full" value="e-mail" placeholder="Standaard: e-mail">
+            </div>
+
+            <div class="mb-4">
+                <label for="SECONDARY_OIDC_FIELD" class="block text-gray-700 font-bold">Secundaire OIDC veld:</label>
+                <input type="text" name="SECONDARY_OIDC_FIELD" id="SECONDARY_OIDC_FIELD" class="border rounded py-2 px-3 w-full" value="preferred_username" placeholder="Standaard: preferred_username">
+            </div>
+
+            <div class="mb-4">
+                <label for="PRIMARY_DB_FIELD" class="block text-gray-700 font-bold">Primaire DB veld:</label>
+                <input type="text" name="PRIMARY_DB_FIELD" id="PRIMARY_DB_FIELD" class="border rounded py-2 px-3 w-full" value="e-mail" placeholder="Default: email">
+            </div>
+
+            <div class="mb-4">
+                <0>Secundaire DB Veld:</0>
+                <input type="text" name="SECONDARY_DB_FIELD" id="SECONDARY_DB_FIELD" class="border rounded py-2 px-3 w-full" value="gebruikersnaam" placeholder="Standaard: gebruikersnaam">
+            </div>
+
+            <div class="mb-4">
+                <label for="ENABLE_AUTO_REGISTRATION" class="block text-gray-700 font-bold">Automatische registratie inschakelen:</label>
+                <select name="ENABLE_AUTO_REGISTRATION" id="ENABLE_AUTO_REGISTRATION" class="border rounded py-2 px-3 w-full">
+                    <option value="true">Ja</option>
+                    <option value="false" selected>Nee</option>
+                </select>
+            </div>
+            
+
+            <div class="mb-4">
+                <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mr-2">Instellingen opslaan</button>
+                <a href="{{ url_for('index') }}" class="bg-gray-500 text-white px-3 py-2 rounded">Sla nu over</a>
+                <p class="text-sm text-gray-600 mt-2">Je kan deze instellingen later instellen in de parameters sectie.</p>
+            </div>
+        </form>
+    </div>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+    </script>
+</body>
+</html>

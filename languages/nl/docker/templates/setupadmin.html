@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beheerder instellingen</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body class="text-gray-900 font-sans">
+    <div class="container mx-auto p-8">
+        <h1 class="text-2xl font-semibold mb-4">Beheerder instellingen</h1>
+        <form action="{{ url_for('setup') }}" method="post">
+            <div class="mb-4">
+                <label for="admin_username" class="block text-gray-700 font-bold">Gebruikersnaam voor inloggen:</label>
+                <input type="text" name="admin_username" id="admin_username" class="border rounded py-2 px-3 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="admin_password" class="block text-gray-700 font-bold">Wachtwoord:</label>
+                <input type="password" name="admin_password" id="admin_password" class="border rounded py-2 px-3 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="admin_email" class="block text-gray-700 font-bold">Email:</label>
+                <input type="email" name="admin_email" id="admin_email" class="border rounded py-2 px-3 w-full">
+            </div>
+            <div class="mb-4">
+                <label for="full_name" class="block text-gray-700 font-bold">Volledige naam:</label>
+                <input type="text" name="full_name" id="full_name" class="border rounded py-2 px-3 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="birthday" class="block text-gray-700 font-bold"> Geboortedatum:</label>
+                <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full" required>
+            </div>
+            <div class="mb-4">
+                <label for="avatar" class="block text-gray-700 font-bold">Avatar:</label>
+                <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full" required>
+                    <option value="icons/avatar1.png">Avatar 1</option>
+                    <option value="icons/avatar2.png">Avatar 2</option>
+                    <option value="icons/avatar3.png">Avatar 3</option>
+                    <option value="icons/avatar4.png">Avatar 4</option>
+                    <option value="icons/avatar5.png">Avatar 5</option>
+                    <option value="icons/avatar6.png">Avatar 6</option>
+                </select>
+                <h3>Avatar 1</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar1.png') }}"width="50" height="50">
+                <h3>Avatar 2</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar2.png') }}"width="50" height="50">
+                <h3>Avatar 3</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar3.png') }}"width="50" height="50">
+                <h3>Avatar 4</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar4.png') }}"width="50" height="50">
+                <h3>Avatar 5</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar5.png') }}"width="50" height="50">
+                <h3>Avatar 6</h3>
+                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar6.png') }}"width="50" height="50">
+            </div>
+
+            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Beheerdersaccount aanmaken</button>
+        </div>
+        </form>
+    </div>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+    </script>
+</body>
+</html>
