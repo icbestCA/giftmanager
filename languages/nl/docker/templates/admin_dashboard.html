@@ -253,7 +253,7 @@
                         <h4 class="text-xl font-medium mb-3" style="color: var(--text-color);">Container beheer</h4>
                         <p class="sec-text mb-4">Klik op de knop hieronder als u de container om welke reden dan ook opnieuw wilt herstarten.</p>
                         
-                        <form method="POST" action="{{ url_for('dashboard') }}">
+                        <form method="POST" action="{{ url_for('restart_container') }}">
                             <div class="flex justify-start">
                                 <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 transition ease-in-out duration-200">
                                     Herstart Container
