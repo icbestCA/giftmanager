@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <title>Inloggning</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: url('./static/images/bg.jpg'); /* Replace with actual image path */
+            background-size: cover;
+            background-position: center;
+        }
+
+        form {
+            background-color: rgba(97, 97, 97, 0.836); /* Semi-transparent background */
+            padding: 20px; /* Padding inside the form */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            width: 320px;
+            text-align: center;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+        }
+
+        h1 {
+            color: #fff; /* White text for the title */
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .info-box {
+            background-color: #d0f0ff; /* Light blue box */
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            color: #000; /* Black text */
+        }
+
+        label {
+            display: block;
+            color: #fff; /* White labels */
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px; /* Rounded input fields */
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly opaque */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box; /* Ensures padding is included in the width */
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #f7b89a; /* Light orange button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffae82; /* Darker shade on hover */
+        }
+
+        p {
+            color: #fff; /* White text for the footer */
+            margin-top: 10px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        .info-box {
+            background-color: #d0f0ff; /* Light blue box */
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            color: #000; /* Black text */
+        }
+        .oidc-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff; /* Blue button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .oidc-login:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+        .guest-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Green button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .guest-login:hover {
+            background-color: #218838; /* Darker shade on hover */
+        }
+
+        .secondary-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #6c757d; /* Gray button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .secondary-button:hover {
+            background-color: #545b62; /* Darker shade on hover */
+        }
+        
+        .register-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #17a2b8; /* Teal button */
+            border: none;
+            border-radius: 20px; /* Fully rounded button */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-button:hover {
+            background-color: #138496; /* Darker shade on hover */
+        }
+
+
+        .separator {
+            color: #fff;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #fff;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Regular Login Form -->
+    <form method="post" action="/login" id="regular-login">
+        <h1>Inloggning</h1>
+        <div class="info-box">
+            {{ login_message }}
+        </div>
+        <!-- Displaying flashed messages for the login route only -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category.startswith('login') %}  <!-- Show only login-related messages -->
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }}">
+                    {{ message }}
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Your form fields here -->
+        <label for="username">Användarnamn</label>
+        <input type="text" id="username" name="username"  style="font-size: 17px;" required>
+        <label for="password">Lösenord</label>
+        <input type="password" id="password" name="password" style="font-size: 17px;" required>
+        <input type="submit" value="Logga in">
+
+        {% if enable_self_registration %}
+        <div class="separator">eller</div>
+        
+        <!-- Registration Button -->
+        <a href="{{ url_for('register') }}">
+            <button type="button" class="register-button">
+                Skapa nytt konto
+            </button>
+        </a>
+        {% endif %}
+
+        {% if guests_exist %}
+        <div class="separator">eller</div>
+        
+        <!-- Guest Login Button -->
+        
+        <button type="button" class="guest-login" onclick="showGuestLogin()">
+            Jag har ett gästlösenord
+        </button>
+        {% endif %}
+        
+        <!-- Display OIDC Login Button if enabled -->
+        {% if oidc_enabled %}
+            <a href="{{ url_for('login_oidc') }}">
+                <button type="button" class="oidc-login">Logga in med OIDC</button>
+            </a>
+        {% endif %}
+        
+        <p>Kontakta administratören för att återställa ditt lösenord.</p>
+    </form>
+
+    <!-- Guest Login Form (Initially Hidden) -->
+    <form method="post" action="/guest_login" id="guest-login" style="display: none;">
+        <h1>Gäst inloggning</h1>
+        <div class="info-box">
+            Ange ditt gästlösenord för att få tillgång till begränsade funktioner
+        </div>
+        <!-- Displaying flashed messages for guest login -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {% if category.startswith('login') %}
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }}">
+                    {{ message }}
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <label for="guest_password">Gäst lösenord</label>
+        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required
+                placeholder="Ange gästlösenord">
+        
+        <input type="submit" value="LOGGA IN SOM GÄST" style="background-color: #28a745;">
+        
+        <button type="button" class="secondary-button" onclick="showRegularLogin()">
+            Tillbaka till vanlig inloggning
+        </button>
+        
+        <p>Kontakta administratören för att få tillgång som gäst.</p>
+    </form>
+
+    <script>
+        function showGuestLogin() {
+            document.getElementById('regular-login').style.display = 'none';
+            document.getElementById('guest-login').style.display = 'block';
+        }
+
+        function showRegularLogin() {
+            document.getElementById('guest-login').style.display = 'none';
+            document.getElementById('regular-login').style.display = 'block';
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

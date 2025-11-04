@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redigera inloggningsmeddelande</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+        
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+        
+        .inputer{
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+        }
+        
+        .sidebar {
+            overflow-y: scroll;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Mobile sidebar styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 50;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: var(--overlay-bg-color);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+            
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        
+        /* Menu toggle styles */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Menu item icons */
+        .sidebar a i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+        }
+    </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body class="font-sans">
+    <div class="flex h-screen">
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
+            <div class="px-6 py-4">
+                <a href="/admin" class="text-2xl font-semibold">
+                    Admin Översikt
+                </a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-6">
+                <!-- Group 1 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Hantering</h2>
+                    <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-users"></i> Användare
+                    </a>
+                    <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-gift"></i> Hemlig Tomte
+                    </a>
+                    <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-plus"></i> Lägg till användare
+                    </a>
+                    <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-people-group"></i> Familjer
+                    </a>
+                    <a href="{{ url_for('manage_guest_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-clock"></i> Gästanvändare
+                    </a>
+                </div>
+                <!-- Group 2 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Konfiguration & Underhåll</h2>
+                    <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-trash"></i> Radera skript
+                    </a>
+                    <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-envelope"></i> E-post inställningar
+                    </a>
+                    <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Inloggningsinställningar
+                    </a>
+                    <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-shield-halved"></i> OIDC inställningar
+                    </a>
+                    <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Avancerat
+                    </a>
+                    
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <header class="header shadow p-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold">Redigera inloggningsmeddelande</h2>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">Till Översikt</a>
+                </div>
+            </header>
+
+            <main class="p-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl mx-auto section">
+                    <h3 class="text-2xl font-semibold text-center mb-6">Redigera inloggningsmeddelande</h3>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                                <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} mb-4 p-4 rounded text-white
+                                    {{ 'bg-green-500' if 'success' in category else 'bg-red-500' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="post">
+                        <textarea name="login_message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4 resize-none inputer">{{ current_message }}</textarea>
+                        
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                            Uppdatera meddelande
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.classList.toggle('no-scroll');
+            }
+            
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when a navigation link is clicked (on mobile)
+            const navLinks = document.querySelectorAll('.sidebar a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

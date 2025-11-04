@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrera dig - Presenthanterare</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+        .inputer{
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+        }
+    </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body class="font-sans">
+    <header class="header p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">
+                Tillbaka
+            </button>
+        </nav>
+    </header>
+    <main class="main container mx-auto p-8">
+        <div class="section shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">Registrera dig</h1>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="mb-4">
+                    <label for="username" class="block sec-text font-bold">Användarnamn för inloggning:</label>
+                    <input type="text" name="username" id="username" class="border rounded py-2 px-3 w-full inputer" required>
+                </div>
+                <div class="mb-4">
+                    <label for="full_name" class="block sec-text font-bold">Fullständigt namn:</label>
+                    <input type="text" name="full_name" id="full_name" class="border rounded py-2 px-3 w-full inputer" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block sec-text font-bold">Lösenord:</label>
+                    <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full inputer" required>
+                </div>
+                <div class="mb-4">
+                    <label for="confirm_password" class="block sec-text font-bold">Bekräfta lösenord:</label>
+                    <input type="password" name="confirm_password" id="confirm_password" class="border rounded py-2 px-3 w-full inputer" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block sec-text font-bold">E-post (valfritt):</label>
+                    <input type="email" name="email" id="email" class="border rounded py-2 px-3 w-full inputer">
+                </div>
+                <div class="mb-4">
+                    <label for="birthday" class="block sec-text font-bold">Födelsedag (valfritt):</label>
+                    <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full inputer">
+                </div>
+
+                {% if joining_code %}
+                <div class="mb-4">
+                    <label for="joining_code" class="block sec-text font-bold">Anslut till kod:</label>
+                    <input type="text" name="joining_code" id="joining_code" class="border rounded py-2 px-3 w-full inputer" required>
+                    <p class="text-sm sec-text mt-1">Be din familj om en anslutningskod</p>
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <label for="avatar" class="block sec-text font-bold">Avatar:</label>
+                    <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full inputer" required>
+                        <option value="icons/avatar1.png">Avatar 1</option>
+                        <option value="icons/avatar2.png">Avatar 2</option>
+                        <option value="icons/avatar3.png">Avatar 3</option>
+                        <option value="icons/avatar4.png">Avatar 4</option>
+                        <option value="icons/avatar5.png">Avatar 5</option>
+                        <option value="icons/avatar6.png">Avatar 6</option>
+                    </select>
+                    
+                    <div class="mt-4">
+                        <h3 class="sec-text font-bold mb-2">Förhandsgranska Avatar:</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 1</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar1.png') }}" width="50" height="50">
+                            </div>
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 2</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar2.png') }}" width="50" height="50">
+                            </div>
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 3</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar3.png') }}" width="50" height="50">
+                            </div>
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 4</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar4.png') }}" width="50" height="50">
+                            </div>
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 5</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar5.png') }}" width="50" height="50">
+                            </div>
+                            <div class="text-center">
+                                <h4 class="sec-text">Avatar 6</h4>
+                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar6.png') }}" width="50" height="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Registrera dig</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', () => {
+            window.location.href = '{{ url_for("login") }}';
+        });
+
+        // Password confirmation validation
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password');
+            const confirmPassword = this;
+            
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Passwords do not match');
+            } else {
+                confirmPassword.setCustomValidity('');
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
