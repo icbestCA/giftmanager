@@ -192,11 +192,22 @@ oauth.register(
 
 @app.route('/login_oidc')
 def login_oidc():
-    redirect_uri = url_for("auth", _external=True)
+    # Determine the scheme from headers (in case behind reverse proxy)
+    forwarded_proto = request.headers.get('X-Forwarded-Proto', request.scheme)
+    scheme = forwarded_proto.split(',')[0].strip()  # Handle multi-value headers
+
+    # Generate external HTTPS redirect_uri manually
+    redirect_uri = url_for("auth", _external=True, _scheme=scheme)
+
+    # Create nonce and state
     nonce = secrets.token_urlsafe(16)
-    state = secrets.token_urlsafe(16)  # Generate a state token
+    state = secrets.token_urlsafe(16)
+
+    # Store in session
     session["nonce"] = nonce
-    session["state"] = state  # Store the state in the session
+    session["state"] = state
+
+    # Perform OIDC authorization redirect
     return oauth.keycloak.authorize_redirect(redirect_uri, nonce=nonce, state=state)
 
 @app.route("/auth")
@@ -789,7 +800,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.4.3"
+    app_version = "v2.4.4"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
