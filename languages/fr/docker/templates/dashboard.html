@@ -98,17 +98,20 @@
 
         .sidebar {
             position: fixed;
-            overflow-y: scroll;
+            overflow-y: auto;
             top: 0;
             left: 0;
             width: 250px;
-            height: 100%;
+            height: 100vh;
+            justify-content: space-between;
             background-color: var(--sidebar-bg-color);
             padding: 20px;
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
             z-index: 50;
-            bottom: 0;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar.open {
@@ -196,7 +199,9 @@
             background-color: #444;
             border: none;
             color: #fff;
-            padding: 10px 15px;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+            margin-top: 10px;
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
@@ -208,9 +213,89 @@
         font-size: 16px;
         }
         .version{
-            bottom: 20px;
-            position: absolute;
             color: var(--text-color);
+        }
+        
+        /* Dropdown styles */
+        .dropdown-container {
+            background-color: var(--card-bg-color);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-text-color);
+        }
+        
+        .dropdown-content {
+            margin-top: 12px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            max-height: 0;
+        }
+        
+        .dropdown-content.open {
+            max-height: 500px;
+        }
+        
+        .dropdown-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .dropdown-content label {
+            color: var(--primary-text-color);
+            font-size: 14px;
+        }
+        
+        .dropdown-content input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--card-border-color);
+            background-color: var(--input-bg-color);
+            color: var(--input-text-color);
+        }
+        
+        .dropdown-chevron {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .dropdown-chevron.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: px;
+            border-top: 1px solid var(--hr-border-color);
+        }
+        
+        .bottom-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            color: var(--secondary-text-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .bottom-item:hover {
+            color: var(--primary-text-color);
+        }
+        
+        .bottom-item img {
+            margin-right: 8px;
         }
     </style>
     <script>
@@ -237,9 +322,9 @@
     <div class="flex">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
             <h2 class="text-lg font-semibold mb-4 text-primary">Menu</h2>
-            <ul class="space-y-2">
-                <li>
+
                     <!-- Display Error Messages -->
                     {% if password_messages %}
                         <div class="alert alert-danger">
@@ -249,46 +334,72 @@
                         </div>
                     {% endif %}
 
-                    <h2 class="text-lg font-semibold mt-2 text-primary">Informations</h2>
+                <!-- User Info -->
+                <div class="dropdown-container">
+                    <h3 class="text-lg font-semibold text-primary mb-2">Informations</h3>
                     <p class="text-secondary">Nom: {{ profile_info['full_name'] }}</p>
                     <p class="text-secondary">Anniversaire: {{ profile_info['birthday'] }}</p>
-                    <br>
-                    {% if not profile_info.guest %}
-                    <!-- Password Change Form -->
-                    <h2><strong class="text-primary">Changer mot de passe</strong></h2>
-                    <form method="POST" action="/change_password">
-                        <label for="current_password" class="text-primary">Mot de passe actuel</label>
-                        <input type="password" name="current_password" class="inputer" required>
-                        <label for="new_password" class="text-primary">Nouveau mot de passe</label>
-                        <input type="password" name="new_password" class="inputer" required>
-                        <label for="confirm_password" class="text-primary">Répétez le nouveau mot de passe</label>
-                        <input type="password" name="confirm_password" class="inputer" required><br>
-                        <br>
-                        <input type="submit" value="Changer mot de passe" class="rounded-blue-button">
-                    </form>
-                </li>
-                <hr>
-                <li>
-                    <img src="{{ url_for('static', filename='icons/mail.svg') }}" alt="Email" class="helplogo">
-                    <form method="POST" action="/change_email">
-                        <label for="new_email" class="text-primary">Nouvel Email</label>
-                        <input type="email" name="new_email" class="inputer" required>
-                        <br><br>
-                        <input type="submit" value="Changer" class="rounded-blue-button">
-                    </form>
-                    <br>
-                </li>
-                {% endif %}
-                <a href="/logout" ><img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout"></a> <br>
-            </ul>
-            <button class="theme-toggle" onclick="toggleDarkMode()"><i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme</button>
-            <br> <br>
-            {% if profile_info['admin'] == true %}
-                <a href="/admin" class="text-secondary">Tableau de bord admin</a>
-            {% endif %}
-            <br> <br>
-            <p class="text-secondary">Giftmanager <br> {{app_version}}</p>
+                </div>
 
+                    {% if not profile_info.guest %}
+                <!-- Password Change Dropdown -->
+                <div class="dropdown-container">
+                    <div class="dropdown-header" onclick="toggleDropdown('passwordDropdown', 'passwordChevron')">
+                        <span>Changer le mot de passe</span>
+                        <i class="fa-solid fa-chevron-down dropdown-chevron" id="passwordChevron"></i>
+                    </div>
+                    <div class="dropdown-content" id="passwordDropdown">
+                    <form method="POST" action="/change_password">
+                            <label for="current_password">Mot de passe courant</label>
+                        <input type="password" name="current_password" class="inputer" required>
+                            
+                            <label for="new_password">Nouveau mot de passe</label>
+                        <input type="password" name="new_password" class="inputer" required>
+                            
+                            <label for="confirm_password">Répéter le mot de passe</label>
+                            <input type="password" name="confirm_password" class="inputer" required>
+                            
+                            <button type="submit" class="rounded-blue-button mt-2">Changer mot de passe</button>
+                    </form>
+                </div>
+                </div>
+
+                <!-- Email Change Dropdown -->
+                <div class="dropdown-container">
+                    <div class="dropdown-header" onclick="toggleDropdown('emailDropdown', 'emailChevron')">
+                        <span>Changer l'email</span>
+                        <i class="fa-solid fa-chevron-down dropdown-chevron" id="emailChevron"></i>
+                    </div>
+                    <div class="dropdown-content" id="emailDropdown">
+                    <form method="POST" action="/change_email">
+                            <label for="new_email">Nouveau Email</label>
+                        <input type="email" name="new_email" class="inputer" required>
+                            
+                            <button type="submit" class="rounded-blue-button mt-2">Changer l'email</button>
+                    </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Fixed bottom section -->
+            <div class="sidebar-bottom">
+                <a href="/logout" class="bottom-item">
+                    <span style="padding-right: 10px;">Déconnexion</span>
+                    <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Déconnexion">
+                    
+                </a>
+                
+                <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
+                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Thème
+                </button>
+                
+            {% if profile_info['admin'] == true %}
+                    <a href="/admin" class="bottom-item" style="padding-top: 10px;">Tableau de bord</a>
+            {% endif %}
+
+                <p class="text-secondary text-sm version mt-4">Giftmanager <br> {{app_version}}</p>
+            </div>
         </div>
 
         <!-- Overlay -->
@@ -367,6 +478,14 @@
             localStorage.setItem('sidebarState', 'closed');
         });
 
+        function toggleDropdown(dropdownId, chevronId) {
+            const dropdown = document.getElementById(dropdownId);
+            const chevron = document.getElementById(chevronId);
+            
+            dropdown.classList.toggle('open');
+            chevron.classList.toggle('rotated');
+        }
+
     function toggleDarkMode() {
         const htmlElement = document.documentElement;
         const currentTheme = htmlElement.getAttribute('data-theme');
@@ -397,6 +516,7 @@
         const theme = getThemeFromCookie();
         htmlElement.setAttribute('data-theme', theme);
     });
+        
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')

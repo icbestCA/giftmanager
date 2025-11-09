@@ -799,13 +799,13 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.4.4"
+    app_version = "v2.4.5"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
 
     # Get flash messages related to passwords
-    password_messages = [msg for msg in get_flashed_messages() if 'password' in msg.lower()]
+    password_messages = [msg for msg in get_flashed_messages() if 'password' in msg.lower() or 'email' in msg.lower()]
 
     # Render the dashboard page with the necessary context
     return render_template(
@@ -1263,8 +1263,9 @@ def admin_dashboard():
 @admin_required
 def manage_users():
 
-    # Load users from the JSON file using the pre-defined function
-    users = load_users()
+    # Load users and filter out guests immediately
+    users = [user for user in load_users() if not user.get('guest', False)]
+
 
     if request.method == 'POST':
         username = request.form.get('username')
