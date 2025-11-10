@@ -225,11 +225,11 @@
                     {% if gift_idea.bought_by %}
                     <p class="text-green-500">Gekauft von: {{ get_full_name(gift_idea.bought_by) }}</p>
                     {% if gift_idea.bought_by == session['username'] %}
-                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Kauf abbrechen</button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Ich möchte das nicht mehr schenken.</button>
                     {% endif %}
                     {% else %}
                     <strong>Verfügbare Geschenke</strong>
-                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Dieses Geschenk mir zuwesien</button>
+                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Ich möchte das schenken.</button>
                     {% endif %}
                 </li>
                 {% endfor %}
