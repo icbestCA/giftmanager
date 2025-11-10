@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geschenke Dashboard</title>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: white;
+            --card-bg-color: #f0f0f0;
+            --card-border-color: #ccc;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: #666;
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --input-bg-color: white;
+            --input-text-color: black;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --card-bg-color: #1e1e1e;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+            --input-bg-color: black;
+            --input-text-color: white;
+        }
+
+        .rounded-blue-button {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 20px;
+            padding: 4px 5px;
+            cursor: pointer;
+        }
+
+        .rounded-blue-button:hover {
+            background-color: var(--button-hover-bg-color);
+        }
+
+        .help {
+            cursor: pointer;
+        }
+
+        .user-card-button {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .user-card-button:hover {
+            background-color: var(--card-hover-bg-color);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        .sidebar {
+            position: fixed;
+            overflow-y: auto;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            justify-content: space-between;
+            background-color: var(--sidebar-bg-color);
+            padding: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-bg-color);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 40;
+        }
+
+        .overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--hr-border-color);
+            margin: 20px 0;
+        }
+
+        .alert-danger {
+            background-color: var(--alert-bg-color);
+            border-left: 5px solid var(--alert-border-color);
+            padding: 10px;
+            margin-bottom: 20px;
+            color: var(--alert-text-color);
+        }
+
+        .text-primary {
+            color: var(--primary-text-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-text-color);
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .helplogo {
+            width: 24px;
+            height: 24px;
+        }
+        .inputer{
+            color: var(--input-text-color);
+            background-color: var(--input-bg-color);
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+            /* Theme Button Styles */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #444;
+            border: none;
+            color: #fff;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+            /* Icon Styles */
+        .theme-toggle i {
+        margin-right: 8px;
+        font-size: 16px;
+        }
+        .version{
+            color: var(--text-color);
+        }
+
+        /* Dropdown styles */
+        .dropdown-container {
+            background-color: var(--card-bg-color);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-text-color);
+        }
+
+        .dropdown-content {
+            margin-top: 12px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            max-height: 0;
+        }
+
+        .dropdown-content.open {
+            max-height: 500px;
+        }
+
+        .dropdown-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dropdown-content label {
+            color: var(--primary-text-color);
+            font-size: 14px;
+        }
+
+        .dropdown-content input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--card-border-color);
+            background-color: var(--input-bg-color);
+            color: var(--input-text-color);
+        }
+
+        .dropdown-chevron {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .dropdown-chevron.rotated {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: px;
+            border-top: 1px solid var(--hr-border-color);
+        }
+
+        .bottom-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            color: var(--secondary-text-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .bottom-item:hover {
+            color: var(--primary-text-color);
+        }
+
+        .bottom-item img {
+            margin-right: 8px;
+        }
+    </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body class="text-gray-900 font-sans">
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <h2 class="text-lg font-semibold mb-4 text-primary">Menü</h2>
+
+                <!-- Display Error Messages -->
+                {% if password_messages %}
+                    <div class="alert alert-danger">
+                        {% for message in password_messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- User Info -->
+                <div class="dropdown-container">
+                    <h3 class="text-lg font-semibold text-primary mb-2">Info</h3>
+                    <p class="text-secondary">Name: {{ profile_info['full_name'] }}</p>
+                    <p class="text-secondary">Geburtstag: {{ profile_info['birthday'] }}</p>
+                </div>
+
+                {% if not profile_info.guest %}
+                <!-- Password Change Dropdown -->
+                <div class="dropdown-container">
+                    <div class="dropdown-header" onclick="toggleDropdown('passwordDropdown', 'passwordChevron')">
+                        <span>Passwort ändern</span>
+                        <i class="fa-solid fa-chevron-down dropdown-chevron" id="passwordChevron"></i>
+                    </div>
+                    <div class="dropdown-content" id="passwordDropdown">
+                        <form method="POST" action="/change_password">
+                            <label for="current_password">Aktuelles Passwort</label>
+                            <input type="password" name="current_password" class="inputer" required>
+
+                            <label for="new_password">Neues Passwort</label>
+                            <input type="password" name="new_password" class="inputer" required>
+
+                            <label for="confirm_password">Neues Passwort wiederholen</label>
+                            <input type="password" name="confirm_password" class="inputer" required>
+
+                            <button type="submit" class="rounded-blue-button mt-2">Passwort ändern</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Email Change Dropdown -->
+                <div class="dropdown-container">
+                    <div class="dropdown-header" onclick="toggleDropdown('emailDropdown', 'emailChevron')">
+                        <span>Email ändern</span>
+                        <i class="fa-solid fa-chevron-down dropdown-chevron" id="emailChevron"></i>
+                    </div>
+                    <div class="dropdown-content" id="emailDropdown">
+                        <form method="POST" action="/change_email">
+                            <label for="new_email">Neue Email</label>
+                            <input type="email" name="new_email" class="inputer" required>
+
+                            <button type="submit" class="rounded-blue-button mt-2">Email ändern</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Fixed bottom section -->
+            <div class="sidebar-bottom">
+                <a href="/logout" class="bottom-item">
+                    <span style="padding-right: 10px;">Logout</span>
+                    <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout">
+
+                </a>
+
+                <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
+                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme
+                </button>
+
+                {% if profile_info['admin'] == true %}
+                    <a href="/admin" class="bottom-item" style="padding-top: 10px;">Admin Dashboard</a>
+                {% endif %}
+
+                <p class="text-secondary text-sm version mt-4">Giftmanager <br> {{app_version}}</p>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1">
+            <header class="header p-4">
+                <nav class="container mx-auto flex justify-between items-center">
+                    <button id="sidebarToggle" class="text-2xl px-4 py-2">
+                        <svg class="h-8 w-8 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </button>
+                    <div class="help" onclick="location.href='{{ url_for('bought_items') }}'">
+                        <img class="helplogo" src="{{ url_for('static', filename='icons/cart.svg') }}">
+                    </div>
+
+                    {% if assigned_users %}
+                    <div class="help">
+                        <a href="{{ url_for('secret_santa_assignments') }}" title="Zeige dein Wichtel Partner">
+                            <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
+                        <p class="text-center text-secondary">Ideen hinzufügen</p>
+                    </div>
+                </nav>
+            </header>
+
+            <main class="main container mx-auto p-8">
+                <section class="section shadow-lg rounded-lg">
+                    <h1 class="text-2xl font-semibold mb-4 text-primary">Benutzer*innen</h1>
+                    <div class="user-list">
+                        {% for user in users %}
+                        <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
+                            <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                            <p class="text-center text-secondary">{{ user.full_name }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        // Check the local storage for the sidebar state
+        const sidebarState = localStorage.getItem('sidebarState');
+        if (sidebarState === 'open') {
+            sidebar.classList.add('open');
+            overlay.classList.add('visible');
+        }
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+            // Store the sidebar state in local storage
+            if (sidebar.classList.contains('open')) {
+                localStorage.setItem('sidebarState', 'open');
+            } else {
+                localStorage.setItem('sidebarState', 'closed');
+            }
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+            localStorage.setItem('sidebarState', 'closed');
+        });
+
+        function toggleDropdown(dropdownId, chevronId) {
+            const dropdown = document.getElementById(dropdownId);
+            const chevron = document.getElementById(chevronId);
+
+            dropdown.classList.toggle('open');
+            chevron.classList.toggle('rotated');
+        }
+
+        function toggleDarkMode() {
+            const htmlElement = document.documentElement;
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            // Set the new theme
+            htmlElement.setAttribute('data-theme', newTheme);
+
+            // Store the theme preference in a cookie
+            document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}`; // 1 year
+        }
+
+        // Function to get the theme preference from the cookie
+        function getThemeFromCookie() {
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'theme') {
+                    return value;
+                }
+            }
+            return 'light'; // Default to light mode if no cookie is found
+        }
+
+        // Apply the theme preference from the cookie on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const htmlElement = document.documentElement;
+            const theme = getThemeFromCookie();
+            htmlElement.setAttribute('data-theme', theme);
+        });
+
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+        }
+    </script>
+</body>
+</html>

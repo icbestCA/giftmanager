@@ -1,0 +1,7 @@
+Flask
+mailjet_rest
+python-dotenv
+argon2-cffi
+authlib
+requests
+beautifulsoup4
