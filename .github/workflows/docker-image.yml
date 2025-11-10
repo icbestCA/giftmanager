@@ -54,3 +54,43 @@ jobs:
           org.opencontainers.image.source=${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}
           org.opencontainers.image.created=${{ github.event.created_at }}
+    - name: Build and push Docker image (FR)
+      uses: docker/build-push-action@v2
+      with:
+        context: languages/fr/docker
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:latest-fr
+          ghcr.io/${{ github.repository }}:${{ github.sha }}-fr
+        platforms: linux/amd64,linux/arm64
+        labels: |
+          org.opencontainers.image.source=${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.created=${{ github.event.created_at }}
+    - name: Build and push Docker image (NL)
+      uses: docker/build-push-action@v2
+      with:
+        context: languages/nl/docker
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:latest-nl
+          ghcr.io/${{ github.repository }}:${{ github.sha }}-nl
+        platforms: linux/amd64,linux/arm64
+        labels: |
+          org.opencontainers.image.source=${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.created=${{ github.event.created_at }}
+    - name: Build and push Docker image (SV)
+      uses: docker/build-push-action@v2
+      with:
+        context: languages/sv/docker
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:latest-sv
+          ghcr.io/${{ github.repository }}:${{ github.sha }}-sv
+        platforms: linux/amd64,linux/arm64
+        labels: |
+          org.opencontainers.image.source=${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.created=${{ github.event.created_at }}
+          
