@@ -191,7 +191,7 @@ def tailwind_css():
 def fa_js():
     return send_from_directory('static', 'fa.min.js')
 
-@app.route('Sortable.min.js')
+@app.route('/Sortable.min.js')
 def sortable_js():
     return send_from_directory('static', 'Sortable.min.js')
 
