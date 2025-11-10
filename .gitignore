@@ -1,3 +1,6 @@
+# Ignore Trunk
+.trunk/
+
 # Ignore the virtual environment directory
 venv/
 .env/
