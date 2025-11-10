@@ -60,8 +60,8 @@ jobs:
         context: languages/de-custom/docker
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}:latest-fr
-          ghcr.io/${{ github.repository }}:${{ github.sha }}-fr
+          ghcr.io/${{ github.repository }}:latest-de-custom
+          ghcr.io/${{ github.repository }}:${{ github.sha }}-de-custom
         platforms: linux/amd64,linux/arm64
         labels: |
           org.opencontainers.image.source=${{ github.repository }}
