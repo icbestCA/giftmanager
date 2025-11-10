@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
         :root {
@@ -89,7 +89,7 @@
             overflow-y: scroll;
             transition: transform 0.3s ease-in-out;
         }
-        
+
         /* Mobile sidebar styles */
         @media (max-width: 768px) {
             .sidebar {
@@ -100,11 +100,11 @@
                 z-index: 50;
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .overlay {
                 position: fixed;
                 top: 0;
@@ -117,32 +117,32 @@
                 visibility: hidden;
                 transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             }
-            
+
             .overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .menu-toggle {
                 display: block;
             }
         }
-        
+
         /* Desktop styles */
         @media (min-width: 769px) {
             .menu-toggle {
                 display: none;
             }
-            
+
             .overlay {
                 display: none;
             }
         }
-        
+
         .menu-toggle {
             background: none;
             border: none;
@@ -175,7 +175,7 @@
     <div class="flex h-screen">
         <!-- Overlay for mobile sidebar -->
         <div class="overlay" id="sidebarOverlay"></div>
-        
+
         <!-- Sidebar -->
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
@@ -221,7 +221,7 @@
                     <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
                         <i class="fas fa-user-cog"></i> Erweitert
                     </a>
-                    
+
                 </div>
             </nav>
         </div>
@@ -252,7 +252,7 @@
                     <div class="p-6 rounded-lg shadow-sm mb-6" style="background-color: var(--main-bg-color); margin-top: 5px;">
                         <h4 class="text-xl font-medium mb-3" style="color: var(--text-color);">Container Verwaltung</h4>
                         <p class="sec-text mb-4">Wenn du den Container aus irgendeinem Grund neu starten musst, klicke auf die Schaltfläche unten.</p>
-                        
+
                         <form method="POST" action="{{ url_for('dashboard') }}">
                             <div class="flex justify-start">
                                 <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 transition ease-in-out duration-200">
@@ -267,8 +267,6 @@
         </div>
     </div>
 
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <script>
         function toggleDarkMode() {
@@ -282,21 +280,21 @@
             // Store the theme preference in a cookie
             document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}`; // 1 year
         }
-        
+
         // Sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const menuToggle = document.getElementById('menuToggle');
             const overlay = document.getElementById('sidebarOverlay');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
             }
-            
+
             menuToggle.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
-            
+
             // Close sidebar when a navigation link is clicked (on mobile)
             const navLinks = document.querySelectorAll('.sidebar a');
             navLinks.forEach(link => {

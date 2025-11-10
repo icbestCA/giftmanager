@@ -52,7 +52,7 @@
             text-align: left;
         }
 
-        
+
 
         input[type="text"],
         input[type="password"] {
@@ -158,7 +158,7 @@
         .secondary-button:hover {
             background-color: #545b62; /* Darker shade on hover */
         }
-        
+
         .register-button {
             width: 100%;
             padding: 10px;
@@ -229,7 +229,7 @@
         <input type="submit" value="LOGIN">
         {% if enable_self_registration %}
         <div class="separator">or</div>
-        
+
         <!-- Registration Button -->
         <a href="{{ url_for('register') }}">
             <button type="button" class="register-button">
@@ -240,29 +240,29 @@
 
         {% if guests_exist %}
         <div class="separator">or</div>
-        
+
         <!-- Guest Login Button -->
-        
+
         <button type="button" class="guest-login" onclick="showGuestLogin()">
-            Ich habe ein Gastpasswort
+            Geschenkliste als Gast ansehen
         </button>
         {% endif %}
-        
+
         <!-- Display OIDC Login Button if enabled -->
         {% if oidc_enabled %}
             <a href="{{ url_for('login_oidc') }}">
                 <button type="button" class="oidc-login">Login mit OIDC</button>
             </a>
         {% endif %}
-        
-        <p>Kontaktieren Sie den Administrator, um Ihr Passwort zurückzusetzen.</p>
+
+        <p>Kontaktiere Frej oder Thies um dein Kennwort zurückzusetzen.</p>
     </form>
 
     <!-- Guest Login Form (Initially Hidden) -->
     <form method="post" action="/guest_login" id="guest-login" style="display: none;">
         <h1>Gast Login</h1>
         <div class="info-box">
-            Gebe dein Gastpasswort ein, um eingeschränkte Funktionen zu nutzen
+            Gebe das Gastpasswort ein, um die Geschenkliste zu sehen.
         </div>
         <!-- Displaying flashed messages for guest login -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -278,15 +278,15 @@
         {% endwith %}
 
         <label for="guest_password">Gastpasswort</label>
-        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required 
+        <input type="password" id="guest_password" name="password" style="font-size: 17px;" required
                placeholder="Gebe das Gastpasswort ein">
-        
+
         <input type="submit" value="ANMELDEN ALS GAST" style="background-color: #28a745;">
-        
+
         <button type="button" class="secondary-button" onclick="showRegularLogin()">
             Zurück zum regulären Login
         </button>
-        
+
         <p>Kontaktiere den Administrator, um einen Gastzugang zu erhalten.</p>
     </form>
 

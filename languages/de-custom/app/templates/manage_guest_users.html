@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gastnutzer*innen Verwalten</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
         :root {
@@ -71,7 +71,7 @@
             border-radius: 8px;
             padding: 24px;
         }
-        
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -86,25 +86,25 @@
         [data-theme="dark"] .helplogo {
             filter: invert(1) brightness(1.5);
         }
-        
+
         .sec-text{
             color: var(--secondary-text-color);
         }
-        
+
         .inputer{
             color: var(--button-text-color);
             background-color: var(--card-bg-color);
         }
-        
+
         .max-w-3xl {
             max-width: 60rem;
         }
-        
+
         .sidebar {
             overflow-y: scroll;
             transition: transform 0.3s ease-in-out;
         }
-        
+
         /* Mobile sidebar styles */
         @media (max-width: 768px) {
             .sidebar {
@@ -115,11 +115,11 @@
                 z-index: 50;
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .overlay {
                 position: fixed;
                 top: 0;
@@ -132,13 +132,13 @@
                 visibility: hidden;
                 transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             }
-            
+
             .overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
         }
-        
+
         /* Menu toggle styles */
         .menu-toggle {
             background: none;
@@ -149,18 +149,18 @@
             padding: 0.5rem;
             transition: transform 0.2s ease;
         }
-        
+
         .menu-toggle:hover {
             transform: scale(1.1);
         }
-        
+
         /* Menu item icons */
         .sidebar a i {
             width: 20px;
             text-align: center;
             margin-right: 12px;
         }
-        
+
         .access-section {
             transition: all 0.3s ease;
         }
@@ -184,12 +184,12 @@
             const theme = getThemeFromCookie();
             document.documentElement.setAttribute('data-theme', theme);
         })();
-        
+
         function toggleAccessType() {
             const familyAccess = document.getElementById('family-access');
             const peopleAccess = document.getElementById('people-access');
             const familyRadio = document.getElementById('access_family');
-            
+
             if (familyRadio.checked) {
                 familyAccess.style.display = 'block';
                 peopleAccess.style.display = 'none';
@@ -198,21 +198,21 @@
                 peopleAccess.style.display = 'block';
             }
         }
-        
+
         function validateGuestForm() {
             const displayName = document.querySelector('input[name="display_name"]').value;
             const password = document.querySelector('input[name="password"]').value;
-            
+
             if (!displayName.trim()) {
                 alert('Bitte gebe einen Anzeigenamen für den Gast ein.');
                 return false;
             }
-            
+
             if (!password) {
                 alert('Bitte gebe ein Passwort für den Gast ein.');
                 return false;
             }
-            
+
             // Check if at least one access option is selected
             const accessType = document.querySelector('input[name="access_type"]:checked').value;
             if (accessType === 'family') {
@@ -228,10 +228,10 @@
                     return false;
                 }
             }
-            
+
             return true;
         }
-        
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             toggleAccessType();
@@ -242,7 +242,7 @@
     <div class="flex h-screen">
         <!-- Overlay for mobile sidebar -->
         <div class="overlay" id="sidebarOverlay"></div>
-        
+
         <!-- Sidebar -->
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
@@ -325,18 +325,18 @@
                     <form method="POST" class="mb-8" onsubmit="return validateGuestForm()">
                         <div class="mb-6">
                             <h4 class="text-xl font-semibold mb-4">Neue*n Gastnutzer*in erstellen</h4>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label for="display_name" class="block font-medium mb-2">Anzeigename:</label>
-                                    <input type="text" id="display_name" name="display_name" 
-                                           class="border rounded py-2 px-3 w-full inputer" 
+                                    <input type="text" id="display_name" name="display_name"
+                                           class="border rounded py-2 px-3 w-full inputer"
                                            placeholder="z.B., Onkel John" required>
                                     <small class="text-gray-500">Dieser Name wird angezeigt, wenn der Gast Artikel als gekauft markiert</small>
                                 </div>
                                 <div>
                                     <label for="password" class="block font-medium mb-2">Passwort:</label>
-                                    <input type="password" id="password" name="password" 
+                                    <input type="password" id="password" name="password"
                                            class="border rounded py-2 px-3 w-full inputer" required>
                                 </div>
                             </div>
@@ -345,12 +345,12 @@
                                 <label class="block font-medium mb-2">Zugriffstyp:</label>
                                 <div class="flex space-x-4">
                                     <label class="inline-flex items-center">
-                                        <input type="radio" name="access_type" id="access_family" 
+                                        <input type="radio" name="access_type" id="access_family"
                                                value="family" checked class="form-radio">
                                         <span class="ml-2">Zugriff nach Familie</span>
                                     </label>
                                     <label class="inline-flex items-center">
-                                        <input type="radio" name="access_type" id="access_people" 
+                                        <input type="radio" name="access_type" id="access_people"
                                                value="people" class="form-radio">
                                         <span class="ml-2">Zugriff auf bestimmte Personen</span>
                                     </label>
@@ -364,7 +364,7 @@
                                     {% for group in all_groups %}
                                         {% if not group.startswith('guest_') %}
                                         <label class="flex items-center">
-                                            <input type="checkbox" name="access_groups" value="{{ group }}" 
+                                            <input type="checkbox" name="access_groups" value="{{ group }}"
                                                 class="mr-2">
                                             {{ group }}
                                         </label>
@@ -380,7 +380,7 @@
                                     {% for user in all_users %}
                                     {% if not user.get('guest') %}
                                     <label class="flex items-center">
-                                        <input type="checkbox" name="access_users" value="{{ user.username }}" 
+                                        <input type="checkbox" name="access_users" value="{{ user.username }}"
                                                class="mr-2">
                                         {{ user.full_name }} ({{ user.username }})
                                     </label>
@@ -429,7 +429,7 @@
                                                 </div>
                                             {% else %}
                                                 <div class="text-sm">
-                                                    <strong>Personen:</strong> 
+                                                    <strong>Personen:</strong>
                                                     {% for username in guest.access_users %}
                                                         {{ get_full_name(username) }}{% if not loop.last %}, {% endif %}
                                                     {% endfor %}
@@ -437,8 +437,8 @@
                                             {% endif %}
                                         </td>
                                         <td class="border px-4 py-2">
-                                            <form method="POST" action="{{ url_for('delete_guest_user', username=guest.username) }}" 
-                                                  style="display: inline;" 
+                                            <form method="POST" action="{{ url_for('delete_guest_user', username=guest.username) }}"
+                                                  style="display: inline;"
                                                   onsubmit="return confirm('Sind du sicher, dass du den Gastnutzer {{ guest.full_name }} löschen möchtest?');">
                                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded text-sm">
                                                     Löschen
@@ -461,25 +461,22 @@
             </main>
         </div>
     </div>
-
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         // Sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const menuToggle = document.getElementById('menuToggle');
             const overlay = document.getElementById('sidebarOverlay');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
                 document.body.classList.toggle('no-scroll');
             }
-            
+
             menuToggle.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
-            
+
             // Close sidebar when a navigation link is clicked (on mobile)
             const navLinks = document.querySelectorAll('.sidebar a');
             navLinks.forEach(link => {

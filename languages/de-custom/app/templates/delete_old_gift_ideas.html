@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geschenkideen Verwalten</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -73,7 +73,7 @@
             border-radius: 8px;
             padding: 24px;
         }
-        
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -88,21 +88,21 @@
         [data-theme="dark"] .helplogo {
             filter: invert(1) brightness(1.5);
         }
-        
+
         .sec-text{
             color: var(--secondary-text-color);
         }
-        
+
         .inputer{
             color: var(--button-text-color);
             background-color: var(--card-bg-color);
         }
-        
+
         .sidebar {
             overflow-y: scroll;
             transition: transform 0.3s ease-in-out;
         }
-        
+
         /* Mobile sidebar styles */
         @media (max-width: 768px) {
             .sidebar {
@@ -113,11 +113,11 @@
                 z-index: 50;
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .overlay {
                 position: fixed;
                 top: 0;
@@ -130,13 +130,13 @@
                 visibility: hidden;
                 transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             }
-            
+
             .overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
         }
-        
+
         /* Menu toggle styles */
         .menu-toggle {
             background: none;
@@ -147,11 +147,11 @@
             padding: 0.5rem;
             transition: transform 0.2s ease;
         }
-        
+
         .menu-toggle:hover {
             transform: scale(1.1);
         }
-        
+
         /* Menu item icons */
         .sidebar a i {
             width: 20px;
@@ -182,7 +182,7 @@
     <div class="flex h-screen">
         <!-- Overlay for mobile sidebar -->
         <div class="overlay" id="sidebarOverlay"></div>
-        
+
         <!-- Sidebar -->
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
@@ -284,24 +284,22 @@
         </div>
     </div>
 
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         // Sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const menuToggle = document.getElementById('menuToggle');
             const overlay = document.getElementById('sidebarOverlay');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
                 document.body.classList.toggle('no-scroll');
             }
-            
+
             menuToggle.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
-            
+
             // Close sidebar when a navigation link is clicked (on mobile)
             const navLinks = document.querySelectorAll('.sidebar a');
             navLinks.forEach(link => {

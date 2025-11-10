@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meine Ideen</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="/tailwind.min.css">
+    <script src="/Sortable.min.js"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -177,7 +177,7 @@
                 }
                 return 'light'; // Default to light mode if no cookie is found
             }
-    
+
             const theme = getThemeFromCookie();
             document.documentElement.setAttribute('data-theme', theme);
         })();
@@ -204,7 +204,7 @@
                 <li class="idea-item bg-white p-4 shadow-md rounded-lg flex flex-col sm:flex-row items-start sm:items-center" style="background-color: var(--card-bg-color);" data-idea-id="{{ gift_idea.gift_idea_id }}" data-priority="{{ gift_idea.priority }}">
                     <span class="priority-number">{{ gift_idea.priority }}</span>
                     <span class="drag-handle hidden">☰</span>
-                    <input type="number" class="priority-input hidden border border-gray-300 rounded p-1 inputer" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
+                    <input type="number" class="priority-input hidden border border-gray-300 rounded p-1 inputer" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;">
                     <div class="flex-1">
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
                         <p class="sec-text description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>

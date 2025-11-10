@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ idea.gift_name }} - Idee Bearbeiten</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+    <link rel="stylesheet" href="/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -120,7 +120,7 @@ async function fetchOGImage(url) {
     try {
         // Make a request to the Flask backend
         const response = await fetch(`/fetch_og_image?url=${encodeURIComponent(url)}`);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -217,13 +217,13 @@ document.addEventListener('DOMContentLoaded', function () {
         <!-- Description Field -->
         <label for="description" class="block mb-2 sec-text">Beschreibung (Optional):</label>
         <textarea id="description" name="description" rows="4" cols="50" class="border rounded py-2 px-3 w-full inputer">{{ idea.description }}</textarea>
-        
+
         <br>
-    
+
         <!-- Link Field -->
         <label for="link" class="block mt-4 mb-2 sec-text">Link (Optional):</label>
         <input type="text" id="link" name="link" value="{{ idea.link }}" class="border rounded py-2 px-3 w-full inputer">
-    
+
         <br>
 
         <!-- Display OG Image if the link is available -->
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
             {% if idea.image_path %}
             <img src="{{ idea.image_path }}" alt="OG Image" class="w-full rounded shadow-lg mt-4"> <!-- Prepopulate the image if already set -->
             {% endif %}
-        </div> 
+        </div>
         <div id="manualImageUrlContainer" class="mb-4">
             <label for="manualImageUrl" class="block sec-text font-bold">Bild-URL eingeben (Optional):</label>
             <input type="url" name="manualImageUrl" id="manualImageUrl" class="border inputer rounded py-2 px-3 w-full" value="{{ idea.image_path }}">
@@ -240,14 +240,14 @@ document.addEventListener('DOMContentLoaded', function () {
         {% endif %}
 
         <!-- Hidden input to store the image URL -->
-        <input type="hidden" id="image_path" name="image_path" value="{{ idea.image_path }}"> 
-    
+        <input type="hidden" id="image_path" name="image_path" value="{{ idea.image_path }}">
+
         <!-- Estimated Value Field -->
         <label for="value" class="block mt-4 mb-2 sec-text">Erwarteter Preis (Optional):</label>
         <input type="text" id="value" name="value" value="{{ idea.value }}" class="border rounded py-2 px-3 w-full inputer" placeholder="Erwarteten Preis in Euro eingeben">
-    
+
         <br>
-    
+
         <!-- Save and Cancel Buttons -->
         <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mt-4 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
             Änderungen speichern

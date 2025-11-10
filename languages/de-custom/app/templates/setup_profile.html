@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Einstellungen</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -17,11 +17,11 @@
                 <label for="username" class="block text-gray-700 font-bold">Benutzername:</label>
                 <input type="text" name="username" id="username" value="{{ user.username }}" class="border rounded py-2 px-3 w-full" disabled>
             </div>
-            
+
             <div class="mb-4">
                 <label for="full_name" class="block text-gray-700 font-bold">Vollständiger Name:</label>
-                <input type="text" name="full_name" id="full_name" 
-                       value="{{ oidc_user_info.full_name if oidc_user_info.full_name else '' }}" 
+                <input type="text" name="full_name" id="full_name"
+                       value="{{ oidc_user_info.full_name if oidc_user_info.full_name else '' }}"
                        class="border rounded py-2 px-3 w-full">
             </div>
 

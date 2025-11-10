@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neue Idee</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+    <link rel="stylesheet" href="/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -239,13 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="hidden" id="imagePath" name="imagePath"> <!-- Hidden input to store the image URL -->
                 <div class="mb-4">
                     <label for="value" class="block sec-text font-bold">Erwarteter Preis (Optional):</label>
-                    <input type="number" id="value" name="value" step="any" placeholder="Erwarteter Preis" 
+                    <input type="number" id="value" name="value" step="any" placeholder="Erwarteter Preis"
                         class="border rounded inputer py-2 px-3 w-full">
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Absenden</button>
             </form>
         </section>
-    </main>      
+    </main>
     <script>
     const backButton = document.getElementById('backButton');
     backButton.addEventListener('click', () => {

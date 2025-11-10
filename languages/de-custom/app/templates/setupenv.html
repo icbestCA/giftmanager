@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -32,7 +32,7 @@
             <div class="mb-4">
                 <label for="DELETE_DAYS" class="block text-gray-700 font-bold">Lösch-Tage:</label>
                 <input type="number" name="DELETE_DAYS" id="DELETE_DAYS" class="border rounded py-2 px-3 w-full" placeholder="Default: 30" value="{{ DELETE_DAYS }}">
-            </div>            
+            </div>
 
             <div class="mb-4">
                 <label for="OIDC_CLIENT_ID" class="block text-gray-700 font-bold">OIDC Client ID:</label>
@@ -81,7 +81,7 @@
                     <option value="false" selected>Deaktivieren</option>
                 </select>
             </div>
-            
+
 
             <div class="mb-4">
                 <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mr-2">Konfiguration Speichern</button>

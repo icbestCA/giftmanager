@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrieren</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -124,7 +124,7 @@
     <main class="main container mx-auto p-8">
         <div class="section shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">Registrieren</h1>
-            
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -179,7 +179,7 @@
                         <option value="icons/avatar5.png">Avatar 5</option>
                         <option value="icons/avatar6.png">Avatar 6</option>
                     </select>
-                    
+
                     <div class="mt-4">
                         <h3 class="sec-text font-bold mb-2">Avatar Vorschau:</h3>
                         <div class="flex flex-wrap gap-4">
@@ -226,7 +226,7 @@
         document.getElementById('confirm_password').addEventListener('input', function() {
             const password = document.getElementById('password');
             const confirmPassword = this;
-            
+
             if (password.value !== confirmPassword.value) {
                 confirmPassword.setCustomValidity('Passwords do not match');
             } else {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geschenkideen</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -221,7 +221,7 @@
                             {% endif %}
                         </div>
                     </div>
-    
+
                     {% if gift_idea.bought_by %}
                     <p class="text-green-500">Gekauft von: {{ get_full_name(gift_idea.bought_by) }}</p>
                     {% if gift_idea.bought_by == session['username'] %}
@@ -272,7 +272,7 @@
         backButton.addEventListener('click', () => {
             window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
         });
-    
+
         function markIdeaAsBought(ideaId, button) {
             fetch(`/mark_as_bought/${ideaId}`, {
                 method: 'POST',
@@ -280,7 +280,7 @@
             .then(response => {
                 // Always reload the page, regardless of the response status
                 location.reload();
-    
+
                 if (response.ok) {
                     // Hide the button and update the text
                     button.style.display = 'none';
@@ -291,7 +291,7 @@
                 console.error('Error marking idea as bought:', error);
             });
         }
-    
+
         function markIdeaAsNotBought(ideaId, button) {
             fetch(`/mark_as_not_bought/${ideaId}`, {
                 method: 'POST',
@@ -309,21 +309,21 @@
                 console.error('Error marking idea as not bought:', error);
             });
         }
-    
+
         document.querySelectorAll('.mark-as-bought-button').forEach(button => {
             button.addEventListener('click', () => {
                 const ideaId = button.getAttribute('data-idea-id');
                 markIdeaAsBought(ideaId, button);
             });
         });
-    
+
         document.querySelectorAll('.mark-as-not-bought-button').forEach(button => {
             button.addEventListener('click', () => {
                 const ideaId = button.getAttribute('data-idea-id');
                 markIdeaAsNotBought(ideaId, button);
             });
         });
-    
+
         // Add the code for deleting an idea here
         document.querySelectorAll('.delete-idea-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -331,7 +331,7 @@
                 deleteIdea(ideaId);
             });
         });
-    
+
         function deleteIdea(ideaId) {
             fetch(`/delete_idea/${ideaId}`, {
                 method: 'DELETE',
@@ -345,7 +345,7 @@
                     if (ideaElement) {
                         ideaElement.remove();
                     }
-                    
+
                     // Log and attempt to reload the page
                     console.log("Reloading the page...");
                     location.reload();  // This should trigger the page reload
@@ -381,8 +381,8 @@
             console.log('ServiceWorker registration failed: ', err);
           });
       });
-    }  
-    </script>    
-    
+    }
+    </script>
+
 </body>
 </html>

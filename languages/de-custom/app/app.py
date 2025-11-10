@@ -52,14 +52,14 @@ def login_required(f):
         if 'username' not in session:
             flash('Please log in first.', 'warning')
             return redirect(url_for('login'))
-        
+
         # Check if user is a guest and route doesn't allow guests
         if is_guest_user(session['username']):
             # Check if the route has @guest_allowed decorator
             if not getattr(f, '_guest_allowed', False):
                 flash('This feature is not available for guest users.', 'danger')
                 return redirect(url_for('dashboard'))
-        
+
         return f(*args, **kwargs)
     return decorated_function
 
@@ -84,7 +84,7 @@ def admin_required(f):
 
         # Continue to the original function if the user is an admin
         return f(*args, **kwargs)
-    
+
     return decorated_function
 
 def is_guest_user(username):
@@ -100,14 +100,14 @@ def guest_allowed(f):
         if 'username' not in session:
             flash('Please log in first.', 'warning')
             return redirect(url_for('login'))
-        
+
         # Check if user is a guest
         if is_guest_user(session['username']):
             return f(*args, **kwargs)
         else:
             # Regular users can always access guest-allowed routes
             return f(*args, **kwargs)
-    
+
     # Mark this function as guest allowed
     decorated_function._guest_allowed = True
     return decorated_function
@@ -162,7 +162,7 @@ def get_currency_position():
 def format_currency(amount):
     symbol = get_currency_symbol()
     position = get_currency_position()
-    
+
     if position == 'after':
         return f"{amount}{symbol}"
     else:  # before (default)
@@ -219,24 +219,24 @@ def auth():
     if state != saved_state:
         flash("Authorization failed: invalid state.", "danger")
         return redirect(url_for("login"))
-    
+
     try:
         # Retrieve the access token from OIDC provider
         token = oauth.keycloak.authorize_access_token()
     except Exception as e:
         flash("OIDC authorization failed.", "danger")
         return redirect(url_for("login"))
-    
+
     # Pop nonce from session after use
     nonce = session.pop("nonce", None)
-    
+
     try:
         # Parse ID token and retrieve user info
         user_info = oauth.keycloak.parse_id_token(token, nonce=nonce)
     except Exception as e:
         flash("Failed to parse user information.", "danger")
         return redirect(url_for("login"))
-    
+
     # Retrieve fields dynamically from the environment
     primary_oidc_field = os.getenv("PRIMARY_OIDC_FIELD", "").lower()
     secondary_oidc_field = os.getenv("SECONDARY_OIDC_FIELD", "").lower()
@@ -254,12 +254,12 @@ def auth():
     user_in_db = None
     if primary_oidc_value:
         user_in_db = next(
-            (user for user in users if user.get(primary_db_field, "").lower() == primary_oidc_value.lower()), 
+            (user for user in users if user.get(primary_db_field, "").lower() == primary_oidc_value.lower()),
             None
         )
     if not user_in_db and secondary_oidc_value:
         user_in_db = next(
-            (user for user in users if user.get(secondary_db_field, "").lower() == secondary_oidc_value.lower()), 
+            (user for user in users if user.get(secondary_db_field, "").lower() == secondary_oidc_value.lower()),
             None
         )
 
@@ -268,7 +268,7 @@ def auth():
         session["username"] = user_in_db["username"]
         flash("Login successful with OIDC!", "login_success")
         return redirect(url_for("dashboard"))
-    
+
     # Handle auto-registration if enabled
     if os.getenv("ENABLE_AUTO_REGISTRATION", "false").lower() == "true":
         # Create a new user profile
@@ -281,13 +281,13 @@ def auth():
         users.append(new_user)
         save_users(users)  # Save the updated users list
         session["username"] = new_user["username"]
-        
+
         flash("New profile created. Please complete your profile setup.", "info")
         return redirect(url_for("setup_profile"))  # Redirect to profile setup page
 
     flash("User not found and auto-registration is disabled.", "danger")
     return redirect(url_for("login"))
-    
+
 
 @app.route("/setup_profile", methods=["GET", "POST"])
 def setup_profile():
@@ -297,10 +297,10 @@ def setup_profile():
 
     # Retrieve the logged-in username from the session
     username = session.get("username")
-    
+
     # Find the user in `users.json`
     user = next((u for u in users if u["username"] == username), None)
-    
+
     if not user:
         flash("User not found.", "danger")
         return redirect(url_for("login"))
@@ -309,7 +309,7 @@ def setup_profile():
     if user.get("avatar"):
         flash("Profile setup not required. Avatar already set.", "info")
         return redirect(url_for("dashboard"))
-    
+
     # Check if default login is enabled
     enable_default_login = os.getenv("ENABLE_DEFAULT_LOGIN", "true").lower() == "true"
 
@@ -321,13 +321,13 @@ def setup_profile():
 
         user["birthday"] = request.form["birthday"]
         user["avatar"] = request.form["avatar"]
-        
+
         # Update full name if provided
         user["full_name"] = request.form.get("full_name", user.get("full_name"))
-        
+
         # Save the updated user list to `users.json`
         save_users(users)
-        
+
         flash("Profile setup complete!", "success")
         return redirect(url_for("dashboard"))
 
@@ -402,8 +402,8 @@ def login():
             flash('User does not exist', 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
             flash(f"Error reading users.json: {e}", 'login_error')
-            
-    
+
+
     return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag, enable_self_registration=enable_self_registration)
 
 def guests_exist():
@@ -418,10 +418,10 @@ def register():
     if not os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true':
         flash('Self-registration is not enabled. Please contact an administrator.', 'danger')
         return redirect(url_for('login'))
-    
+
     # Get joining code for template
     joining_code = os.getenv('JOINING_CODE', '')
-    
+
     if request.method == 'POST':
         # Get form data
         username = request.form['username'].lower().strip()
@@ -432,36 +432,36 @@ def register():
         birthday = request.form.get('birthday', '')
         avatar = request.form.get('avatar', 'icons/avatar1.png')
         submitted_joining_code = request.form.get('joining_code', '')
-        
+
         # Validate joining code if one is set in environment
         if joining_code and submitted_joining_code != joining_code:
             flash('Invalid joining code. Please check with your family.', 'danger')
             return render_template('register.html', joining_code=joining_code)
-        
+
         # Validate required input
         if not username or not password or not full_name:
             flash('Please fill in all required fields.', 'danger')
             return render_template('register.html', joining_code=joining_code)
-        
+
         if password != confirm_password:
             flash('Passwords do not match.', 'danger')
             return render_template('register.html', joining_code=joining_code)
-        
+
         # No password complexity requirements
-        
+
         # Load existing users
         users = load_users()
-        
+
         # Check for duplicate username
         if any(user['username'].lower() == username for user in users):
             flash('Username already exists. Please choose a different one.', 'danger')
             return render_template('register.html', joining_code=joining_code)
-        
+
         # Check for duplicate email only if email is provided
         if email and any(user.get('email', '').lower() == email.lower() for user in users):
             flash('Email already registered. Please use a different email or contact support.', 'danger')
             return render_template('register.html', joining_code=joining_code)
-        
+
         # Create new user
         new_user = {
             "username": username,
@@ -472,16 +472,16 @@ def register():
             "avatar": avatar,
             "admin": False,
             "guest": False,
-            "groups": []  # New users start with no groups by default
+            "groups": ["default"]  # New users start with no groups by default
         }
-        
+
         # Add user to database
         users.append(new_user)
         save_users(users)
-        
+
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('login'))
-    
+
     # GET request - show registration form
     return render_template('register.html', joining_code=joining_code)
 
@@ -555,7 +555,7 @@ def add2():
         # Save the updated ideas back to the file
         save_gift_ideas(gift_ideas_data)
 
-        
+
         # Redirect to the user's gift ideas page
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
     imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
@@ -606,7 +606,7 @@ def add_idea(selected_user_id):
         link = request.form.get('link', '')
         value = request.form.get('value', None)  # Optional field
         image_path = request.form.get('imagePath', '')  # Get the image path from the form
-        
+
         # Retrieve the currently logged-in user
         added_by = session.get('username')
 
@@ -687,7 +687,7 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
     for idea in gift_ideas_data:
         if idea.get('bought_by') == buyer_username:
             buyer_email = get_user_email_by_username(buyer_username)
-            
+
             if buyer_email:
                 text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
 
@@ -734,27 +734,27 @@ def logout():
 @login_required
 @guest_allowed
 def dashboard():
-    
+
     # Read user data from the JSON file
     users = load_users()
 
     # Get the current user's data from the session
     current_user = next((user for user in users if user['username'] == session['username']), None)
-    
+
     if not current_user:
         flash('User data not found', 'danger')
         return redirect(url_for('login'))
 
     # Check if current user is a guest
     is_guest = current_user.get('guest', False)
-    
+
     # Initialize visible_users
     visible_users = []
-    
+
     if is_guest:
         # Handle guest user access
         access_type = current_user.get('access_type', 'family')
-        
+
         if access_type == 'family':
             # Show users in guest's assigned groups (including guest groups)
             guest_groups = current_user.get('groups', [])
@@ -773,7 +773,7 @@ def dashboard():
     else:
         # Regular user logic - SIMPLE VERSION
         current_user_groups = current_user.get('groups', [])
-        
+
         # If current user has no groups, show all non-guest users
         if not current_user_groups:
             visible_users = [user for user in users if not user.get('guest')]
@@ -784,7 +784,7 @@ def dashboard():
                 if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
                 and not user.get('guest')
             ]
-        
+
         # Move current user to top
         if current_user in visible_users:
             visible_users.insert(0, visible_users.pop(visible_users.index(current_user)))
@@ -801,7 +801,7 @@ def dashboard():
     }
 
     app_version = "v2.4.5"
-    
+
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
 
@@ -822,7 +822,7 @@ def dashboard():
 @app.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
-    
+
     current_password = request.form['current_password']
     new_password = request.form['new_password']
     confirm_password = request.form['confirm_password']
@@ -985,7 +985,7 @@ def user_gift_ideas(selected_user_id):
 def my_ideas():
     # Get the connected user
     connected_user = session.get('username')
-    
+
     # Load the gift ideas from the JSON file using load_gift_ideas()
     gift_ideas_data = load_gift_ideas()
 
@@ -1116,7 +1116,7 @@ def edit_idea(idea_id):
 
                 flash('Idea updated successfully!', 'success')
                 return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
-            
+
             imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
             # Render the edit idea form with pre-filled data
             return render_template('edit_idea.html', idea=idea, imgenabled=imgenabled)
@@ -1307,8 +1307,8 @@ def manage_users():
     # Transform users into tuples for the template
     users_data = [
         (
-            user['username'], 
-            user['full_name'], 
+            user['username'],
+            user['full_name'],
             user.get('email', 'N/A'),  # Default to 'N/A' if email is missing
             user.get('avatar', 'avatar1.png'),  # Default to placeholder if avatar is missing
             user.get('admin', 'N/A')  # Default to 'N/A' if admin is missing
@@ -1622,7 +1622,7 @@ def setup_oidc():
         load_dotenv(dotenv_path, override=True)
     except FileNotFoundError:
         flash("Environment file not found. Creating a new one.", "warning")
-    
+
     current_values = {
         "OIDC_CLIENT_ID": os.getenv("OIDC_CLIENT_ID", ''),
         "OIDC_CLIENT_SECRET": os.getenv("OIDC_CLIENT_SECRET", ''),
@@ -1638,7 +1638,7 @@ def setup_oidc():
 
     return render_template('setup_oidc.html', current_values=current_values)
 
-# Families 
+# Families
 # Start
 @app.route('/families', methods=['GET', 'POST'])
 @admin_required
@@ -1696,7 +1696,7 @@ def update_group_assignments():
     flash('Group assignments updated successfully!', 'success')
     return redirect(url_for('manage_groups'))
 
-# Families 
+# Families
 # End
 @app.route('/setup_advanced', methods=['GET'])
 @admin_required
@@ -1752,7 +1752,7 @@ def run_script():
     except Exception as e:
         error_message = f"Error occurred while running delete_old_gift_ideas: {e}\n\n"
         return render_template('script_output.html', script_output=error_message)
-    
+
 
 
 def fetch_og_image(url):
@@ -1801,28 +1801,28 @@ def get_og_image():
     if og_image_url:
         return jsonify({"og_image_url": og_image_url})
     else:
-        return jsonify({"error": "No OG image found"}), 404    
+        return jsonify({"error": "No OG image found"}), 404
 
 @app.route('/manage_guest_users', methods=['GET', 'POST'])
 @admin_required
 def manage_guest_users():
     users = load_users()
-    
+
     if request.method == 'POST':
         display_name = request.form.get('display_name')
         password = request.form.get('password')
         access_type = request.form.get('access_type', 'family')
-        
+
         # Generate guest username
         base_username = "guest_" + display_name.lower().replace(' ', '_').replace("'", "")
         username = base_username
         counter = 1
-        
+
         # Ensure unique username
         while any(user['username'] == username for user in users):
             username = f"{base_username}_{counter}"
             counter += 1
-        
+
         # Create guest user
         new_guest = {
             "username": username,
@@ -1834,24 +1834,24 @@ def manage_guest_users():
             "groups": [],
             "access_users": []
         }
-        
+
         # Set access based on type
         if access_type == 'family':
             new_guest['groups'] = request.form.getlist('access_groups')
         else:  # people access
             new_guest['access_users'] = request.form.getlist('access_users')
-            
+
             # Create private family groups for each selected person
             private_groups = []
             for selected_username in new_guest['access_users']:
                 # Create a unique private family name
                 private_family_name = f"guest_{username}_{selected_username}"
                 private_groups.append(private_family_name)
-                
+
                 # Add this private family to the guest user
                 if private_family_name not in new_guest['groups']:
                     new_guest['groups'].append(private_family_name)
-                
+
                 # Add the private family to the selected user WITHOUT removing them from global access
                 for user in users:
                     if user['username'] == selected_username:
@@ -1860,25 +1860,25 @@ def manage_guest_users():
                         if private_family_name not in user['groups']:
                             user['groups'].append(private_family_name)
                         # User keeps their existing groups and remains in global access
-        
+
         users.append(new_guest)
         save_users(users)
         flash('Guest user created successfully!', 'success')
         return redirect(url_for('manage_guest_users'))
-    
+
     # Get all available groups and users for the form
     all_groups = sorted(set(
-        group for user in users 
+        group for user in users
         for group in user.get('groups', [])
     ))
-    
+
     # Get non-guest users for people access
     all_users = [user for user in users if not user.get('guest')]
-    
+
     # Get existing guest users
     guest_users = [user for user in users if user.get('guest')]
-    
-    return render_template('manage_guest_users.html', 
+
+    return render_template('manage_guest_users.html',
                          guest_users=guest_users,
                          all_groups=all_groups,
                          all_users=all_users)
@@ -1889,59 +1889,59 @@ def manage_guest_users():
 def delete_guest_user(username):
     users = load_users()
     gift_ideas_data = load_gift_ideas()
-    
+
     # Find the guest user before deleting to get their details
     guest_user = next((user for user in users if user['username'] == username), None)
-    
+
     if guest_user:
         # 1. Remove ALL guest's private family groups from all users
         for user in users:
             if 'groups' in user:
                 # Remove any group that starts with "guest_{username}_"
-                user['groups'] = [group for group in user['groups'] 
+                user['groups'] = [group for group in user['groups']
                                 if not group.startswith(f"guest_{username}_")]
                 # Also remove the main guest family group if it exists
-                user['groups'] = [group for group in user['groups'] 
+                user['groups'] = [group for group in user['groups']
                                 if group != f"guest_{username}"]
-        
+
         # 2. Delete entirely the gift ideas that were bought by this guest
         updated_gift_ideas = []
         deleted_count = 0
-        
+
         for idea in gift_ideas_data:
             if idea.get('bought_by') == username:
                 # Skip adding this idea to the updated list (effectively deleting it)
                 deleted_count += 1
                 continue
             updated_gift_ideas.append(idea)
-        
+
         # 3. Remove the guest user
         users = [user for user in users if user['username'] != username]
-        
+
         # Save both updated datasets
         save_users(users)
         save_gift_ideas(updated_gift_ideas)
-        
+
         flash(f'Guest user {username} deleted successfully! All private groups removed and {deleted_count} purchased gift ideas deleted.', 'success')
     else:
         flash('Guest user not found.', 'danger')
-    
+
     return redirect(url_for('manage_guest_users'))
 
 
 @app.route('/guest_login', methods=['POST'])
 def guest_login():
     password = request.form['password']
-    
+
     users = load_users()
-    
+
     # Look for a guest user with matching password
     for user in users:
         if user.get('guest') and verify_password(user['password'], password):
             session['username'] = user['username']
             flash('Guest login successful!', 'login_success')
             return redirect(url_for('dashboard'))
-    
+
     flash('Invalid guest password', 'login_error')
     return redirect(url_for('login'))
 
@@ -1960,10 +1960,10 @@ def get_visible_groups(users):
 def update_currency_settings():
     symbol = request.form.get('currency_symbol', '$')
     position = request.form.get('currency_position', 'before')
-    
+
     set_key(".env", "CURRENCY_SYMBOL", symbol)
     set_key(".env", "CURRENCY_POSITION", position)
-    
+
     flash('Currency settings updated! Please restart to see changes', 'success')
     return redirect(url_for('setup_advanced'))
 
@@ -1973,10 +1973,10 @@ def update_self_registration_settings():
     """Update self-registration settings"""
     enable_self_registration = request.form.get('enable_self_registration', 'false')
     joining_code = request.form.get('joining_code', '')
-    
+
     set_key(".env", "ENABLE_SELF_REGISTRATION", enable_self_registration)
     set_key(".env", "JOINING_CODE", joining_code)
-    
+
     flash('Self-registration settings updated successfully!', 'success')
     return redirect(url_for('setup_advanced'))
 

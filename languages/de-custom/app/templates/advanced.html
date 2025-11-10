@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Settings</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -73,7 +73,7 @@
             border-radius: 8px;
             padding: 24px;
         }
-        
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -88,21 +88,21 @@
         [data-theme="dark"] .helplogo {
             filter: invert(1) brightness(1.5);
         }
-        
+
         .sec-text{
             color: var(--secondary-text-color);
         }
-        
+
         .inputer{
             color: var(--button-text-color);
             background-color: var(--card-bg-color);
         }
-        
+
         .sidebar {
             overflow-y: scroll;
             transition: transform 0.3s ease-in-out;
         }
-        
+
         /* Mobile sidebar styles */
         @media (max-width: 768px) {
             .sidebar {
@@ -113,11 +113,11 @@
                 z-index: 50;
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .overlay {
                 position: fixed;
                 top: 0;
@@ -130,13 +130,13 @@
                 visibility: hidden;
                 transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             }
-            
+
             .overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
         }
-        
+
         /* Menu toggle styles */
         .menu-toggle {
             background: none;
@@ -147,11 +147,11 @@
             padding: 0.5rem;
             transition: transform 0.2s ease;
         }
-        
+
         .menu-toggle:hover {
             transform: scale(1.1);
         }
-        
+
         /* Menu item icons */
         .sidebar a i {
             width: 20px;
@@ -189,27 +189,27 @@
         function updateCurrencyPreview() {
             const symbol = document.getElementById('currency_symbol').value || '$';
             const position = document.querySelector('input[name="currency_position"]:checked').value;
-            
+
             let preview;
             if (position === 'before') {
                 preview = symbol + '50';
             } else {
                 preview = '50' + symbol;
             }
-            
+
             document.getElementById('currency_preview').textContent = preview;
         }
 
         // Initialize preview on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCurrencyPreview();
-            
+
             // Add event listeners for real-time preview
             const symbolInput = document.getElementById('currency_symbol');
             if (symbolInput) {
                 symbolInput.addEventListener('input', updateCurrencyPreview);
             }
-            
+
             const positionRadios = document.querySelectorAll('input[name="currency_position"]');
             positionRadios.forEach(radio => {
                 radio.addEventListener('change', updateCurrencyPreview);
@@ -221,7 +221,7 @@
     <div class="flex h-screen">
         <!-- Overlay for mobile sidebar -->
         <div class="overlay" id="sidebarOverlay"></div>
-        
+
         <!-- Sidebar -->
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
@@ -303,24 +303,24 @@
                         <div class="mb-4">
                             <p class="mb-2">Gebe die ID oder den Namen deines Docker-Containers an, damit du ihn von der Admin-Dashboard-Seite aus neu starten kannst. Du musst /var/run/docker.sock:/var/run/docker.sock als Volume mounten.</p>
                             <label for="containerid" class="block sec-text font-medium">Container ID</label>
-                            <input 
-                                type="text" 
-                                id="containerid" 
-                                name="containerid" 
+                            <input
+                                type="text"
+                                id="containerid"
+                                name="containerid"
                                 value="{{ current_ID }}"
                                 class="border border-gray-300 rounded px-4 py-2 w-full inputer">
-                        </div>    
-                        <button 
-                            type="submit" 
+                        </div>
+                        <button
+                            type="submit"
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Save
                         </button>
                     </form>
-                    
+
                     <div class="my-6 border-t border-gray-300"></div>
-                    
+
                     <!-- Reordering Section -->
-                    <form method="post" action="{{ url_for('update_reordering') }}">  
+                    <form method="post" action="{{ url_for('update_reordering') }}">
                         <div class="mb-4">
                             <p class="mb-2">Aktiviere die Schaltfläche zum Neuordnen auf der Seite "Meine Ideen".</p>
                             <label for="reordering" class="block sec-text font-medium">Neuordnen-Schaltfläche</label>
@@ -329,17 +329,17 @@
                                 <option value="false" {% if current_reorder == 'false' %}selected{% endif %}>Deaktivieren</option>
                             </select>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Save
                         </button>
-                    </form>  
-                    
+                    </form>
+
                     <div class="my-6 border-t border-gray-300"></div>
-                    
+
                     <!-- Images Section -->
-                    <form method="post" action="{{ url_for('update_images') }}">  
+                    <form method="post" action="{{ url_for('update_images') }}">
                         <div class="mb-4">
                             <p class="mb-2">Bilder aktivieren</p>
                             <label for="images" class="block sec-text font-medium">Bilder</label>
@@ -348,8 +348,8 @@
                                 <option value="false" {% if images == 'false' %}selected{% endif %}>Deaktivieren</option>
                             </select>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Save
                         </button>
@@ -361,15 +361,15 @@
                     <form method="post" action="{{ url_for('update_currency_settings') }}">
                         <div class="mb-6">
                             <h3 class="text-xl font-semibold mb-4">Währungseinstellungen</h3>
-                            
+
                             <!-- Currency Symbol -->
                             <div class="mb-4">
                                 <label for="currency_symbol" class="block sec-text font-medium mb-2">
                                     Währungssymbol
                                 </label>
-                                <input type="text" 
-                                       id="currency_symbol" 
-                                       name="currency_symbol" 
+                                <input type="text"
+                                       id="currency_symbol"
+                                       name="currency_symbol"
                                        value="{{ current_currency_symbol }}"
                                        maxlength="5"
                                        class="w-full px-3 py-2 border rounded-md inputer"
@@ -384,12 +384,12 @@
                                 </label>
                                 <div class="space-y-2">
                                     <label class="flex items-center">
-                                        <input type="radio" name="currency_position" value="before" 
+                                        <input type="radio" name="currency_position" value="before"
                                                class="mr-2" {{ 'checked' if current_currency_position == 'before' }}>
                                         <span>Vor dem Betrag (z.B., $50)</span>
                                     </label>
                                     <label class="flex items-center">
-                                        <input type="radio" name="currency_position" value="after" 
+                                        <input type="radio" name="currency_position" value="after"
                                                class="mr-2" {{ 'checked' if current_currency_position == 'after' }}>
                                         <span>Nach dem Betrag (z.B., 50€)</span>
                                     </label>
@@ -405,7 +405,7 @@
 
                             <!-- Submit Button -->
                             <div class="text-center mt-4">
-                                <button type="submit" 
+                                <button type="submit"
                                         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
                                     Währungseinstellungen speichern
                                 </button>
@@ -418,11 +418,11 @@
                     <form method="post" action="{{ url_for('update_self_registration_settings') }}">
                         <div class="mb-6">
                             <h3 class="text-xl font-semibold mb-4">Selbstregistrierungseinstellungen</h3>
-                            
+
                             <!-- Enable Self Registration -->
                             <div class="mb-4">
                                 <label class="flex items-center">
-                                    <input type="checkbox" name="enable_self_registration" value="true" 
+                                    <input type="checkbox" name="enable_self_registration" value="true"
                                         class="mr-2" {{ 'checked' if enable_self_registration }}>
                                     <span class="font-medium">Selbstregistrierung aktivieren</span>
                                 </label>
@@ -434,9 +434,9 @@
                                 <label for="joining_code" class="block sec-text font-medium mb-2">
                                     Beitrittscode (Optional)
                                 </label>
-                                <input type="text" 
-                                    id="joining_code" 
-                                    name="joining_code" 
+                                <input type="text"
+                                    id="joining_code"
+                                    name="joining_code"
                                     value="{{ joining_code }}"
                                     class="w-full px-3 py-2 border rounded-md inputer"
                                     placeholder="Leer lassen, um die Registrierung für alle zu erlauben">
@@ -447,7 +447,7 @@
 
                             <!-- Submit Button -->
                             <div class="text-center mt-4">
-                                <button type="submit" 
+                                <button type="submit"
                                         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
                                     Registrierungseinstellungen speichern
                                 </button>
@@ -459,24 +459,22 @@
         </div>
     </div>
 
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         // Sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const menuToggle = document.getElementById('menuToggle');
             const overlay = document.getElementById('sidebarOverlay');
-            
+
             function toggleSidebar() {
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
                 document.body.classList.toggle('no-scroll');
             }
-            
+
             menuToggle.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
-            
+
             // Close sidebar when a navigation link is clicked (on mobile)
             const navLinks = document.querySelectorAll('.sidebar a');
             navLinks.forEach(link => {

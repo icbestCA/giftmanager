@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geschenke Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="/tailwind.min.css" rel="stylesheet">
+    <script src="/fa.min.js" crossorigin="anonymous"></script>
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -178,7 +178,7 @@
             border-radius: 8px;
             padding: 24px;
         }
-        
+
         .helplogo {
             width: 24px;
             height: 24px;
@@ -215,14 +215,14 @@
         .version{
             color: var(--text-color);
         }
-        
+
         /* Dropdown styles */
         .dropdown-container {
             background-color: var(--card-bg-color);
             padding: 16px;
             margin-bottom: 16px;
         }
-        
+
         .dropdown-header {
             display: flex;
             justify-content: space-between;
@@ -231,29 +231,29 @@
             font-weight: 600;
             color: var(--primary-text-color);
         }
-        
+
         .dropdown-content {
             margin-top: 12px;
             overflow: hidden;
             transition: max-height 0.3s ease-in-out;
             max-height: 0;
         }
-        
+
         .dropdown-content.open {
             max-height: 500px;
         }
-        
+
         .dropdown-content form {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        
+
         .dropdown-content label {
             color: var(--primary-text-color);
             font-size: 14px;
         }
-        
+
         .dropdown-content input {
             padding: 8px;
             border-radius: 4px;
@@ -261,26 +261,26 @@
             background-color: var(--input-bg-color);
             color: var(--input-text-color);
         }
-        
+
         .dropdown-chevron {
             transition: transform 0.3s ease-in-out;
         }
-        
+
         .dropdown-chevron.rotated {
             transform: rotate(180deg);
         }
-        
+
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
         }
-        
+
         .sidebar-bottom {
             margin-top: auto;
             padding-top: px;
             border-top: 1px solid var(--hr-border-color);
         }
-        
+
         .bottom-item {
             display: flex;
             align-items: center;
@@ -289,11 +289,11 @@
             text-decoration: none;
             transition: color 0.2s;
         }
-        
+
         .bottom-item:hover {
             color: var(--primary-text-color);
         }
-        
+
         .bottom-item img {
             margin-right: 8px;
         }
@@ -324,7 +324,7 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-content">
                 <h2 class="text-lg font-semibold mb-4 text-primary">Menü</h2>
-                
+
                 <!-- Display Error Messages -->
                 {% if password_messages %}
                     <div class="alert alert-danger">
@@ -352,13 +352,13 @@
                         <form method="POST" action="/change_password">
                             <label for="current_password">Aktuelles Passwort</label>
                             <input type="password" name="current_password" class="inputer" required>
-                            
+
                             <label for="new_password">Neues Passwort</label>
                             <input type="password" name="new_password" class="inputer" required>
-                            
+
                             <label for="confirm_password">Neues Passwort wiederholen</label>
                             <input type="password" name="confirm_password" class="inputer" required>
-                            
+
                             <button type="submit" class="rounded-blue-button mt-2">Passwort ändern</button>
                         </form>
                     </div>
@@ -374,30 +374,30 @@
                         <form method="POST" action="/change_email">
                             <label for="new_email">Neue Email</label>
                             <input type="email" name="new_email" class="inputer" required>
-                            
+
                             <button type="submit" class="rounded-blue-button mt-2">Email ändern</button>
                         </form>
                     </div>
                 </div>
                 {% endif %}
             </div>
-            
+
             <!-- Fixed bottom section -->
             <div class="sidebar-bottom">
                 <a href="/logout" class="bottom-item">
                     <span style="padding-right: 10px;">Logout</span>
                     <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout">
-                    
+
                 </a>
-                
+
                 <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
                     <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme
                 </button>
-                
+
                 {% if profile_info['admin'] == true %}
                     <a href="/admin" class="bottom-item" style="padding-top: 10px;">Admin Dashboard</a>
                 {% endif %}
-                
+
                 <p class="text-secondary text-sm version mt-4">Giftmanager <br> {{app_version}}</p>
             </div>
         </div>
@@ -481,7 +481,7 @@
         function toggleDropdown(dropdownId, chevronId) {
             const dropdown = document.getElementById(dropdownId);
             const chevron = document.getElementById(chevronId);
-            
+
             dropdown.classList.toggle('open');
             chevron.classList.toggle('rotated');
         }
@@ -516,7 +516,7 @@
             const theme = getThemeFromCookie();
             htmlElement.setAttribute('data-theme', theme);
         });
-        
+
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
