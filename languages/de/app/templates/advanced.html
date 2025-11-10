@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+        
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+        
+        .inputer{
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+        }
+        
+        .sidebar {
+            overflow-y: scroll;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Mobile sidebar styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 50;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: var(--overlay-bg-color);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+            
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        
+        /* Menu toggle styles */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Menu item icons */
+        .sidebar a i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        .preview-box {
+            background-color: var(--card-bg-color);
+            border: 2px dashed var(--card-border-color);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        // Inline script to apply the theme from the cookie immediately
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+
+        function updateCurrencyPreview() {
+            const symbol = document.getElementById('currency_symbol').value || '$';
+            const position = document.querySelector('input[name="currency_position"]:checked').value;
+            
+            let preview;
+            if (position === 'before') {
+                preview = symbol + '50';
+            } else {
+                preview = '50' + symbol;
+            }
+            
+            document.getElementById('currency_preview').textContent = preview;
+        }
+
+        // Initialize preview on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrencyPreview();
+            
+            // Add event listeners for real-time preview
+            const symbolInput = document.getElementById('currency_symbol');
+            if (symbolInput) {
+                symbolInput.addEventListener('input', updateCurrencyPreview);
+            }
+            
+            const positionRadios = document.querySelectorAll('input[name="currency_position"]');
+            positionRadios.forEach(radio => {
+                radio.addEventListener('change', updateCurrencyPreview);
+            });
+        });
+    </script>
+</head>
+<body class="font-sans">
+    <div class="flex h-screen">
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
+            <div class="px-6 py-4">
+                <a href="/admin" class="text-2xl font-semibold">
+                    Admin Dashboard
+                </a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-6">
+                <!-- Group 1 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Verwaltung</h2>
+                    <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-users"></i> Benutzer
+                    </a>
+                    <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-gift"></i> Wichteln
+                    </a>
+                    <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-plus"></i> Benutzer hinzufügen
+                    </a>
+                    <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-people-group"></i> Familien
+                    </a>
+                    <a href="{{ url_for('manage_guest_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-clock"></i> Gastbenutzer
+                    </a>
+                </div>
+                <!-- Group 2 -->
+                <div>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Konfiguration & Wartung</h2>
+                    <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-trash"></i> Lösch-Skript
+                    </a>
+                    <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-envelope"></i> E-Mail-Einstellungen
+                    </a>
+                    <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Login-Einstellungen
+                    </a>
+                    <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-shield-halved"></i> OIDC Einstellungen
+                    </a>
+                    <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-user-cog"></i> Erweitert
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <header class="header shadow p-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold">Erweiterte Einstellungen</h2>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">Zum Dashboard</a>
+                </div>
+            </header>
+
+            <main class="p-6">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="main p-6 rounded shadow section">
+                    <!-- Container ID Section -->
+                    <form method="post" action="{{ url_for('update_containerid') }}">
+                        <div class="mb-4">
+                            <p class="mb-2">Gebe die ID oder den Namen deines Docker-Containers an, damit du ihn von der Admin-Dashboard-Seite aus neu starten kannst. Du musst /var/run/docker.sock:/var/run/docker.sock als Volume mounten.</p>
+                            <label for="containerid" class="block sec-text font-medium">Container ID</label>
+                            <input 
+                                type="text" 
+                                id="containerid" 
+                                name="containerid" 
+                                value="{{ current_ID }}"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer">
+                        </div>    
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                            Save
+                        </button>
+                    </form>
+                    
+                    <div class="my-6 border-t border-gray-300"></div>
+                    
+                    <!-- Reordering Section -->
+                    <form method="post" action="{{ url_for('update_reordering') }}">  
+                        <div class="mb-4">
+                            <p class="mb-2">Aktiviere die Schaltfläche zum Neuordnen auf der Seite "Meine Ideen".</p>
+                            <label for="reordering" class="block sec-text font-medium">Neuordnen-Schaltfläche</label>
+                            <select id="reordering" name="reordering" class="p-3 w-full border rounded-lg inputer">
+                                <option value="true" {% if current_reorder == 'true' %}selected{% endif %}>Aktivieren</option>
+                                <option value="false" {% if current_reorder == 'false' %}selected{% endif %}>Deaktivieren</option>
+                            </select>
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                            Save
+                        </button>
+                    </form>  
+                    
+                    <div class="my-6 border-t border-gray-300"></div>
+                    
+                    <!-- Images Section -->
+                    <form method="post" action="{{ url_for('update_images') }}">  
+                        <div class="mb-4">
+                            <p class="mb-2">Bilder aktivieren</p>
+                            <label for="images" class="block sec-text font-medium">Bilder</label>
+                            <select id="images" name="images" class="p-3 w-full border rounded-lg inputer">
+                                <option value="true" {% if images == 'true' %}selected{% endif %}>Aktivieren</option>
+                                <option value="false" {% if images == 'false' %}selected{% endif %}>Deaktivieren</option>
+                            </select>
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                            Save
+                        </button>
+                    </form>
+
+                    <div class="my-6 border-t border-gray-300"></div>
+
+                    <!-- Currency Settings Section -->
+                    <form method="post" action="{{ url_for('update_currency_settings') }}">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Währungseinstellungen</h3>
+                            
+                            <!-- Currency Symbol -->
+                            <div class="mb-4">
+                                <label for="currency_symbol" class="block sec-text font-medium mb-2">
+                                    Währungssymbol
+                                </label>
+                                <input type="text" 
+                                       id="currency_symbol" 
+                                       name="currency_symbol" 
+                                       value="{{ current_currency_symbol }}"
+                                       maxlength="5"
+                                       class="w-full px-3 py-2 border rounded-md inputer"
+                                       placeholder="z.B., $, €, £, ¥">
+                                <p class="text-sm text-gray-500 mt-1">Geben Sie das Währungssymbol ein (maximal 5 Zeichen)</p>
+                            </div>
+
+                            <!-- Currency Position -->
+                            <div class="mb-4">
+                                <label class="block sec-text font-medium mb-2">
+                                    Symbolposition
+                                </label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="currency_position" value="before" 
+                                               class="mr-2" {{ 'checked' if current_currency_position == 'before' }}>
+                                        <span>Vor dem Betrag (z.B., $50)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="currency_position" value="after" 
+                                               class="mr-2" {{ 'checked' if current_currency_position == 'after' }}>
+                                        <span>Nach dem Betrag (z.B., 50€)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Preview -->
+                            <div class="preview-box">
+                                <h4 class="font-medium mb-2">Vorschau:</h4>
+                                <div class="text-2xl font-bold" id="currency_preview"></div>
+                                <p class="text-sm text-gray-500 mt-2">So werden die Geschenkwerte angezeigt</p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
+                                    Währungseinstellungen speichern
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="my-6 border-t border-gray-300"></div>
+
+                    <!-- Self-Registration Settings Section -->
+                    <form method="post" action="{{ url_for('update_self_registration_settings') }}">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Selbstregistrierungseinstellungen</h3>
+                            
+                            <!-- Enable Self Registration -->
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="enable_self_registration" value="true" 
+                                        class="mr-2" {{ 'checked' if enable_self_registration }}>
+                                    <span class="font-medium">Selbstregistrierung aktivieren</span>
+                                </label>
+                                <p class="text-sm text-gray-500 mt-1 ml-6">Erlaube neuen Benutzern, eigene Konten zu erstellen</p>
+                            </div>
+
+                            <!-- Joining Code -->
+                            <div class="mb-4 ml-6">
+                                <label for="joining_code" class="block sec-text font-medium mb-2">
+                                    Beitrittscode (Optional)
+                                </label>
+                                <input type="text" 
+                                    id="joining_code" 
+                                    name="joining_code" 
+                                    value="{{ joining_code }}"
+                                    class="w-full px-3 py-2 border rounded-md inputer"
+                                    placeholder="Leer lassen, um die Registrierung für alle zu erlauben">
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Wenn gesetzt, müssen Benutzer diesen Code bei der Registrierung angeben. Leer lassen für offene Registrierung.
+                                </p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
+                                    Registrierungseinstellungen speichern
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.classList.toggle('no-scroll');
+            }
+            
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when a navigation link is clicked (on mobile)
+            const navLinks = document.querySelectorAll('.sidebar a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

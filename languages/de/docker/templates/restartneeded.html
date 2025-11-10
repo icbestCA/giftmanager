@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restart Required</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #e74c3c;
+            font-size: 2.5rem;
+        }
+        h2 {
+            font-size: 1.2rem;
+            color: #555;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 1rem;
+            color: #333;
+        }
+        .restart-button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .restart-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Restart Required</h1>
+        <h2>We’ve just created some necessary files (environment and data). To apply these changes, please restart the app.</h2>
+        <p>Once you restart the Docker container, Gunicorn will pick up the changes, and the app will be able to read the new environment and data files.</p>
+        <p>After restarting, refresh this page to proceed to the setup.</p>
+    </div>
+</body>
+</html>
