@@ -818,7 +818,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.5.0"
+    app_version = "v2.5.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1293,17 +1293,26 @@ def admin_dashboard():
 @app.route('/users', methods=['GET', 'POST'])
 @admin_required
 def manage_users():
-
-    # Load users and filter out guests immediately
-    users = [ user for user in load_users() if not user.get('guest', False) and not user.get('shared_list', False) ]
-
+    # Load ALL users (including shared lists) for processing
+    all_users = load_users()
+    
+    # Filter only regular users for display/management
+    users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
     if request.method == 'POST':
         username = request.form.get('username')
 
         # Handle delete
         if 'delete_user' in request.form:
-            users = [user for user in users if user['username'] != username]
+            # Remove only the regular user from both arrays
+            all_users = [user for user in all_users if user['username'] != username]
+            
+            # Remove user from list_members in shared lists
+            for user_obj in all_users:
+                if user_obj.get('shared_list') and 'list_members' in user_obj:
+                    if username in user_obj['list_members']:
+                        user_obj['list_members'].remove(username)
+            
             flash('User deleted successfully!', 'success')
 
         # Handle toggle admin
@@ -1311,6 +1320,10 @@ def manage_users():
             for user in users:
                 if user['username'] == username:
                     user['admin'] = bool(int(request.form['toggle_admin']))
+                    # Also update in all_users to maintain consistency
+                    for u in all_users:
+                        if u['username'] == username and not u.get('shared_list'):
+                            u['admin'] = bool(int(request.form['toggle_admin']))
                     flash('Admin status updated successfully!', 'success')
                     break
 
@@ -1325,23 +1338,31 @@ def manage_users():
                 if user['username'] == username:
                     user['full_name'] = updated_name
                     user['email'] = updated_email if updated_email else user.get('email', 'N/A')
-                    user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')  # Default avatar if missing
+                    user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')
                     if updated_password:
-                        user['password'] = ph.hash(updated_password)  # Hash the new password
+                        user['password'] = ph.hash(updated_password)
+                    # Also update in all_users
+                    for u in all_users:
+                        if u['username'] == username and not u.get('shared_list'):
+                            u.update(user)
                     flash('User updated successfully!', 'success')
                     break
 
-        # Save updated users to the JSON file using the pre-defined function
-        save_users(users)
+        # Save ALL users (including shared lists) back to the file
+        save_users(all_users)
+        
+        # Reload for display
+        all_users = load_users()
+        users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
     # Transform users into tuples for the template
     users_data = [
         (
             user['username'], 
             user['full_name'], 
-            user.get('email', 'N/A'),  # Default to 'N/A' if email is missing
-            user.get('avatar', 'avatar1.png'),  # Default to placeholder if avatar is missing
-            user.get('admin', 'N/A')  # Default to 'N/A' if admin is missing
+            user.get('email', 'N/A'),
+            user.get('avatar', 'avatar1.png'),
+            user.get('admin', 'N/A')
         )
         for user in users
     ]
