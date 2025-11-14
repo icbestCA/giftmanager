@@ -818,7 +818,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.5.1"
+    app_version = "v2.5.2"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1891,26 +1891,6 @@ def manage_guest_users():
             new_guest['groups'] = request.form.getlist('access_groups')
         else:  # people access
             new_guest['access_users'] = request.form.getlist('access_users')
-            
-            # Create private family groups for each selected person
-            private_groups = []
-            for selected_username in new_guest['access_users']:
-                # Create a unique private family name
-                private_family_name = f"guest_{username}_{selected_username}"
-                private_groups.append(private_family_name)
-                
-                # Add this private family to the guest user
-                if private_family_name not in new_guest['groups']:
-                    new_guest['groups'].append(private_family_name)
-                
-                # Add the private family to the selected user WITHOUT removing them from global access
-                for user in users:
-                    if user['username'] == selected_username:
-                        if 'groups' not in user:
-                            user['groups'] = []
-                        if private_family_name not in user['groups']:
-                            user['groups'].append(private_family_name)
-                        # User keeps their existing groups and remains in global access
         
         users.append(new_guest)
         save_users(users)
@@ -1945,15 +1925,8 @@ def delete_guest_user(username):
     guest_user = next((user for user in users if user['username'] == username), None)
     
     if guest_user:
-        # 1. Remove ALL guest's private family groups from all users
-        for user in users:
-            if 'groups' in user:
-                # Remove any group that starts with "guest_{username}_"
-                user['groups'] = [group for group in user['groups'] 
-                                if not group.startswith(f"guest_{username}_")]
-                # Also remove the main guest family group if it exists
-                user['groups'] = [group for group in user['groups'] 
-                                if group != f"guest_{username}"]
+        # 1. Remove the guest user
+        users = [user for user in users if user['username'] != username]
         
         # 2. Delete entirely the gift ideas that were bought by this guest
         updated_gift_ideas = []
@@ -1966,14 +1939,11 @@ def delete_guest_user(username):
                 continue
             updated_gift_ideas.append(idea)
         
-        # 3. Remove the guest user
-        users = [user for user in users if user['username'] != username]
-        
         # Save both updated datasets
         save_users(users)
         save_gift_ideas(updated_gift_ideas)
         
-        flash(f'Guest user {username} deleted successfully! All private groups removed and {deleted_count} purchased gift ideas deleted.', 'success')
+        flash(f'Guest user {username} deleted successfully! {deleted_count} purchased gift ideas deleted.', 'success')
     else:
         flash('Guest user not found.', 'danger')
     
