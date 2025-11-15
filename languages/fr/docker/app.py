@@ -429,6 +429,7 @@ def index():
 def login():
     guests_exist_flag = guests_exist()
     enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
+    enable_self_registration = os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true'
 
 
     # For GET requests, render the login page
