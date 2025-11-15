@@ -12,8 +12,8 @@ import random
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
@@ -26,6 +26,32 @@ mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
 ph = PasswordHasher()
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+def read_env_variable(key, default=None):
+    """Read environment variable from .env file with proper defaults"""
+    # Define the path here to avoid the default parameter issue
+    env_path = dotenv_path
+    
+    try:
+        with open(env_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    current_key, value = line.split('=', 1)
+                    if current_key.strip() == key:
+                        value = value.strip()
+                        # Remove quotes
+                        if value and ((value[0] == '"' and value[-1] == '"') or (value[0] == "'" and value[-1] == "'")):
+                            value = value[1:-1]
+                        return value if value else default
+    except FileNotFoundError:
+        pass  # .env file doesn't exist, that's okay
+    except Exception as e:
+        print(f"Error reading .env file: {e}")
+    
+    # Fallback to system environment
+    return os.getenv(key, default)
 
 
 def load_gift_ideas():
@@ -154,10 +180,10 @@ def change_email():
 
 
 def get_currency_symbol():
-    return os.getenv('CURRENCY_SYMBOL', '$')
+    return read_env_variable("CURRENCY_SYMBOL", "$")
 
 def get_currency_position():
-    return os.getenv('CURRENCY_POSITION', 'before')
+    return read_env_variable("CURRENCY_POSITION", "before")
 
 def format_currency(amount):
     symbol = get_currency_symbol()
@@ -171,12 +197,12 @@ def format_currency(amount):
 
 @app.context_processor
 def utility_processor():
-    # Use the existing get_full_name function that's already defined
     return dict(
-        get_full_name=get_full_name,  # This uses the function you already have
+        get_full_name=get_full_name, 
         format_currency=format_currency,
         get_currency_symbol=get_currency_symbol,
-        get_currency_position=get_currency_position
+        get_currency_position=get_currency_position,
+        generate_share_url=generate_share_url
     )
 
 
@@ -270,7 +296,7 @@ def auth():
         return redirect(url_for("dashboard"))
     
     # Handle auto-registration if enabled
-    if os.getenv("ENABLE_AUTO_REGISTRATION", "false").lower() == "true":
+    if read_env_variable("ENABLE_AUTO_REGISTRATION", "false").lower() == "true":
         # Create a new user profile
         new_user = {
             "username": user_info.get("preferred_username"),
@@ -311,7 +337,7 @@ def setup_profile():
         return redirect(url_for("dashboard"))
     
     # Check if default login is enabled
-    enable_default_login = os.getenv("ENABLE_DEFAULT_LOGIN", "true").lower() == "true"
+    enable_default_login = read_env_variable("ENABLE_DEFAULT_LOGIN", "true").lower() == "true"
 
     if request.method == "POST":
         # Handle form submission to update profile details
@@ -366,8 +392,8 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     guests_exist_flag = guests_exist()
-    enable_default_login = os.getenv('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
-    enable_self_registration = os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true'
+    enable_default_login = read_env_variable('ENABLE_DEFAULT_LOGIN', 'true').lower() == 'true'
+    enable_self_registration = read_env_variable('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true'
 
 
     # For GET requests, render the login page
@@ -424,12 +450,12 @@ def guests_exist():
 def register():
     """Self-registration page for new users"""
     # Check if self-registration is enabled
-    if not os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true':
+    if not read_env_variable('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true':
         flash('Self-registration is not enabled. Please contact an administrator.', 'danger')
         return redirect(url_for('login'))
     
     # Get joining code for template
-    joining_code = os.getenv('JOINING_CODE', '')
+    joining_code = read_env_variable('JOINING_CODE', '')
     
     if request.method == 'POST':
         # Get form data
@@ -567,7 +593,7 @@ def add2():
         
         # Redirect to the user's gift ideas page
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
-    imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the filtered user list
     return render_template('add2.html', user_list=user_list, imgenabled=imgenabled)
 
@@ -644,7 +670,7 @@ def add_idea(selected_user_id):
         # Flash success message and redirect
         flash(f'Idea "{name}" added for user {user} by {added_by}!', 'success')
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
-    imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the user list, gift ideas, and the selected user as default
     return render_template('add_idea.html', user_list=user_list, gift_ideas=gift_ideas_data, default_user=selected_user_id, imgenabled=imgenabled)
 
@@ -818,13 +844,16 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.5.2"
+    app_version = "v2.6.0"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
 
     # Get flash messages related to passwords
     password_messages = [msg for msg in get_flashed_messages() if 'password' in msg.lower() or 'email' in msg.lower()]
+
+    enable_link_sharing_value = read_env_variable("ENABLE_LINK_SHARING", "true")
+    enable_link_sharing = str(enable_link_sharing_value).lower() == 'true' if enable_link_sharing_value is not None else True
 
     # Render the dashboard page with the necessary context
     return render_template(
@@ -833,7 +862,8 @@ def dashboard():
         users=sorted_users,
         password_messages=password_messages,
         app_version=app_version,
-        assigned_users=assigned_users
+        assigned_users=assigned_users,
+        enable_link_sharing=enable_link_sharing
     )
 
 
@@ -997,7 +1027,7 @@ def user_gift_ideas(selected_user_id):
     is_shared_list_member = shared_list and connected_user in shared_list.get('list_members', [])
     # Call get_full_name function to fetch the user's full name directly in the route
     user_namels = get_full_name(selected_user_id)  # Get the full name based on the selected user ID
-    imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels, imgenabled=imgenabled, is_shared_list_member=is_shared_list_member)
 
 
@@ -1016,8 +1046,8 @@ def my_ideas():
     # Sort the gift ideas by priority, with ideas that have no priority appearing at the bottom
     my_gift_ideas.sort(key=lambda x: (x.get('priority', float('inf')), x['gift_idea_id']))
 
-    reordering = os.getenv('REORDERING', 'true').lower() == 'true'
-    imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
+    reordering = read_env_variable('REORDERING', 'true').lower() == 'true'
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Check if there are no ideas and redirect to a different page
     if not my_gift_ideas:
         flash('You haven\'t added any gift ideas.', 'info')
@@ -1147,7 +1177,7 @@ def edit_idea(idea_id):
                 flash('Idea updated successfully!', 'success')
                 return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
             
-            imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
+            imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
             # Render the edit idea form with pre-filled data
             return render_template('edit_idea.html', idea=idea, imgenabled=imgenabled)
         else:
@@ -1286,7 +1316,7 @@ def secret_santa_assignments():
 @app.route('/admin')
 @admin_required
 def admin_dashboard():
-    containerid = os.getenv("CONTAINER_ID")
+    containerid = read_env_variable("CONTAINER_ID")
     container_restart = bool(containerid)
     return render_template('admin_dashboard.html', container_restart=container_restart)
 
@@ -1417,16 +1447,6 @@ def edit_email_settings():
         'SYSTEM_EMAIL': os.getenv('SYSTEM_EMAIL', ''),
     }
     return render_template('edit_email_settings.html', settings=current_settings)
-
-def read_env_variable(key, dotenv_path=dotenv_path):
-    try:
-        with open(dotenv_path, 'r') as file:
-            for line in file:
-                if line.strip().startswith(f"{key}="):
-                    return line.strip().split('=', 1)[1].strip("'").strip('"')
-    except FileNotFoundError:
-        return None
-    return None
 
 @app.route('/edit_login_message', methods=['GET', 'POST'])
 @admin_required  # Assumes an @admin_required decorator exists for access control
@@ -1757,11 +1777,19 @@ def setup_advanced():
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()
     current_currency_position = get_currency_position()
-    enable_self_registration = os.getenv('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true'
-    joining_code = os.getenv('JOINING_CODE', '')
-    return render_template('advanced.html', current_ID=current_ID, current_reorder=current_reorder, images=images, current_currency_symbol=current_currency_symbol,
-                         current_currency_position=current_currency_position, enable_self_registration=enable_self_registration,
-                         joining_code=joining_code)
+    enable_self_registration = read_env_variable("ENABLE_SELF_REGISTRATION", "false").lower() == 'true'
+    enable_link_sharing = read_env_variable("ENABLE_LINK_SHARING", "true").lower() == 'true'
+    joining_code = read_env_variable("JOINING_CODE", "")
+    
+    return render_template('advanced.html', 
+                         current_ID=current_ID, 
+                         current_reorder=current_reorder, 
+                         images=images, 
+                         current_currency_symbol=current_currency_symbol,
+                         current_currency_position=current_currency_position, 
+                         enable_self_registration=enable_self_registration,
+                         joining_code=joining_code, 
+                         enable_link_sharing=enable_link_sharing)
 
 # Route to update CONTAINER_ID (POST request)
 @app.route('/update_containerid', methods=['POST'])
@@ -2119,6 +2147,318 @@ def edit_shared_list_members(list_username):
     
     flash(f'Members updated for "{shared_list["full_name"]}"!', 'success')
     return redirect(url_for('manage_shared_lists'))
+
+
+@app.route('/update_link_sharing', methods=['POST'])
+@admin_required
+def update_link_sharing():
+    """Update global link sharing setting"""
+    enable_link_sharing = request.form.get('enable_link_sharing', 'false').lower() == 'true'
+    
+    set_key(".env", "ENABLE_LINK_SHARING", str(enable_link_sharing).lower())
+    
+    flash('Link sharing settings updated!', 'success')
+    return redirect(url_for('setup_advanced'))
+
+
+def generate_share_token():
+    return secrets.token_urlsafe(16)
+
+@app.route('/manage_sharing', methods=['GET', 'POST'])
+@login_required
+def manage_sharing():
+
+    if not read_env_variable('ENABLE_LINK_SHARING', 'true').lower() == 'true':
+        flash('Link sharing feature is currently disabled by administrator.', 'danger')
+        return redirect(url_for('dashboard'))
+
+
+    users = load_users()
+    current_user = next((user for user in users if user['username'] == session['username']), None)
+    
+    if not current_user:
+        flash('User not found', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Get the target entity (user or shared list) for which we're managing sharing
+    target_username = request.args.get('for', session['username'])
+    target_entity = next((user for user in users if user['username'] == target_username), None)
+    
+    if not target_entity:
+        flash('Target not found', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Check permissions
+    if target_entity.get('shared_list'):
+        # For shared lists, check if current user is a member
+        if session['username'] not in target_entity.get('list_members', []):
+            flash('You are not a member of this shared list', 'danger')
+            return redirect(url_for('dashboard'))
+    else:
+        # For individual users, only the user themselves can manage sharing
+        if target_username != session['username']:
+            flash('You can only manage your own sharing settings', 'danger')
+            return redirect(url_for('dashboard'))
+    
+    # Initialize sharing structure if it doesn't exist
+    if 'sharing' not in target_entity:
+        target_entity['sharing'] = {'public_links': []}
+    
+    if request.method == 'POST':
+        # Create new share link
+        if 'create_link' in request.form:
+            link_name = request.form.get('link_name', 'My Gift List')
+            days_valid = int(request.form.get('days_valid', 30))
+            allow_purchases = request.form.get('allow_purchases', 'false') == 'true'
+            
+            new_link = {
+                'token': generate_share_token(),
+                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'expires_at': (datetime.now() + timedelta(days=days_valid)).strftime('%Y-%m-%d %H:%M:%S'),
+                'is_active': True,
+                'name': link_name,
+                'created_by': session['username'],
+                'allow_purchases': allow_purchases,  # New field
+                'visitor_purchases': []  # Track visitor purchases
+            }
+            
+            target_entity['sharing']['public_links'].append(new_link)
+            save_users(users)
+            flash('New share link created!', 'success')
+        
+        # Toggle link status
+        elif 'toggle_link' in request.form:
+            token = request.form['token']
+            for link in target_entity['sharing']['public_links']:
+                if link['token'] == token:
+                    link['is_active'] = not link['is_active']
+                    save_users(users)
+                    status = "activated" if link['is_active'] else "deactivated"
+                    flash(f'Share link {status}!', 'success')
+                    break
+        
+        # Extend expiration date
+        elif 'extend_link' in request.form:
+            token = request.form['token']
+            additional_days = int(request.form.get('additional_days', 30))
+            
+            for link in target_entity['sharing']['public_links']:
+                if link['token'] == token:
+                    current_expiry = datetime.strptime(link['expires_at'], '%Y-%m-%d %H:%M:%S')
+                    new_expiry = current_expiry + timedelta(days=additional_days)
+                    link['expires_at'] = new_expiry.strftime('%Y-%m-%d %H:%M:%S')
+                    save_users(users)
+                    flash(f'Share link extended by {additional_days} days! New expiry: {new_expiry.strftime("%Y-%m-%d")}', 'success')
+                    break
+        
+        # Delete link
+        elif 'delete_link' in request.form:
+            token = request.form['token']
+            target_entity['sharing']['public_links'] = [
+                link for link in target_entity['sharing']['public_links'] 
+                if link['token'] != token
+            ]
+            save_users(users)
+            flash('Share link deleted!', 'success')
+    
+    # Get all shared lists where current user is a member (for navigation)
+    user_shared_lists = [
+        user for user in users 
+        if user.get('shared_list') and session['username'] in user.get('list_members', [])
+    ]
+    
+    return render_template('manage_sharing.html', 
+                         sharing_data=target_entity['sharing'],
+                         target_entity=target_entity,
+                         user_shared_lists=user_shared_lists,
+                         current_target=target_username,
+                         datetime=datetime)  # Add this line
+
+@app.route('/shared/<token>')
+def shared_list(token):
+
+
+    if not read_env_variable('ENABLE_LINK_SHARING', 'true').lower() == 'true':
+        return render_template('shared_list_expired.html'), 404
+
+
+    """Public view of a shared gift list or individual user list"""
+    users = load_users()
+    gift_ideas_data = load_gift_ideas()
+    
+    # Find the entity (user or shared list) that owns this share token
+    share_owner = None
+    active_link = None
+    is_expired = False
+    
+    for user in users:
+        if 'sharing' in user and 'public_links' in user['sharing']:
+            for link in user['sharing']['public_links']:
+                if link['token'] == token:
+                    # Check if link has expired
+                    expires_at = datetime.strptime(link['expires_at'], '%Y-%m-%d %H:%M:%S')
+                    if datetime.now() <= expires_at and link.get('is_active', True):
+                        share_owner = user
+                        active_link = link
+                    else:
+                        share_owner = user
+                        active_link = link
+                        is_expired = True
+                    break
+    
+    if not share_owner or not active_link:
+        return render_template('shared_list_expired.html'), 404
+    
+    if is_expired:
+        return render_template('shared_list_expired.html'), 410  # 410 Gone
+    
+    # Get gift ideas for the share owner (could be individual user or shared list)
+    user_gift_ideas = [
+        idea for idea in gift_ideas_data 
+        if idea['user_id'] == share_owner['username']
+    ]
+    
+    # Sort by priority
+    user_gift_ideas.sort(key=lambda x: (x.get('priority', float('inf')), x['gift_idea_id']))
+    
+    # Get currency formatting for display
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
+    
+    return render_template('shared_list_public.html',
+                         gift_ideas=user_gift_ideas,
+                         share_owner=share_owner,
+                         share_link=active_link,
+                         imgenabled=imgenabled,
+                         get_full_name=get_full_name,
+                         format_currency=format_currency)
+
+@app.route('/shared/<token>/mark_bought/<int:idea_id>', methods=['POST'])
+def mark_shared_bought(token, idea_id):
+    """Allow visitors to mark items as bought in shared lists"""
+    users = load_users()
+    gift_ideas_data = load_gift_ideas()
+    
+    # Find the share link
+    share_owner = None
+    active_link = None
+    
+    for user in users:
+        if 'sharing' in user and 'public_links' in user['sharing']:
+            for link in user['sharing']['public_links']:
+                if link['token'] == token and link.get('is_active', True):
+                    expires_at = datetime.strptime(link['expires_at'], '%Y-%m-%d %H:%M:%S')
+                    if datetime.now() <= expires_at:
+                        share_owner = user
+                        active_link = link
+                    break
+    
+    if not share_owner or not active_link:
+        return jsonify({'error': 'Share link not found or expired'}), 404
+    
+    if not active_link.get('allow_purchases', False):
+        return jsonify({'error': 'Purchases not allowed for this share link'}), 403
+    
+    # Find the gift idea
+    idea = find_idea_by_id(gift_ideas_data, idea_id)
+    if not idea or idea['user_id'] != share_owner['username']:
+        return jsonify({'error': 'Gift idea not found'}), 404
+    
+    # Get visitor name from request
+    visitor_name = request.json.get('visitor_name', '').strip()
+    if not visitor_name:
+        return jsonify({'error': 'Visitor name is required'}), 400
+    
+    # Generate unique visitor ID
+    visitor_id = secrets.token_urlsafe(16)
+    
+    # Mark as bought by visitor
+    if not idea.get('bought_by'):
+        idea['bought_by'] = f"visitor:{visitor_name}"
+        idea['date_bought'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        idea['visitor_id'] = visitor_id
+        
+        # Track visitor purchase
+        if 'visitor_purchases' not in active_link:
+            active_link['visitor_purchases'] = []
+        active_link['visitor_purchases'].append({
+            'idea_id': idea_id,
+            'visitor_name': visitor_name,
+            'visitor_id': visitor_id,
+            'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        })
+        
+        save_gift_ideas(gift_ideas_data)
+        save_users(users)
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Item marked as purchased',
+            'visitor_id': visitor_id
+        })
+    else:
+        return jsonify({'error': 'Item already purchased'}), 400
+
+@app.route('/shared/<token>/mark_not_bought/<int:idea_id>', methods=['POST'])
+def mark_shared_not_bought(token, idea_id):
+    """Allow visitors to unmark items as bought"""
+    users = load_users()
+    gift_ideas_data = load_gift_ideas()
+    
+    # Find the share link
+    share_owner = None
+    active_link = None
+    
+    for user in users:
+        if 'sharing' in user and 'public_links' in user['sharing']:
+            for link in user['sharing']['public_links']:
+                if link['token'] == token and link.get('is_active', True):
+                    expires_at = datetime.strptime(link['expires_at'], '%Y-%m-%d %H:%M:%S')
+                    if datetime.now() <= expires_at:
+                        share_owner = user
+                        active_link = link
+                    break
+    
+    if not share_owner or not active_link:
+        return jsonify({'error': 'Share link not found or expired'}), 404
+    
+    # Find the gift idea
+    idea = find_idea_by_id(gift_ideas_data, idea_id)
+    if not idea or idea['user_id'] != share_owner['username']:
+        return jsonify({'error': 'Gift idea not found'}), 404
+    
+    # Get visitor ID from request
+    visitor_id = request.json.get('visitor_id')
+    if not visitor_id:
+        return jsonify({'error': 'Visitor ID required'}), 400
+    
+    # Check if this visitor made the purchase
+    if idea.get('bought_by', '').startswith('visitor:') and idea.get('visitor_id') == visitor_id:
+        idea['bought_by'] = None
+        idea.pop('date_bought', None)
+        idea.pop('visitor_id', None)
+        
+        # Remove from visitor purchases tracking
+        if 'visitor_purchases' in active_link:
+            active_link['visitor_purchases'] = [
+                purchase for purchase in active_link['visitor_purchases']
+                if purchase['idea_id'] != idea_id
+            ]
+        
+        save_gift_ideas(gift_ideas_data)
+        save_users(users)
+        
+        return jsonify({'success': True, 'message': 'Purchase cancelled'})
+    else:
+        return jsonify({'error': 'You can only cancel your own purchases'}), 403
+    
+def generate_share_url(token):
+    """Generate share URL with proper scheme (HTTPS if available)"""
+    # Determine the scheme from headers (in case behind reverse proxy)
+    forwarded_proto = request.headers.get('X-Forwarded-Proto', request.scheme)
+    scheme = forwarded_proto.split(',')[0].strip()  # Handle multi-value headers
+    
+    # Generate external URL with proper scheme
+    return url_for("shared_list", token=token, _external=True, _scheme=scheme)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
