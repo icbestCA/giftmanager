@@ -344,23 +344,34 @@
         }
 
         // Event listener for saving the reordered ideas
-        saveButton.addEventListener('click', () => {
+       saveButton.addEventListener('click', () => {
             const reorderedIdeas = [];
 
-            // Sort ideas based on updated priority input values
+            // Get ALL ideas (don't sort them)
             const ideasArray = Array.from(document.querySelectorAll('.idea-item'));
-            ideasArray.sort((a, b) => a.querySelector('.priority-input').value - b.querySelector('.priority-input').value);
-
-            // Update the DOM order and prepare for saving to the server
-            ideasArray.forEach((idea, index) => {
-                ideasList.appendChild(idea); // Reorder DOM elements
+            
+            // Use the actual input values from users, not automatic numbering
+            ideasArray.forEach((idea) => {
+                const priorityInput = idea.querySelector('.priority-input');
+                let priorityValue = priorityInput.value.trim();
+                
+                // Send empty string for empty inputs (backend will delete the field)
+                if (priorityValue === '') {
+                    priorityValue = '';
+                } else {
+                    // Convert to number for valid inputs
+                    priorityValue = parseInt(priorityValue);
+                    if (isNaN(priorityValue) || priorityValue <= 0) {
+                        priorityValue = '';
+                    }
+                }
+                
                 reorderedIdeas.push({
                     gift_idea_id: idea.getAttribute('data-idea-id'),
-                    priority: index + 1 // Updated priority
+                    priority: priorityValue
                 });
-                idea.querySelector('.priority-number').textContent = index + 1; // Update displayed priority
-                idea.querySelector('.priority-input').value = index + 1;
             });
+
 
             // Send updated order to the server
             fetch('/update_order', {
@@ -368,13 +379,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order: reorderedIdeas })
             })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
                 console.log('Success:', data);
-                toggleReorderMode(); // Exit reorder mode after saving
+                window.location.reload();
             })
-            .catch(error => console.error('Error:', error))
-            .finally(() => window.location.reload()); // Reload the page regardless of response
+            .catch(error => console.error('Error:', error));
         });
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

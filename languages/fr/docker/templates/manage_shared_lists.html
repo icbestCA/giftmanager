@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listes partagées</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .inputer {
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+
+        .card {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+
+        .edit-members-form {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--card-border-color);
+            border-radius: 0.5rem;
+            background-color: var(--card-bg-color);
+        }
+
+        .avatar-option {
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+            background-color: #f3f4f6;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .avatar-option.selected {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+        }
+
+        .avatar-option:hover {
+            background-color: #e5e7eb;
+        }
+
+        .avatar-option img {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.25rem;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            background-color: #9ca3af;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <header class="bg-white shadow p-4 header">
+        <div class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">Retour</button>
+            <h1 class="text-xl font-semibold">Listes partagées</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 max-w-2xl">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Create New Shared List Section -->
+        <div class="card p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Créer une nouvelle liste partagée</h2>
+            
+            <form method="POST" action="{{ url_for('manage_shared_lists') }}">
+                <div class="mb-4">
+                    <label for="list_name" class="block font-medium mb-2">Nom de la liste :</label>
+                    <input type="text" id="list_name" name="list_name" 
+                           class="w-full px-3 py-2 border rounded inputer" 
+                           placeholder="ex: Vacances familiales, bureau" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block font-medium mb-2">Avatar de la liste:</label>
+                    <div class="border rounded p-4">
+                        <div class="grid grid-cols-4 gap-2">
+                            {% for i in range(1, 9) %}
+                            <label class="avatar-option" for="avatar{{ i }}">
+                                <input type="radio" id="avatar{{ i }}" name="avatar" value="icons/avatar{{ i }}.png" 
+                                       class="hidden" {% if i == 1 %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='icons/avatar' ~ i ~ '.png') }}" 
+                                     alt="Avatar {{ i }}" 
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="avatar-placeholder" style="display: none;">
+                                    {{ i }}
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2 text-center">Sélectionnez un avatar pour votre liste partagée</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block font-medium mb-2">Ajouter des membres:</label>
+                    <div class="border rounded p-4 max-h-48 overflow-y-auto">
+                        {% for user in available_users %}
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" name="members" value="{{ user.username }}" class="mr-2">
+                            {{ user.full_name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Créer une liste partagée
+                </button>
+            </form>
+        </div>
+
+        <!-- Manage Existing Shared Lists Section -->
+        <div class="card p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Mes listes partagées</h2>
+            
+            {% if shared_lists %}
+            <div class="space-y-4">
+                {% for list in shared_lists %}
+                <div class="border rounded p-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <!-- Display actual avatar image instead of placeholder -->
+                                <img src="{{ url_for('static', filename=list.avatar if list.avatar else 'icons/avatar1.png') }}" 
+                                     alt="Avatar de la liste" 
+                                     class="w-8 h-8 rounded-full object-cover mr-3"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3" style="display: none;">
+                                    {{ list.full_name[0] }}
+                                </div>
+                                <h3 class="text-lg font-semibold">{{ list.full_name }}</h3>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                Members: 
+                                {% for username in list.list_members %}
+                                {{ get_full_name(username) }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                        <div class="flex space-x-2 ml-4">
+                            <a href="{{ url_for('user_gift_ideas', selected_user_id=list.username) }}" 
+                               class="bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">
+                                Voir
+                            </a>
+                            {% if list.list_owner == session['username'] %}
+                            <button onclick="toggleEditMembers('{{ list.username }}')" 
+                                    class="bg-yellow-500 text-white px-3 py-2 rounded text-sm hover:bg-yellow-600">
+                                Modifier
+                            </button>
+                            <form method="POST" action="{{ url_for('delete_shared_list', list_username=list.username) }}" 
+                                  onsubmit="return confirm('Delete this list?')">
+                                <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
+                                    Supprimer
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="bg-gray-500 text-white px-3 py-2 rounded text-sm">
+                                Membre
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Edit Members Form -->
+                    {% if list.list_owner == session['username'] %}
+                    <div id="edit-members-{{ list.username }}" class="edit-members-form">
+                        <h4 class="font-semibold mb-3">Modifier les membres</h4>
+                        <form method="POST" action="{{ url_for('edit_shared_list_members', list_username=list.username) }}">
+                            <div class="mb-4">
+                                <div class="border rounded p-4 max-h-48 overflow-y-auto">
+                                    {% for user in available_users %}
+                                    <label class="flex items-center mb-2">
+                                        <input type="checkbox" name="members" value="{{ user.username }}" 
+                                               class="mr-2" {% if user.username in list.list_members %}checked{% endif %}>
+                                        {{ user.full_name }}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600">
+                                    Enregistrer
+                                </button>
+                                <button type="button" onclick="toggleEditMembers('{{ list.username }}')" 
+                                        class="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">Pas encore de listes partagées.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Retour au tableau de bord
+            </a>
+        </div>
+    </main>
+
+    <script>
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', () => {
+            window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+        });
+        // Theme handling
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light';
+            }
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+
+        function toggleEditMembers(listUsername) {
+            const form = document.getElementById('edit-members-' + listUsername);
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectAvatar(avatarId) {
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('label[for="' + avatarId + '"]').classList.add('selected');
+            document.getElementById(avatarId).checked = true;
+        }
+
+        // Initialize avatar selection and image error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select first avatar on load
+            selectAvatar('avatar1');
+            
+            // Add click handlers for all avatar options
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const inputId = this.querySelector('input').id;
+                    selectAvatar(inputId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
