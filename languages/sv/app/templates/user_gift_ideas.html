@@ -202,7 +202,7 @@
                         {% endif %}
 
                         <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
-                            {% if gift_idea.added_by == session['username'] %}
+                            {% if gift_idea.added_by == session['username'] or is_shared_list_member %}
                             <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
                                 <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5 helplogo">
                             </button>

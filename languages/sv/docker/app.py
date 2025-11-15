@@ -451,6 +451,15 @@ def login():
             # Authenticate user
             for user in users:
                 if user['username'].lower() == input_username:
+                    if user.get('shared_list', False):
+                        flash('Användaren finns inte', 'login_error')
+                        return render_template(
+                            'login.html',
+                            oidc_enabled=oidc_enabled,
+                            login_message=login_message,
+                            guests_exist=guests_exist_flag,
+                            enable_self_registration=enable_self_registration
+                        )
                     # Verify the password hash
                     if verify_password(user['password'], password):
                         session['username'] = user['username']
@@ -714,15 +723,20 @@ def add_idea(selected_user_id):
 def delete_idea(idea_id):
     # Load gift ideas using helper function
     gift_ideas_data = load_gift_ideas()
+    users = load_users()
+    
 
     # Find the idea by its ID
     idea = find_idea_by_id(gift_ideas_data, idea_id)
+    shared_list = next((user for user in users if user['username'] == idea['user_id'] and user.get('shared_list')), None)
 
     if idea:
         current_user_username = session['username']  # Use 'username' from the session
 
+# Check if the idea was added by the current user, if it's in their list, OR if they're a member of the shared list
+
         # Check if the idea was added by the current user or if it's in their list
-        if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username:
+        if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username or (shared_list and current_user_username in shared_list.get('list_members', [])):
             # Check if the idea is bought
             if idea['bought_by']:
                 # Send an email to the buyer using Mailjet
@@ -859,7 +873,10 @@ def dashboard():
             visible_users.insert(0, visible_users.pop(visible_users.index(current_user)))
 
     # Sort the users alphabetically by full name
-    sorted_users = sorted(visible_users, key=lambda x: x['full_name'].lower())
+    sorted_users = sorted(
+            visible_users,
+            key=lambda x: (x['username'] != current_user['username'], x['full_name'].lower())
+        )
 
     # Prepare the profile information for the current user
     profile_info = {
@@ -869,7 +886,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.4.5"
+    app_version = "v2.5.2"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1042,11 +1059,14 @@ def user_gift_ideas(selected_user_id):
     if not user_gift_ideas:
         flash('Inga presentförslag för den här användaren.', 'info')
         return redirect(url_for('noidea'))
-
+    
+    users = load_users()
+    shared_list = next((user for user in users if user['username'] == selected_user_id and user.get('shared_list')), None)
+    is_shared_list_member = shared_list and connected_user in shared_list.get('list_members', [])
     # Call get_full_name function to fetch the user's full name directly in the route
     user_namels = get_full_name(selected_user_id)  # Get the full name based on the selected user ID
     imgenabled = os.getenv('IMGENABLED', 'true').lower() == 'true'
-    return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels, imgenabled=imgenabled)
+    return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels, imgenabled=imgenabled, is_shared_list_member=is_shared_list_member)
 
 
 @app.route('/my_ideas')
@@ -1078,7 +1098,7 @@ def my_ideas():
 def update_order():
     # Get the new order data from the request
     data = request.get_json()
-    new_order = data.get('order')  # Ensure 'order' includes 'priority'
+    new_order = data.get('order')
 
     # Load the gift ideas from the JSON file using load_gift_ideas()
     gift_ideas_data = load_gift_ideas()
@@ -1087,12 +1107,17 @@ def update_order():
     for idea in gift_ideas_data:
         for item in new_order:
             if int(idea['gift_idea_id']) == int(item['gift_idea_id']):
-                idea['priority'] = item['priority']  # Make sure priority is updated
+                priority = item.get('priority')
+                if priority is None or priority == '':
+                    # Remove the priority field completely from JSON
+                    if 'priority' in idea:
+                        del idea['priority']
+                else:
+                    idea['priority'] = priority
 
     # Write the updated data back to the JSON file using save_gift_ideas()
     save_gift_ideas(gift_ideas_data)
 
-    # Option 1: Return a success message as plain text
     return "Order updated successfully!"
 
 @app.route('/noidea')
@@ -1153,15 +1178,19 @@ def add_user():
 def edit_idea(idea_id):
     # Load the gift ideas from the JSON file
     gift_ideas_data = load_gift_ideas()
-
+# Check if the idea was added by the current user, if it's in their list, OR if they're a member of the shared list
+    users = load_users()
+    
     # Find the idea by its ID
     idea = find_idea_by_id(gift_ideas_data, idea_id)
+
+    shared_list = next((user for user in users if user['username'] == idea['user_id'] and user.get('shared_list')), None)
 
     if idea:
         current_user_username = session['username']  # Use 'username' from the session
 
         # Check if the idea was added by the current user or if it's in their list
-        if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username:
+        if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username or (shared_list and current_user_username in shared_list.get('list_members', [])):
             if request.method == 'POST':
                 # Debug: print received form data
                 print(f"Received description: {request.form.get('description')}")
@@ -1238,7 +1267,7 @@ def secret_santa():
             else:
                 # Remove the corresponding instructions file if it exists
                 try:
-                    os.remove(f'santa_inst_{pool_name_to_delete}.txt')
+                    os.remove(Path(app.config['DATA'], f'santa_inst_{pool_name_to_delete}.txt'))
                 except FileNotFoundError:
                     pass  # Ignore if the file does not exist
 
@@ -1282,7 +1311,7 @@ def secret_santa():
             save_users(users)
 
             # Save the instructions to a text file specific to the pool
-            with open(f'santa_inst_{pool_name}.txt', 'w') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
             flash('Hemliga Tomte uppdrag har skapats!', 'success')
@@ -1313,7 +1342,7 @@ def secret_santa_assignments():
     pool_instructions = {}
     for pool_name in assigned_users.keys():
         try:
-            with open(f'santa_inst_{pool_name}.txt', 'r') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'r') as file:
                 pool_instructions[pool_name] = file.read()
         except FileNotFoundError:
             pool_instructions[pool_name] = "No specific instructions provided."
@@ -1332,16 +1361,26 @@ def admin_dashboard():
 @app.route('/users', methods=['GET', 'POST'])
 @admin_required
 def manage_users():
-
-    # Load users and filter out guests immediately
-    users = [user for user in load_users() if not user.get('guest', False)]
+    # Load ALL users (including shared lists) for processing
+    all_users = load_users()
+    
+    # Filter only regular users for display/management
+    users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
     if request.method == 'POST':
         username = request.form.get('username')
 
         # Handle delete
         if 'delete_user' in request.form:
-            users = [user for user in users if user['username'] != username]
+            # Remove only the regular user from both arrays
+            all_users = [user for user in all_users if user['username'] != username]
+            
+            # Remove user from list_members in shared lists
+            for user_obj in all_users:
+                if user_obj.get('shared_list') and 'list_members' in user_obj:
+                    if username in user_obj['list_members']:
+                        user_obj['list_members'].remove(username)
+            
             flash('Användaren tagits bort!', 'success')
 
         # Handle toggle admin
@@ -1349,6 +1388,10 @@ def manage_users():
             for user in users:
                 if user['username'] == username:
                     user['admin'] = bool(int(request.form['toggle_admin']))
+                    # Also update in all_users to maintain consistency
+                    for u in all_users:
+                        if u['username'] == username and not u.get('shared_list'):
+                            u['admin'] = bool(int(request.form['toggle_admin']))
                     flash('Administratörsstatus har uppdaterats!', 'success')
                     break
 
@@ -1363,23 +1406,31 @@ def manage_users():
                 if user['username'] == username:
                     user['full_name'] = updated_name
                     user['email'] = updated_email if updated_email else user.get('email', 'N/A')
-                    user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')  # Default avatar if missing
+                    user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')
                     if updated_password:
-                        user['password'] = ph.hash(updated_password)  # Hash the new password
+                        user['password'] = ph.hash(updated_password)
+                    # Also update in all_users
+                    for u in all_users:
+                        if u['username'] == username and not u.get('shared_list'):
+                            u.update(user)
                     flash('Användaruppgifterna har uppdaterats!', 'success')
                     break
 
-        # Save updated users to the JSON file using the pre-defined function
-        save_users(users)
+        # Save ALL users (including shared lists) back to the file
+        save_users(all_users)
+        
+        # Reload for display
+        all_users = load_users()
+        users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
     # Transform users into tuples for the template
     users_data = [
         (
             user['username'], 
             user['full_name'], 
-            user.get('email', 'N/A'),  # Default to 'N/A' if email is missing
-            user.get('avatar', 'avatar1.png'),  # Default to placeholder if avatar is missing
-            user.get('admin', 'N/A')  # Default to 'N/A' if admin is missing
+            user.get('email', 'N/A'),
+            user.get('avatar', 'avatar1.png'),
+            user.get('admin', 'N/A')
         )
         for user in users
     ]
@@ -1925,26 +1976,6 @@ def manage_guest_users():
             new_guest['groups'] = request.form.getlist('access_groups')
         else:  # people access
             new_guest['access_users'] = request.form.getlist('access_users')
-            
-            # Create private family groups for each selected person
-            private_groups = []
-            for selected_username in new_guest['access_users']:
-                # Create a unique private family name
-                private_family_name = f"guest_{username}_{selected_username}"
-                private_groups.append(private_family_name)
-                
-                # Add this private family to the guest user
-                if private_family_name not in new_guest['groups']:
-                    new_guest['groups'].append(private_family_name)
-                
-                # Add the private family to the selected user WITHOUT removing them from global access
-                for user in users:
-                    if user['username'] == selected_username:
-                        if 'groups' not in user:
-                            user['groups'] = []
-                        if private_family_name not in user['groups']:
-                            user['groups'].append(private_family_name)
-                        # User keeps their existing groups and remains in global access
         
         users.append(new_guest)
         save_users(users)
@@ -1979,15 +2010,8 @@ def delete_guest_user(username):
     guest_user = next((user for user in users if user['username'] == username), None)
     
     if guest_user:
-        # 1. Remove ALL guest's private family groups from all users
-        for user in users:
-            if 'groups' in user:
-                # Remove any group that starts with "guest_{username}_"
-                user['groups'] = [group for group in user['groups'] 
-                                if not group.startswith(f"guest_{username}_")]
-                # Also remove the main guest family group if it exists
-                user['groups'] = [group for group in user['groups'] 
-                                if group != f"guest_{username}"]
+        # 1. Remove the guest user
+        users = [user for user in users if user['username'] != username]
         
         # 2. Delete entirely the gift ideas that were bought by this guest
         updated_gift_ideas = []
@@ -1999,9 +2023,6 @@ def delete_guest_user(username):
                 deleted_count += 1
                 continue
             updated_gift_ideas.append(idea)
-        
-        # 3. Remove the guest user
-        users = [user for user in users if user['username'] != username]
         
         # Save both updated datasets
         save_users(users)
@@ -2064,6 +2085,125 @@ def update_self_registration_settings():
     
     flash('Inställningar för självregistrering har uppdaterats!', 'success')
     return redirect(url_for('setup_advanced'))
+
+@app.route('/manage_shared_lists', methods=['GET', 'POST'])
+@login_required
+def manage_shared_lists():
+    users = load_users()
+    
+    if request.method == 'POST':
+        # Handle creating new shared list
+        list_name = request.form['list_name']
+        members = request.form.getlist('members')
+        avatar = request.form.get('avatar', 'icons/avatar1.png')  # Default to avatar1
+        
+        # Generate unique username for shared list
+        base_username = f"shared_{list_name.lower().replace(' ', '_')}"
+        username = base_username
+        counter = 1
+        
+        while any(user['username'] == username for user in users):
+            username = f"{base_username}_{counter}"
+            counter += 1
+        
+        # Create shared list user
+        shared_list_user = {
+            "username": username,
+            "full_name": list_name,
+            "admin": False,
+            "guest": False,
+            "shared_list": True,
+            "list_owner": session['username'],
+            "list_members": members + [session['username']],  # Include creator
+            "avatar": avatar  # Add the selected avatar
+        }
+        
+        users.append(shared_list_user)
+        save_users(users)
+        flash(f'Delad lista "{list_name}" har skapats!', 'success')
+        return redirect(url_for('manage_shared_lists'))
+    
+    # Get available users for creating new lists
+    current_user_data = next((user for user in users if user["username"] == session['username']), None)
+    current_user_groups = current_user_data.get("groups", [])
+    
+    if not current_user_groups:
+        available_users = [user for user in users if not user.get('guest') and not user.get('shared_list')]
+    else:
+        available_users = [
+            user for user in users 
+            if (not user.get("groups") or any(group in current_user_groups for group in user.get("groups", [])))
+            and not user.get('guest') and not user.get('shared_list')
+        ]
+    
+    # Get existing shared lists for management
+    shared_lists = [
+        user for user in users 
+        if user.get('shared_list') and session['username'] in user.get('list_members', [])
+    ]
+    
+    return render_template('manage_shared_lists.html', 
+                         available_users=available_users, 
+                         shared_lists=shared_lists)
+
+# Keep the delete route separate
+@app.route('/delete_shared_list/<list_username>', methods=['POST'])
+@login_required
+def delete_shared_list(list_username):
+    users = load_users()
+    gift_ideas = load_gift_ideas()
+    
+    # Find the shared list
+    shared_list = next((user for user in users if user['username'] == list_username), None)
+    
+    if not shared_list:
+        flash('Delad lista hittades inte.', 'danger')
+        return redirect(url_for('manage_shared_lists'))
+    
+    # Check if current user is the owner
+    if shared_list.get('list_owner') != session['username']:
+        flash('Endast listägaren kan ta bort denna delade lista.', 'danger')
+        return redirect(url_for('manage_shared_lists'))
+    
+    # Remove shared list user
+    users = [user for user in users if user['username'] != list_username]
+    save_users(users)
+    
+    # Remove all ideas associated with this shared list
+    updated_gift_ideas = [idea for idea in gift_ideas if idea['user_id'] != list_username]
+    save_gift_ideas(updated_gift_ideas)
+    
+    flash(f'Delad lista "{shared_list["full_name"]}" raderades!', 'success')
+    return redirect(url_for('manage_shared_lists'))
+
+@app.route('/edit_shared_list_members/<list_username>', methods=['POST'])
+@login_required
+def edit_shared_list_members(list_username):
+    users = load_users()
+    
+    # Find the shared list
+    shared_list = next((user for user in users if user['username'] == list_username), None)
+    
+    if not shared_list:
+        flash('Delad lista hittades inte.', 'danger')
+        return redirect(url_for('manage_shared_lists'))
+    
+    # Check if current user is the owner
+    if shared_list.get('list_owner') != session['username']:
+        flash('Endast listans ägare kan redigera medlemmar.', 'danger')
+        return redirect(url_for('manage_shared_lists'))
+    
+    # Get selected members and always include the owner
+    new_members = request.form.getlist('members')
+    if session['username'] not in new_members:
+        new_members.append(session['username'])
+    
+    # Update the shared list members
+    shared_list['list_members'] = new_members
+    save_users(users)
+    
+    flash(f'Medlemmar uppdaterade för "{shared_list["full_name"]}"!', 'success')
+    return redirect(url_for('manage_shared_lists'))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
