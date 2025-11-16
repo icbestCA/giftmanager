@@ -389,7 +389,10 @@
                     <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Déconnexion">
                     
                 </a>
-                <a href="/manage_shared_lists" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">Listes partagées</a>
+                <a href="/manage_shared_lists" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">Listes partagés</a>
+                {% if enable_link_sharing %}
+                <a href="/manage_sharing" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">Liens public</a>
+                {% endif %}
                 <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
                     <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Thème
                 </button>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partager la liste</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: black;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .inputer {
+            color: var(--button-text-color);
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+
+        .card {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .share-url-input {
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-tab.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .extend-form {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--card-border-color);
+            border-radius: 0.5rem;
+            background-color: var(--card-bg-color);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <header class="bg-white shadow p-4 header">
+        <div class="container mx-auto flex justify-between items-center">
+            <button id="backButton" class="text-2xl px-4 py-2">Retour</button>
+            <h1 class="text-xl font-semibold">
+                {% if target_entity.get('shared_list') %}
+                    Partage : {{ target_entity.full_name }}
+                {% else %}
+                    Partager ma liste
+                {% endif %}
+            </h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 max-w-4xl">
+        <!-- Navigation Tabs -->
+        {% if user_shared_lists %}
+        <div class="card p-4 rounded-lg shadow-lg mb-6">
+            <div class="flex space-x-4 border-b">
+                <a href="{{ url_for('manage_sharing') }}" 
+                   class="nav-tab {% if current_target == session['username'] %}active{% endif %}">
+                    Ma liste personnelle
+                </a>
+                {% for shared_list in user_shared_lists %}
+                <a href="{{ url_for('manage_sharing', for=shared_list.username) }}" 
+                   class="nav-tab {% if current_target == shared_list.username %}active{% endif %}">
+                    {{ shared_list.full_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Create New Share Link Section -->
+        <div class="card p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl font-semibold mb-4">
+                {% if target_entity.get('shared_list') %}
+                    Créer un lien de partage pour {{ target_entity.full_name }}
+                {% else %}
+                    Créer un nouveau lien de partage
+                {% endif %}
+            </h2>
+            
+            <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label for="link_name" class="block font-medium mb-2">Nom du lien:</label>
+                        <input type="text" id="link_name" name="link_name" 
+                               class="w-full px-3 py-2 border rounded inputer" 
+                               value="{% if target_entity.get('shared_list') %}{{ target_entity.full_name }} Liste{% else %}Ma liste de cadeaux{% endif %}" 
+                               placeholder="Donner un nom à ce lien" required>
+                    </div>
+                    <div>
+                        <label for="days_valid" class="block font-medium mb-2">Valide pendant:</label>
+                        <select class="w-full px-3 py-2 border rounded inputer" id="days_valid" name="days_valid">
+                            <option value="7">7 jours</option>
+                            <option value="30" selected>30 jours</option>
+                            <option value="90">90 jours</option>
+                            <option value="365">1 année</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="allow_purchases" value="true" class="mr-2">
+                            <span class="font-medium">Permettre aux visiteur de marquer les articles comme étant achetés</span>
+                        </label>
+                        <p class="text-sm text-gray-500 ml-6">Les visiteurs peuvent entrer leur nom en marquant des objets comme achetés</p>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" name="create_link" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                            Créer un lien partageable
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Existing Share Links Section -->
+        <div class="card p-4 sm:p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4">
+                {% if target_entity.get('shared_list') %}
+                    {{ target_entity.full_name }} Liens partagés
+                {% else %}
+                    Mes liens partagés
+                {% endif %}
+            </h2>
+            
+            {% if sharing_data.public_links %}
+                <div class="space-y-4">
+                    {% for link in sharing_data.public_links %}
+                    {% set is_expired = link.expires_at and datetime.now() > datetime.strptime(link.expires_at, '%Y-%m-%d %H:%M:%S') %}
+                    <div class="border rounded p-4 {% if is_expired %}bg-gray-50{% endif %}">
+                        <!-- Header Row -->
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                                    <h3 class="text-lg font-semibold break-words">{{ link.name }}</h3>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-sm px-2 py-1 rounded 
+                                            {% if is_expired %}bg-red-100 text-red-800
+                                            {% elif link.is_active %}bg-green-100 text-green-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {% if is_expired %}Expiré
+                                            {% elif link.is_active %}Actif
+                                            {% else %}Inactif{% endif %}
+                                        </span>
+                                        {% if link.created_by and target_entity.get('shared_list') %}
+                                        <span class="text-xs sm:text-sm text-gray-500">
+                                            par{{ get_full_name(link.created_by) }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons - Mobile Stacked -->
+                            <div class="flex flex-col sm:flex-row gap-2 sm:space-x-2 sm:ml-4">
+                                {% if not is_expired %}
+                                <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}" class="w-full sm:w-auto">
+                                    <input type="hidden" name="token" value="{{ link.token }}">
+                                    <button type="submit" name="toggle_link" 
+                                            class="w-full {% if link.is_active %}bg-yellow-500 hover:bg-yellow-600{% else %}bg-green-500 hover:bg-green-600{% endif %} text-white px-3 py-2 rounded text-sm">
+                                        {{ 'Deactivate' if link.is_active else 'Activate' }}
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}" class="w-full sm:w-auto"
+                                    onsubmit="return confirm('Are you sure you want to delete this share link?');">
+                                    <input type="hidden" name="token" value="{{ link.token }}">
+                                    <button type="submit" name="delete_link" class="w-full bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Share URL -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1">URL de partage:</label>
+                            <input type="text" class="w-full px-3 py-2 border rounded inputer share-url-input text-xs sm:text-sm" 
+                                value="{{ generate_share_url(link.token) }}" 
+                                readonly onclick="this.select()">
+                        </div>
+                        
+                        <!-- Dates - Stack on mobile -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm mb-3">
+                            <div class="flex justify-between sm:block">
+                                <span class="font-medium sm:font-normal">Créé</span>
+                                <span>{{ link.created_at[:10] }}</span>
+                            </div>
+                            <div class="flex justify-between sm:block">
+                                <span class="font-medium sm:font-normal">Expire:</span>
+                                <span class="{% if is_expired %}text-red-600 font-semibold{% endif %}">
+                                    {{ link.expires_at[:10] }}
+                                    {% if is_expired %} (Expiré){% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Extend Expiration Button -->
+                        <button type="button" onclick="toggleExtendForm('{{ link.token }}')" 
+                                class="text-blue-600 hover:text-blue-800 text-sm font-medium w-full sm:w-auto text-center sm:text-left">
+                            ↻ Prolonger l'expiration
+                        </button>
+
+                        <!-- Extend Expiration Form -->
+                        <div id="extend-form-{{ link.token }}" class="extend-form mt-3">
+                            <h4 class="font-semibold mb-3 text-sm sm:text-base">Prolonger l'expiration</h4>
+                            <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}" 
+                                class="flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
+                                <input type="hidden" name="token" value="{{ link.token }}">
+                                <div class="flex-1">
+                                    <label class="block text-sm font-medium mb-1">Ajouter des jours :</label>
+                                    <select name="additional_days" class="w-full px-3 py-2 border rounded inputer text-sm">
+                                        <option value="7">7 jours</option>
+                                        <option value="30" selected>30 jours</option>
+                                        <option value="90">90 jours</option>
+                                        <option value="365">1 année</option>
+                                    </select>
+                                </div>
+                                <div class="flex gap-2 mt-2 sm:mt-0">
+                                    <button type="submit" name="extend_link" 
+                                            class="flex-1 bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">
+                                        Prolonger
+                                    </button>
+                                    <button type="button" onclick="toggleExtendForm('{{ link.token }}')" 
+                                            class="flex-1 bg-gray-500 text-white px-3 py-2 rounded text-sm hover:bg-gray-600">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">Aucun lien de partage n'a encore été créé.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Retour au tableau de bord
+            </a>
+        </div>
+    </main>
+
+    <script>
+        const backButton = document.getElementById('backButton');
+        backButton.addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+
+        // Theme handling
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light';
+            }
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+
+        // Auto-select share URL when clicking on input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.share-url-input').forEach(input => {
+                input.addEventListener('click', function() {
+                    this.select();
+                });
+            });
+        });
+
+        function toggleExtendForm(token) {
+            const form = document.getElementById('extend-form-' + token);
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

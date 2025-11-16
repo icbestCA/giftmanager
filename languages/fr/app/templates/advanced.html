@@ -454,6 +454,35 @@
                             </div>
                         </div>
                     </form>
+                    <div class="my-6 border-t border-gray-300"></div>
+
+                    <!-- Link Sharing Settings Section -->
+                    <form method="post" action="{{ url_for('update_link_sharing') }}">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Paramètres de partage de liens</h3>
+                            
+                            <!-- Enable Link Sharing -->
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="enable_link_sharing" value="true" 
+                                        class="mr-2" {{ 'checked' if enable_link_sharing }}>
+                                    <span class="font-medium">Activer la fonctionnalité de partage de liens</span>
+                                </label>
+                                <p class="text-sm text-gray-500 mt-1 ml-6">
+                                    Permettre aux utilisateurs de créer des liens de partage public pour leurs listes de cadeaux. Lorsque désactivé, 
+                                    la fonction de partage publique sera désactivée pour tous.
+                                </p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded">
+                                    Enregistrer les paramètres de partage de liens
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </main>
         </div>
