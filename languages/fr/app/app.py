@@ -844,7 +844,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.0"
+    app_version = "v2.6.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1316,9 +1316,7 @@ def secret_santa_assignments():
 @app.route('/admin')
 @admin_required
 def admin_dashboard():
-    containerid = read_env_variable("CONTAINER_ID")
-    container_restart = bool(containerid)
-    return render_template('admin_dashboard.html', container_restart=container_restart)
+    return render_template('admin_dashboard.html')
 
 @app.route('/users', methods=['GET', 'POST'])
 @admin_required
@@ -1772,7 +1770,6 @@ def update_group_assignments():
 @app.route('/setup_advanced', methods=['GET'])
 @admin_required
 def setup_advanced():
-    current_ID = read_env_variable("CONTAINER_ID")
     current_reorder = read_env_variable("REORDERING")
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()
@@ -1782,7 +1779,6 @@ def setup_advanced():
     joining_code = read_env_variable("JOINING_CODE", "")
     
     return render_template('advanced.html', 
-                         current_ID=current_ID, 
                          current_reorder=current_reorder, 
                          images=images, 
                          current_currency_symbol=current_currency_symbol,
@@ -1791,14 +1787,6 @@ def setup_advanced():
                          joining_code=joining_code, 
                          enable_link_sharing=enable_link_sharing)
 
-# Route to update CONTAINER_ID (POST request)
-@app.route('/update_containerid', methods=['POST'])
-@admin_required
-def update_containerid():
-    containerid = request.form.get('containerid', '').strip()
-    if containerid:
-        set_key(".env", "CONTAINER_ID", containerid)
-    return redirect(url_for('setup_advanced'))
 
 # Route to update REORDERING (POST request)
 @app.route('/update_reordering', methods=['POST'])

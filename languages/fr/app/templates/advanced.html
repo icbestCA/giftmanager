@@ -298,26 +298,6 @@
                 {% endwith %}
 
                 <div class="main p-6 rounded shadow section">
-                    <!-- Container ID Section -->
-                    <form method="post" action="{{ url_for('update_containerid') }}">
-                        <div class="mb-4">
-                            <p class="mb-2">Définissez l'ID ou le nom du conteneur de votre docker afin que vous puissiez le redémarrer à partir de la page du tableau de bord de l'administration. Vous devez monter ce /var/run/docker.sock:/var/run/docker.sock comme volume.</p>
-                            <label for="containerid" class="block sec-text font-medium">ID du conteneur</label>
-                            <input 
-                                type="text" 
-                                id="containerid" 
-                                name="containerid" 
-                                value="{{ current_ID }}"
-                                class="border border-gray-300 rounded px-4 py-2 w-full inputer">
-                        </div>    
-                        <button 
-                            type="submit" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                            Enregistrer
-                        </button>
-                    </form>
-                    
-                    <div class="my-6 border-t border-gray-300"></div>
                     
                     <!-- Reordering Section -->
                     <form method="post" action="{{ url_for('update_reordering') }}">  

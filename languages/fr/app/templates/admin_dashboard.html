@@ -247,21 +247,6 @@
                 <div class="section bg-white p-6 rounded shadow">
                     <h3 class="text-lg font-semibold mb-4">Aperçu du tableau de bord</h3>
                     <p class="sec-text">Ceci est le tableau de bord d'administration où vous pouvez gérer les utilisateurs, configurer les paramètres, et plus encore.</p>
-                    <!-- Form to restart container -->
-                     {% if container_restart %}
-                    <div class="p-6 rounded-lg shadow-sm mb-6" style="background-color: var(--main-bg-color); margin-top: 5px;">
-                        <h4 class="text-xl font-medium mb-3" style="color: var(--text-color);">Gestion du conteneur</h4>
-                        <p class="sec-text mb-4">Si vous devez redémarrer le conteneur pour une raison quelconque, cliquez sur le bouton ci-dessous.</p>
-                        
-                        <form method="POST" action="{{ url_for('dashboard') }}">
-                            <div class="flex justify-start">
-                                <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 transition ease-in-out duration-200">
-                                    Redémarrer le conteneur
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    {% endif %}
                 </div>
             </main>
         </div>

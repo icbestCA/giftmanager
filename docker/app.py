@@ -104,7 +104,6 @@ SECONDARY_DB_FIELD='username'
 ENABLE_AUTO_REGISTRATION='false'
 LOGIN_PAGE_MESSAGE='No account? Contact a family member to create an account!'
 ENABLE_DEFAULT_LOGIN='true'
-CONTAINER_ID='giftmanager'
 REORDERING='true'
 IMGENABLED='false'
                  
@@ -910,14 +909,13 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.0"
+    app_version = "v2.6.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
 
     # Get flash messages related to passwords
     password_messages = [msg for msg in get_flashed_messages() if 'password' in msg.lower() or 'email' in msg.lower()]
-
     enable_link_sharing_value = read_env_variable("ENABLE_LINK_SHARING", "true")
     enable_link_sharing = str(enable_link_sharing_value).lower() == 'true' if enable_link_sharing_value is not None else True
 
@@ -1382,9 +1380,7 @@ def secret_santa_assignments():
 @app.route('/admin')
 @admin_required
 def admin_dashboard():
-    containerid = read_env_variable("CONTAINER_ID")
-    container_restart = bool(containerid)
-    return render_template('admin_dashboard.html', container_restart=container_restart)
+    return render_template('admin_dashboard.html')
 
 @app.route('/users', methods=['GET', 'POST'])
 @admin_required
@@ -1775,22 +1771,6 @@ def setup_oidc():
 
     return render_template('setup_oidc.html', current_values=current_values)
 
-@app.route('/restart_container', methods=['POST'])
-@admin_required
-def restart_container():
-    try:
-        container_id = os.getenv("CONTAINER_ID", "giftmanager")  # Set your container ID here
-        # Capture output and error for debugging
-        result = subprocess.run(['docker', 'restart', container_id], check=True, capture_output=True, text=True)
-    except subprocess.CalledProcessError as e:
-        print("Error details:", e.stderr)  # Detailed error info
-        flash("Failed to restart container. Please try again later.", "error")
-        return redirect(url_for('dashboard'))  # Redirect on error
-    except Exception as e:
-        print("General error:", str(e))
-        flash(f"An unexpected error occurred: {str(e)}", "error")
-        return redirect(url_for('dashboard'))  # Redirect on general error
-    
 # Families 
 # Start
 @app.route('/families', methods=['GET', 'POST'])
@@ -1854,7 +1834,6 @@ def update_group_assignments():
 @app.route('/setup_advanced', methods=['GET'])
 @admin_required
 def setup_advanced():
-    current_ID = read_env_variable("CONTAINER_ID")
     current_reorder = read_env_variable("REORDERING")
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()
@@ -1864,7 +1843,6 @@ def setup_advanced():
     joining_code = read_env_variable("JOINING_CODE", "")
     
     return render_template('advanced.html', 
-                         current_ID=current_ID, 
                          current_reorder=current_reorder, 
                          images=images, 
                          current_currency_symbol=current_currency_symbol,
@@ -1873,14 +1851,6 @@ def setup_advanced():
                          joining_code=joining_code, 
                          enable_link_sharing=enable_link_sharing)
 
-# Route to update CONTAINER_ID (POST request)
-@app.route('/update_containerid', methods=['POST'])
-@admin_required
-def update_containerid():
-    containerid = request.form.get('containerid', '').strip()
-    if containerid:
-        set_key(dotenv_path, "CONTAINER_ID", containerid)
-    return redirect(url_for('setup_advanced'))
 
 # Route to update REORDERING (POST request)
 @app.route('/update_reordering', methods=['POST'])
