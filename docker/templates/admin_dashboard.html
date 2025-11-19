@@ -247,21 +247,6 @@
                 <div class="section bg-white p-6 rounded shadow">
                     <h3 class="text-lg font-semibold mb-4">Dashboard Overview</h3>
                     <p class="sec-text">This is the admin dashboard where you can manage users, configure settings, and more.</p>
-                    <!-- Form to restart container -->
-                     {% if container_restart %}
-                    <div class="p-6 rounded-lg shadow-sm mb-6" style="background-color: var(--main-bg-color); margin-top: 5px;">
-                        <h4 class="text-xl font-medium mb-3" style="color: var(--text-color);">Container Management</h4>
-                        <p class="sec-text mb-4">If you need to restart the container for any reason, click the button below.</p>
-                        
-                        <form method="POST" action="{{ url_for('restart_container') }}">
-                            <div class="flex justify-start">
-                                <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 transition ease-in-out duration-200">
-                                    Restart Container
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    {% endif %}
                 </div>
             </main>
         </div>
