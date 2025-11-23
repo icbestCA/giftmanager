@@ -663,7 +663,7 @@ def need_restart():
         return redirect(url_for('setup'))    
 
 
-@app.route('/add_idea/<selected_user_id>', methods=['GET', 'POST'])
+@app.route('/add_idea/<path:selected_user_id>', methods=['GET', 'POST'])
 @login_required
 def add_idea(selected_user_id):
     # Load data from JSON files
@@ -909,13 +909,14 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.1"
+    app_version = "v2.6.2"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
 
     # Get flash messages related to passwords
     password_messages = [msg for msg in get_flashed_messages() if 'password' in msg.lower() or 'email' in msg.lower()]
+
     enable_link_sharing_value = read_env_variable("ENABLE_LINK_SHARING", "true")
     enable_link_sharing = str(enable_link_sharing_value).lower() == 'true' if enable_link_sharing_value is not None else True
 
@@ -1064,7 +1065,7 @@ def get_full_name(username):
     return username  # If no match found, return the username itself
 
 
-@app.route('/user_gift_ideas/<selected_user_id>')
+@app.route('/user_gift_ideas/<path:selected_user_id>')
 @login_required
 @guest_allowed
 def user_gift_ideas(selected_user_id):
@@ -1995,7 +1996,7 @@ def manage_guest_users():
                          all_users=all_users)
 
 
-@app.route('/delete_guest_user/<username>', methods=['POST'])
+@app.route('/delete_guest_user/<path:username>', methods=['POST'])
 @admin_required
 def delete_guest_user(username):
     users = load_users()
@@ -2092,8 +2093,14 @@ def manage_shared_lists():
         members = request.form.getlist('members')
         avatar = request.form.get('avatar', 'icons/avatar1.png')  # Default to avatar1
         
+
+        sanitized_name = list_name.lower().replace(' ', '_')
+        # Remove characters that break URLs without using re
+        problematic_chars = ['/', '\\', '?', '#', '&', '=', '+']
+        for char in problematic_chars:
+            sanitized_name = sanitized_name.replace(char, '')
         # Generate unique username for shared list
-        base_username = f"shared_{list_name.lower().replace(' ', '_')}"
+        base_username = f"shared_{sanitized_name}"
         username = base_username
         counter = 1
         
@@ -2142,7 +2149,7 @@ def manage_shared_lists():
                          shared_lists=shared_lists)
 
 # Keep the delete route separate
-@app.route('/delete_shared_list/<list_username>', methods=['POST'])
+@app.route('/delete_shared_list/<path:list_username>', methods=['POST'])
 @login_required
 def delete_shared_list(list_username):
     users = load_users()
@@ -2171,7 +2178,7 @@ def delete_shared_list(list_username):
     flash(f'Shared list "{shared_list["full_name"]}" deleted successfully!', 'success')
     return redirect(url_for('manage_shared_lists'))
 
-@app.route('/edit_shared_list_members/<list_username>', methods=['POST'])
+@app.route('/edit_shared_list_members/<path:list_username>', methods=['POST'])
 @login_required
 def edit_shared_list_members(list_username):
     users = load_users()
