@@ -50,9 +50,37 @@
         th {
             background-color: var(--table-header-bg-color);
         }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+        .user-card-button {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .user-card-button:hover {
+            background-color: var(--card-hover-bg-color);
+        }
+        .text-secondary {
+            color: var(--secondary-text-color);
+        }
     </style>
 </head>
 <body>
+    <header class="header p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="user-card-button" onclick="location.href='{{ url_for('dashboard') }}'">
+                <p class="text-center text-secondary">Back to Dashboard</p>
+            </div>
+        </nav>
+    </header>
     <div class="table-container">
         <h1 class="text-2xl font-semibold mb-4">Gift Summary</h1>
         <table>
