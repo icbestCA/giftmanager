@@ -2454,5 +2454,35 @@ def generate_share_url(token):
     # Generate external URL with proper scheme
     return url_for("shared_list", token=token, _external=True, _scheme=scheme)
 
+@app.route('/table_view')
+@login_required
+def table_view():
+    users = load_users()
+    ideas = load_gift_ideas()
+
+    # Create a dictionary to store gifts for each user
+    user_gifts = {user['username']: [] for user in users}
+
+    for idea in ideas:
+        if idea['user_id'] in user_gifts:
+            user_gifts[idea['user_id']].append(idea)
+
+    # Prepare data for the template
+    table_data = []
+    for user in users:
+        if not user.get('guest'):
+            table_data.append({
+                'full_name': user['full_name'],
+                'gifts': user_gifts[user['username']]
+            })
+
+    # Find the maximum number of gifts for any user
+    max_gifts = 0
+    if table_data:
+        max_gifts = max(len(user['gifts']) for user in table_data) if table_data else 0
+
+    return render_template('table_view.html', users=table_data, max_gifts=max_gifts)
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

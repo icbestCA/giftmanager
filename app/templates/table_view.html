@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Summary Table</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --table-bg-color: #fff;
+            --table-header-bg-color: #f3f4f6;
+            --table-border-color: #ccc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --table-bg-color: #1e1e1e;
+            --table-header-bg-color: #121212;
+            --table-border-color: #333;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .table-container {
+            background-color: var(--table-bg-color);
+            border: 1px solid var(--table-border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid var(--table-border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="table-container">
+        <h1 class="text-2xl font-semibold mb-4">Gift Summary</h1>
+        <table>
+            <thead>
+                <tr>
+                    {% for user in users %}
+                        <th>{{ user.full_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(max_gifts) %}
+                    <tr>
+                        {% for user in users %}
+                            <td>
+                                {% if i < user.gifts|length %}
+                                    {{ user.gifts[i].gift_name }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light'; // Default to light mode if no cookie is found
+            }
+
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</body>
+</html>
