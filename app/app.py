@@ -2459,6 +2459,7 @@ def generate_share_url(token):
 def table_view():
     users = load_users()
     ideas = load_gift_ideas()
+    current_user_username = session['username']
 
     # Create a dictionary to store gifts for each user
     user_gifts = {user['username']: [] for user in users}
@@ -2473,6 +2474,7 @@ def table_view():
         if not user.get('guest'):
             table_data.append({
                 'full_name': user['full_name'],
+                'username': user['username'],
                 'gifts': user_gifts[user['username']]
             })
 
@@ -2481,7 +2483,7 @@ def table_view():
     if table_data:
         max_gifts = max(len(user['gifts']) for user in table_data) if table_data else 0
 
-    return render_template('table_view.html', users=table_data, max_gifts=max_gifts)
+    return render_template('table_view.html', users=table_data, max_gifts=max_gifts, current_user_username=current_user_username)
 
 
 if __name__ == "__main__":
