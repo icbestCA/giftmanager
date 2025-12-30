@@ -148,6 +148,23 @@
             }
         }
 
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        [data-theme="dark"] .bg-blue-100 {
+            background-color: #2d3748;
+        }
+
+        [data-theme="dark"] .text-blue-800 {
+            color: #90cdf4;
+        }
 
     </style>
     <script>
@@ -185,13 +202,23 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center idea-container" style="margin-bottom: 5px">
                         <div class="min-w-0 mb-2 sm:mb-0">
                             <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
+                            {% if gift_idea.get('custom_fields') %}
+                            <div class="custom-fields flex flex-wrap gap-1 mt-1 mb-1">
+                                {% for key, value in gift_idea.custom_fields.items() %}
+                                    {% if key and value %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ key }}: {{ value }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             <p class="text-gray-600 description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                             {% if gift_idea.value %}
                             <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
                             {% endif %}
                             <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
                         </div>
-
                         {% if imgenabled %}
                         <div class="divimage">
                             <!-- Display image if available -->
@@ -231,6 +258,12 @@
                     <strong>Available idea</strong>
                     <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
                     {% endif %}
+                    <div class="mt-2 text-xs text-gray-500">
+                        
+                        {% if gift_idea.get('last_updated') %}
+                            Last updated: {{ gift_idea.last_updated[:10] }}
+                        {% endif %}
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
@@ -270,7 +303,7 @@
 
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {
-            window.location.href = '/dashboard'; // Replace '/dashboard' with the actual URL of your dashboard page
+            window.location.href = '/dashboard'; 
         });
     
         function markIdeaAsBought(ideaId, button) {
@@ -370,7 +403,7 @@
     function editIdea(ideaId) {
         // Redirect to the edit page for the specific idea
         window.location.href = `/edit_idea/${ideaId}`;
-    }  
+    }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')

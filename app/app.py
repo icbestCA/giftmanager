@@ -571,6 +571,19 @@ def add2():
         # Find the largest gift idea ID
         largest_gift_idea_id = max((idea['gift_idea_id'] for idea in gift_ideas_data), default=0)
 
+
+        # Process custom fields from the form
+        custom_fields = {}
+        # Get all form keys that start with 'custom_field_key_'
+        for key in request.form.keys():
+            if key.startswith('custom_field_key_'):
+                field_num = key.split('_')[-1]
+                field_key = request.form.get(f'custom_field_key_{field_num}', '').strip()
+                field_value = request.form.get(f'custom_field_value_{field_num}', '').strip()
+                
+                if field_key and field_value:  # Only add if both key and value are provided
+                    custom_fields[field_key] = field_value
+
         # Create a new idea object
         new_idea = {
             'user_id': user,
@@ -581,7 +594,9 @@ def add2():
             'value': value,
             'added_by': added_by,  # Track who added the idea
             'bought_by': None,  # Initialize as not bought
-            'image_path': image_path  # Store the image URL here
+            'image_path': image_path,  # Store the image URL here
+            'custom_fields': custom_fields,  # Add custom fields
+            'last_updated': datetime.now().isoformat()  # Set initial last_updated timestamp
         }
 
         # Append the new idea to the list
@@ -648,6 +663,19 @@ def add_idea(selected_user_id):
         # Find the largest gift idea ID
         largest_gift_idea_id = max((idea['gift_idea_id'] for idea in gift_ideas_data), default=0)
 
+        # Process custom fields from the form
+        custom_fields = {}
+        # Get all form keys that start with 'custom_field_key_'
+        for key in request.form.keys():
+            if key.startswith('custom_field_key_'):
+                field_num = key.split('_')[-1]
+                field_key = request.form.get(f'custom_field_key_{field_num}', '').strip()
+                field_value = request.form.get(f'custom_field_value_{field_num}', '').strip()
+                
+                if field_key and field_value:  # Only add if both key and value are provided
+                    custom_fields[field_key] = field_value
+
+
         # Create a new idea object
         new_idea = {
             'user_id': user,
@@ -658,7 +686,9 @@ def add_idea(selected_user_id):
             'value': value,
             'added_by': added_by,  # Track who added the idea
             'bought_by': None,  # Initialize as not bought
-            'image_path': image_path  # Store the image URL here
+            'image_path': image_path,  # Store the image URL here
+            'custom_fields': custom_fields,  # Add custom fields
+            'last_updated': datetime.now().isoformat()  # Set initial last_updated timestamp
         }
 
         # Append the new idea to the list
@@ -722,6 +752,9 @@ def get_user_email_by_username(username):
     return user.get('email') if user else None
 
 def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
+    if not read_env_variable("MAILJET_API_KEY") or not read_env_variable("MAILJET_API_SECRET"):
+        print("Mailjet not configured. Skipping email notification.")
+        return True  # Return True to allow deletion to proceed
     # Find the idea bought by the buyer
     gift_ideas_data = load_gift_ideas()
     for idea in gift_ideas_data:
@@ -844,7 +877,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.2"
+    app_version = "v2.6.3"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1022,6 +1055,11 @@ def user_gift_ideas(selected_user_id):
         flash('No gift ideas for this user.', 'info')
         return redirect(url_for('noidea'))
     
+    # Ensure each idea has custom_fields and last_updated fields for template
+    for idea in user_gift_ideas:
+        if 'custom_fields' not in idea:
+            idea['custom_fields'] = {}
+
     users = load_users()
     shared_list = next((user for user in users if user['username'] == selected_user_id and user.get('shared_list')), None)
     is_shared_list_member = shared_list and connected_user in shared_list.get('list_members', [])
@@ -1052,6 +1090,10 @@ def my_ideas():
     if not my_gift_ideas:
         flash('You haven\'t added any gift ideas.', 'info')
         return redirect(url_for('noidea'))
+    # Ensure each idea has custom_fields and last_updated fields for template
+    for idea in my_gift_ideas:
+        if 'custom_fields' not in idea:
+            idea['custom_fields'] = {}
 
     return render_template('my_ideas.html', my_gift_ideas=my_gift_ideas, reordering=reordering, imgenabled=imgenabled)
 
@@ -1154,10 +1196,6 @@ def edit_idea(idea_id):
         # Check if the idea was added by the current user or if it's in their list
         if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username or (shared_list and current_user_username in shared_list.get('list_members', [])):
             if request.method == 'POST':
-                # Debug: print received form data
-                print(f"Received description: {request.form.get('description')}")
-                print(f"Received link: {request.form.get('link')}")
-                print(f"Received image_path: {request.form.get('image_path')}")  # This is the field for the image path
 
                 # Update idea details with submitted form data
                 idea['description'] = request.form.get('description', '')
@@ -1171,6 +1209,44 @@ def edit_idea(idea_id):
                 else:
                     print("No image path provided.")
 
+                # Process custom fields (handle optional)
+                custom_fields = {}
+                
+                # Track which existing fields should be kept
+                existing_keys_to_keep = []
+                
+                # Get all field indices from the form
+                for key in request.form.keys():
+                    if key.startswith('existing_custom_key_'):
+                        field_id = key.split('_')[-1]
+                        existing_keys_to_keep.append(field_id)
+                
+                # Process only the existing fields that are still in the form
+                for field_id in existing_keys_to_keep:
+                    field_key = request.form.get(f'existing_custom_key_{field_id}', '').strip()
+                    field_value = request.form.get(f'existing_custom_value_{field_id}', '').strip()
+                    
+                    if field_key:  # Only add if key exists (even if value is empty)
+                        custom_fields[field_key] = field_value
+                
+                # Handle new custom fields
+                new_field_count = 0
+                for key in request.form.keys():
+                    if key.startswith('new_custom_field_key_'):
+                        field_num = key.split('_')[-1]
+                        field_key = request.form.get(f'new_custom_field_key_{field_num}', '').strip()
+                        field_value = request.form.get(f'new_custom_field_value_{field_num}', '').strip()
+                        
+                        if field_key:  # Only add if key exists
+                            custom_fields[field_key] = field_value
+                            new_field_count += 1
+                
+                # Update custom fields (this will remove any deleted fields)
+                idea['custom_fields'] = custom_fields
+                
+                # Update last_updated timestamp
+                idea['last_updated'] = datetime.now().isoformat()
+                
                 # Save the updated gift ideas data back to the JSON file
                 save_gift_ideas(gift_ideas_data)
 
@@ -1178,6 +1254,8 @@ def edit_idea(idea_id):
                 return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
             
             imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
+            if 'custom_fields' not in idea:
+                idea['custom_fields'] = {}
             # Render the edit idea form with pre-filled data
             return render_template('edit_idea.html', idea=idea, imgenabled=imgenabled)
         else:

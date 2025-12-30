@@ -96,6 +96,10 @@
     #imageContainer{
         width: 200px;
     }
+    .custom-field-group {
+        background-color: var(--card-bg-color);
+        border-color: var(--card-border-color);
+    }
     </style>
 <script>
     // Inline script to apply the theme from the cookie immediately
@@ -245,8 +249,42 @@ document.addEventListener('DOMContentLoaded', function () {
         <!-- Estimated Value Field -->
         <label for="value" class="block mt-4 mb-2 sec-text">Estimated Value (Optional):</label>
         <input type="text" id="value" name="value" value="{{ idea.value }}" class="border rounded py-2 px-3 w-full inputer" placeholder="Enter estimated value in dollars">
-    
         <br>
+        <div class="mb-4">
+            <label class="block sec-text font-bold">Custom Fields (Optional):</label>
+            <div id="customFieldsContainer" class="space-y-3 mt-2">
+                <!-- Existing custom fields -->
+                {% set counter = 0 %}
+                {% for key, value in idea.get('custom_fields', {}).items() %}
+                    <div class="custom-field-group p-3 border rounded border-gray-300">
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="text" 
+                                name="existing_custom_key_{{ counter }}" 
+                                value="{{ key }}"
+                                placeholder="Field name (e.g., Shoe Size)" 
+                                class="flex-1 border inputer rounded py-1 px-2 text-sm">
+                            <input type="text" 
+                                name="existing_custom_value_{{ counter }}" 
+                                value="{{ value }}"
+                                placeholder="Value (e.g., 6)" 
+                                class="flex-1 border inputer rounded py-1 px-2 text-sm">
+                            <button type="button" 
+                                    onclick="this.parentElement.parentElement.remove()" 
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    {% set counter = counter + 1 %}
+                {% endfor %}
+                <!-- New custom fields will be added here -->
+            </div>
+            <button type="button" 
+                    onclick="addCustomField()" 
+                    class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                + Add Custom Field
+            </button>
+        </div>
     
         <!-- Save and Cancel Buttons -->
         <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mt-4 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
@@ -266,6 +304,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
+        }
+
+        let newCustomFieldCounter = 0;
+
+        function addCustomField() {
+            const container = document.getElementById('customFieldsContainer');
+            const fieldId = newCustomFieldCounter++;
+            
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'custom-field-group p-3 border rounded border-gray-300';
+            fieldDiv.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <input type="text" 
+                        name="new_custom_field_key_${fieldId}" 
+                        placeholder="Field name (e.g., Shoe Size)" 
+                        class="flex-1 border inputer rounded py-1 px-2 text-sm">
+                    <input type="text" 
+                        name="new_custom_field_value_${fieldId}" 
+                        placeholder="Value (e.g., 6)" 
+                        class="flex-1 border inputer rounded py-1 px-2 text-sm">
+                    <button type="button" 
+                            onclick="this.parentElement.parentElement.remove()" 
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm">
+                        ✕
+                    </button>
+                </div>
+            `;
+            container.appendChild(fieldDiv);
         }
     </script>
 </body>

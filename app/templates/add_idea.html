@@ -93,6 +93,11 @@
         [data-theme="dark"] .helplogo {
             filter: invert(1) brightness(1.5);
         }
+
+        .custom-field-group {
+            background-color: var(--card-bg-color);
+            border-color: var(--card-border-color);
+        }
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -194,10 +199,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+let customFieldCounter = 0;
+
+function addCustomField() {
+    const container = document.getElementById('customFieldsContainer');
+    const fieldId = customFieldCounter++;
+    
+    const fieldDiv = document.createElement('div');
+    fieldDiv.className = 'custom-field-group border rounded border-gray-300';
+    fieldDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+            <input type="text" 
+                   name="custom_field_key_${fieldId}" 
+                   placeholder="Field name (e.g., Shoe Size)" 
+                   class="flex-1 border inputer rounded py-2 px-3 text-sm">
+            <input type="text" 
+                   name="custom_field_value_${fieldId}" 
+                   placeholder="Value (e.g., 6)" 
+                   class="flex-1 border inputer rounded py-2 px-3 text-sm">
+            <button type="button" 
+                    onclick="this.parentElement.parentElement.remove()" 
+                    class="bg-red-500 text-white font-bold py-1 px-2 rounded text-sm">
+                ✕
+            </button>
+        </div>
+    `;
+    container.appendChild(fieldDiv);
+};
     </script>
 </head>
 <body class="body font-sans">
-    <header class="header p-4">
+    <header class="header text-gray-900 p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
                 Back
@@ -239,13 +272,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="mb-4">
                     <label for="value" class="block sec-text font-bold">Estimated Value (Optional):</label>
                     <input type="number" id="value" name="value" step="any" placeholder="Estimated Value"
-                        class="border inputer rounded py-2 px-3 w-full">
+                        class="border rounded inputer py-2 px-3 w-full">
+                </div>
+                <div class="mb-4">
+                    <label class="block sec-text font-bold">Custom Fields (Optional):</label>
+                    <div id="customFieldsContainer" class="space-y-3 mt-2">
+                        <!-- Custom fields will be dynamically added here -->
+                    </div>
+                    <button type="button" 
+                            onclick="addCustomField()" 
+                            class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                        + Add Custom Field
+                    </button>
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Submit</button>
             </form>
         </section>
     </main>
-
     <script>
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {

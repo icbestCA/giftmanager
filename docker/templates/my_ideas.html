@@ -105,6 +105,34 @@
         --helplogo-color: #e0e0e0;
     }
 
+    .description {
+            max-width: 400px;
+            word-wrap: break-word;
+            color: var(--secondary-text-color);
+        }
+
+        /* Responsive layout adjustments */
+        @media (max-width: 640px) {
+            .idea-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .idea-actions {
+                flex-direction: row;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .idea-actions button,
+            .idea-actions a {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
     .header {
         background-color: var(--header-bg-color);
         color: var(--header-text-color);
@@ -130,13 +158,18 @@
         width: 24px;
         height: 24px;
     }
-
-    [data-theme="dark"] .helplogo {
-        filter: invert(1) brightness(1.5);
+    .actions-container{
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
     }
     .sec-text{
         color: var(--secondary-text-color);
     }
+
+    [data-theme="dark"] .helplogo {
+        filter: invert(1) brightness(1.5);
+    }
+    
     .inputer{
         color: var(--button-text-color);
         background-color: var(--card-bg-color);
@@ -150,19 +183,41 @@
         width: 10%;
         height: fit-content;
     }
+        /* Mobile-specific styles */
+        @media screen and (max-width: 640px) {
+            .image {
+                width: 100%; /* Full width on mobile */
+                height: auto; /* Maintain aspect ratio */
+                margin-top: 10px; /* Add some spacing */
+        }
 
-    @media screen and (max-width: 640px){
-        .image{
-            width: 100%;
-            height: 100%;
-            margin-top: 5px;
+            .divimage {
+                width: 48%; /* Full width on mobile */
+                max-width: none; /* Remove max-width restriction */
+                display: flex;
+                margin-bottom: 1rem; /* Add spacing below the image */
+                margin-left: 0;
+            }
         }
-        .divimage{
-            width: 38%;
-            display: flex;
-            justify-content: center;
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1;
+            white-space: nowrap;
         }
-    }
+
+        [data-theme="dark"] .bg-blue-100 {
+            background-color: #2d3748;
+        }
+
+        [data-theme="dark"] .text-blue-800 {
+            color: #90cdf4;
+        }
+
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -207,11 +262,27 @@
                     <input type="number" class="priority-input hidden border border-gray-300 rounded p-1 inputer" value="{{ gift_idea.priority }}" min="1" style="width: 3rem; text-align: center; margin-right: 1rem;"> 
                     <div class="flex-1">
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
+                        {% if gift_idea.get('custom_fields') %}
+                            <div class="custom-fields flex flex-wrap gap-1 mt-1 mb-1">
+                                {% for key, value in gift_idea.custom_fields.items() %}
+                                    {% if key and value %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ key }}: {{ value }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         <p class="sec-text description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                         {% if gift_idea.value %}
                         <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
                         {% endif %}
                         <p class="sec-text">Added By: {{ gift_idea.added_by }}</p>
+                        <div class="mt-2 text-xs text-gray-500">
+                            {% if gift_idea.get('last_updated') %}
+                                Last updated: {{ gift_idea.last_updated[:10] }}
+                            {% endif %}
+                        </div>
                     </div>
 
                     {% if imgenabled %}
@@ -241,16 +312,49 @@
                             <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5">
                         </a>
                         {% endif %}
+                        
                     </div>
+
                 </li>
                 {% endfor %}
             </ul>
         </section>
     </main>
     <script>
+    function toggleDarkMode() {
+        const htmlElement = document.documentElement;
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        // Set the new theme
+        htmlElement.setAttribute('data-theme', newTheme);
+
+        // Store the theme preference in a cookie
+        document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}`; // 1 year
+    }
+
+    // Function to get the theme preference from the cookie
+    function getThemeFromCookie() {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'theme') {
+                return value;
+            }
+        }
+        return 'light'; // Default to light mode if no cookie is found
+    }
+
+    // Apply the theme preference from the cookie on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const htmlElement = document.documentElement;
+        const theme = getThemeFromCookie();
+        htmlElement.setAttribute('data-theme', theme);
+    });
+
         const backButton = document.getElementById('backButton');
         backButton.addEventListener('click', () => {
-            window.location.href = '/dashboard'; // Replace with the actual URL of your dashboard page
+            window.location.href = '/dashboard';
         });
 
         // Delete an idea
