@@ -233,6 +233,30 @@ def change_email():
     flash('Email updated successfully.', 'success')
     return redirect(url_for('dashboard'))
 
+@app.route('/change_user_grouping', methods=['POST'])
+@login_required
+def change_user_grouping():
+    # Load users from JSON
+    users = load_users()
+
+    # Get new grouping setting from the form
+    if 'user_grouping' in request.form.keys():
+        grouping = request.form['user_grouping']
+    else:
+        grouping = 'false'
+
+    for user in users:
+        if user['username'] == session['username']:
+            user['dashboard_user_grouping'] = 'true' if grouping == 'true' else 'false'
+            break
+    else:
+        flash('User not found.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Save the updated data back to the JSON file
+    save_users(users)
+
+    return redirect(url_for('dashboard'))
 
 def get_currency_symbol():
     return read_env_variable("CURRENCY_SYMBOL", "$")
@@ -888,6 +912,12 @@ def dashboard():
     
     # Initialize visible_users
     visible_users = []
+
+    # Initialize groups, that current user is a member of (to be filled down below)
+    member_groups = []
+    
+    # Get boolean setting from user, if the dashboard should show the users grouped
+    show_groups = (current_user.get('dashboard_user_grouping', 'false') == 'true')
     
     if is_guest:
         # Handle guest user access
@@ -911,27 +941,50 @@ def dashboard():
     else:
         # Regular user logic - SIMPLE VERSION
         current_user_groups = current_user.get('groups', [])
+
         
         # If current user has no groups, show all non-guest users
         if not current_user_groups:
             visible_users = [user for user in users if not user.get('guest')]
         else:
-            # If current user has groups, show users who share groups OR have no groups
-            visible_users = [
-                user for user in users
-                if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
-                and not user.get('guest')
-            ]
+            if show_groups:
+                # If current user has groups and wants grouping of the users on the dashboard
+                # Setup usernames of all users in the current users groups
+                member_groups = [{
+                                    "name": group,
+                                    "members": [d for d in users if group in d['groups']]
+                                } for group in current_user_groups
+                                ]
+            else:
+                # If current user has groups but does not want grouping on the dashboard, show users who share groups OR have no groups
+                visible_users = [
+                    user for user in users
+                    if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
+                    and not user.get('guest')
+                ]
         
         # Move current user to top
-        if current_user in visible_users:
-            visible_users.insert(0, visible_users.pop(visible_users.index(current_user)))
+        if show_groups:
+            for group in member_groups:
+                group['members'].insert(0, group['members'].pop(group['members'].index(current_user)))
+        else:
+            if current_user in visible_users:
+                visible_users.insert(0, visible_users.pop(visible_users.index(current_user)))
 
     # Sort the users alphabetically by full name
-    sorted_users = sorted(
-            visible_users,
-            key=lambda x: (x['username'] != current_user['username'], x['full_name'].lower())
-        )
+    if show_groups:
+        # Set sorted_users to empty, since we don't need them with the grouping
+        sorted_users = []
+        for group in member_groups:
+            group['members'] = sorted(
+                    group['members'],
+                    key=lambda x: (x['username'] != current_user['username'], x['full_name'].lower())
+                )
+    else:
+        sorted_users = sorted(
+                visible_users,
+                key=lambda x: (x['username'] != current_user['username'], x['full_name'].lower())
+            )
 
 
     # Prepare the profile information for the current user
@@ -957,7 +1010,9 @@ def dashboard():
     return render_template(
         'dashboard.html',
         profile_info=profile_info,
+        show_groups=show_groups,
         users=sorted_users,
+        groups=member_groups,
         password_messages=password_messages,
         app_version=app_version,
         assigned_users=assigned_users,
