@@ -939,24 +939,69 @@ def dashboard():
                 if user['username'] in access_users and not user.get('guest')
             ]
     else:
-        # Regular user logic - SIMPLE VERSION
+        # Regular user logic
         current_user_groups = current_user.get('groups', [])
-
         
         # If current user has no groups, show all non-guest users
         if not current_user_groups:
             visible_users = [user for user in users if not user.get('guest')]
+            
+            if show_groups:
+                # Get ALL groups from ALL users
+                all_groups = set()
+                for user in visible_users:
+                    all_groups.update(user.get('groups', []))
+                
+                # Create groups current user appears in ALL groups
+                member_groups = []
+                
+                for group in all_groups:
+                    # Get users who belong to this group
+                    group_members = [user for user in visible_users if group in user.get('groups', [])]
+                    
+                    # Add current user to EVERY group
+                    if current_user not in group_members:
+                        group_members.append(current_user)
+                    
+                    if group_members:
+                        member_groups.append({
+                            "name": group,
+                            "members": group_members
+                        })
         else:
             if show_groups:
-                # If current user has groups and wants grouping of the users on the dashboard
-                # Setup usernames of all users in the current users groups
-                member_groups = [{
-                                    "name": group,
-                                    "members": [d for d in users if group in d['groups']]
-                                } for group in current_user_groups
-                                ]
+                # First, get all users who should be visible (same logic as when show_groups=False)
+                visible_users = [
+                    user for user in users
+                    if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
+                    and not user.get('guest')
+                ]
+                
+                # Now create groups users with no groups should appear in ALL groups
+                member_groups = []
+                
+                for group in current_user_groups:
+                    # Get users who belong to this specific group
+                    group_members = []
+                    
+                    for user in visible_users:
+                        user_groups = user.get('groups', [])
+                        
+                        # User belongs to this group if:
+                        # 1. They have this group in their groups list, OR
+                        # 2. They have no groups at all (appear in all groups)
+                        if group in user_groups or not user_groups:
+                            group_members.append(user)
+                    
+                    if group_members:  # Only add group if it has members
+                        member_groups.append({
+                            "name": group,
+                            "members": group_members
+                        })
+                    
             else:
-                # If current user has groups but does not want grouping on the dashboard, show users who share groups OR have no groups
+                # If current user has groups but does not want grouping on the dashboard
+                # Show users who share groups OR have no groups
                 visible_users = [
                     user for user in users
                     if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
@@ -965,6 +1010,7 @@ def dashboard():
         
         # Move current user to top
         if show_groups:
+            # Find which group(s) contain the current user and move to top in each
             for group in member_groups:
                 group['members'].insert(0, group['members'].pop(group['members'].index(current_user)))
         else:
@@ -995,7 +1041,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.3"
+    app_version = "v2.6.4"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)

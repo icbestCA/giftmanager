@@ -318,6 +318,46 @@
         .bottom-item img {
             margin-right: 8px;
         }
+
+        /* Minimal Checkbox Styling */
+        .minimal-checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border-radius: 4px;
+            border: 2px solid var(--card-border-color);
+            background-color: var(--input-bg-color);
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .minimal-checkbox:checked {
+            background-color: var(--button-bg-color);
+            border-color: var(--button-bg-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 12px 12px;
+        }
+
+        .minimal-checkbox:focus {
+            outline: 2px solid var(--button-bg-color);
+            outline-offset: 2px;
+        }
+
+        .minimal-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--primary-text-color);
+            font-weight: 500;
+        }
+
+        .minimal-checkbox-form {
+            display: inline;
+        }
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -361,9 +401,17 @@
                     <p class="text-secondary">Name: {{ profile_info['full_name'] }}</p>
                     <p class="text-secondary">Birthday: {{ profile_info['birthday'] }}</p>
                     <p class="text-secondary">
-                        <form method="POST" action="/change_user_grouping">
-                            <input type="checkbox" id="user_grouping" name="user_grouping" value="true" onclick="this.form.submit()" {% if show_groups %}checked{% endif %}>
-                            <label for="user_grouping"> Group users on dashboard</label>
+                        <form method="POST" action="/change_user_grouping" class="minimal-checkbox-form">
+                            <label class="minimal-checkbox-label">
+                                <input type="checkbox" 
+                                    id="user_grouping" 
+                                    name="user_grouping" 
+                                    value="true" 
+                                    onclick="this.form.submit()" 
+                                    {% if show_groups %}checked{% endif %}
+                                    class="minimal-checkbox">
+                                Group users on dashboard
+                            </label>
                         </form>
                     </p>
                 </div>
@@ -470,7 +518,7 @@
                     <div class="group-list">
                         {% for group in groups -%}
                         <div class="group-card">
-                            <div>{{ group.name }}</div>
+                            <div class="text-secondary">{{ group.name }}</div>
                             <div class="user-list">
                                 {% for user in group.members %}
                                 <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
