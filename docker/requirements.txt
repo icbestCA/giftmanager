@@ -6,3 +6,4 @@ authlib
 gunicorn
 requests
 beautifulsoup4
+pillow

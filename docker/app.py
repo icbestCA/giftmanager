@@ -8,6 +8,9 @@ from argon2.exceptions import VerifyMismatchError
 from authlib.integrations.flask_client import OAuth
 import json, subprocess, secrets
 import os
+import shutil
+import re
+from PIL import Image
 import random
 from pathlib import Path
 from dotenv import load_dotenv, set_key
@@ -16,6 +19,9 @@ from urllib.parse import urljoin
 dotenv_path = os.path.join(os.path.dirname(__file__), './data/.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+import sys
+import logging
 
 # Disable SSL warnings to clean up your logs
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -28,6 +34,10 @@ app.config['DATA'] = "./data"  # Directory where files are stored
 
 app.config['IDEAS_FILE'] = Path(app.config['DATA'], 'ideas.json')
 app.config['USERS_FILE'] = Path(app.config['DATA'], 'users.json')
+app.config['AVATAR_DIR'] = Path(app.config['DATA'], 'avatars')
+
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.DEBUG)
 
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
@@ -109,6 +119,15 @@ IMGENABLED='false'
                  
 """)
 
+# Setup directory for avatars and copy over the builtin avatars
+try:
+    os.mkdir(app.config['AVATAR_DIR'])
+except FileExistsError:
+    # If the directory already exists, we don't need to do anything
+    pass
+for i in range(1, 9):
+    shutil.copy(Path("static", "icons",f"avatar{i}.png"), Path(app.config['AVATAR_DIR'], f"avatar{i}.png"))
+
 def load_gift_ideas():
     with open(app.config['IDEAS_FILE'], 'r') as file:
         return json.load(file)
@@ -125,6 +144,8 @@ def save_users(users):
     with open(app.config['USERS_FILE'], 'w') as file:
         json.dump(users, file, indent=4)
 
+def sanitize_filename(filename):
+    return re.sub(r"[/\\?%*:|\"<>\x7F\x00-\x1F]", "-", filename)
 
 # Define a decorator for requiring authentication
 def login_required(f):
@@ -208,6 +229,25 @@ def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
 
+def list_avatars():
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+    files = [d for d in os.listdir(app.config['AVATAR_DIR']) if d.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS]
+    return files
+
+@app.route('/avatars/<filename>', methods=['GET'])
+@login_required
+@guest_allowed
+def show_avatar(filename):
+    # Read user data from the JSON file
+    users = load_users()
+
+    # Get the current user's data from the session
+    current_user = next((user for user in users if user['username'] == session['username']), None)
+
+    # Check if current user is a guest
+    is_guest = current_user.get('guest', False)
+    if request.method == 'GET':
+        return send_from_directory('data/avatars', filename)
 
 @app.route('/change_email', methods=['POST'])
 @login_required
@@ -235,18 +275,29 @@ def change_email():
 
 @app.route('/change_user_grouping', methods=['POST'])
 @login_required
+@guest_allowed
 def change_user_grouping():
     # Load users from JSON
     users = load_users()
+
+    # Get the current user's data from the session
+    current_user = next((user for user in users if user['username'] == session['username']), None)
+
+    # Check if current user is a guest
+    is_guest = current_user.get('guest', False)
 
     # Get new grouping setting from the form
     if 'user_grouping' in request.form.keys():
         grouping = request.form['user_grouping']
     else:
         grouping = 'false'
+    
+    if grouping == 'true' and is_guest and current_user['access_type'] == "people":
+        # For guest users with people based access showing groups does not make sense
+        return redirect(url_for('dashboard'))
 
     for user in users:
-        if user['username'] == session['username']:
+        if user['username'] == current_user['username']:
             user['dashboard_user_grouping'] = 'true' if grouping == 'true' else 'false'
             break
     else:
@@ -909,6 +960,9 @@ def dashboard():
 
     # Check if current user is a guest
     is_guest = current_user.get('guest', False)
+
+    # Check guest user access (if this is a guest user)
+    access_type = current_user.get('access_type', None)
     
     # Initialize visible_users
     visible_users = []
@@ -920,17 +974,46 @@ def dashboard():
     show_groups = (current_user.get('dashboard_user_grouping', 'false') == 'true')
     
     if is_guest:
-        # Handle guest user access
-        access_type = current_user.get('access_type', 'family')
-        
         if access_type == 'family':
-            # Show users in guest's assigned groups (including guest groups)
-            guest_groups = current_user.get('groups', [])
-            visible_users = [
-                user for user in users
-                if user.get('groups') and any(group in guest_groups for group in user['groups'])
-                and not user.get('guest')  # Don't show other guests
-            ]
+            if show_groups:
+                current_user_groups = current_user.get('groups', [])
+                # First, get all users who should be visible
+                visible_users = [
+                    user for user in users
+                    if (not user.get('groups') or any(group in current_user_groups for group in user.get('groups', [])))
+                    and not user.get('guest')
+                ]
+                
+                # Now create groups users with no groups should appear in ALL groups
+                member_groups = []
+                
+                for group in current_user_groups:
+                    # Get users who belong to this specific group
+                    group_members = []
+                    
+                    for user in visible_users:
+                        user_groups = user.get('groups', [])
+                        
+                        # User belongs to this group if:
+                        # 1. They have this group in their groups list, OR
+                        # 2. They have no groups at all (appear in all groups)
+                        if group in user_groups or not user_groups:
+                            group_members.append(user)
+                    
+                    if group_members:  # Only add group if it has members
+                        member_groups.append({
+                            "name": group,
+                            "members": group_members
+                        })
+                    
+            else:
+                # Show users in guest's assigned groups (including guest groups)
+                guest_groups = current_user.get('groups', [])
+                visible_users = [
+                    user for user in users
+                    if user.get('groups') and any(group in guest_groups for group in user['groups'])
+                    and not user.get('guest')  # Don't show other guests
+                ]
         else:  # people access
             # Show specific users assigned to guest
             access_users = current_user.get('access_users', [])
@@ -1311,6 +1394,18 @@ def add_user():
         email = request.form.get('email')  # Optional field
         avatar = request.form.get('avatar')
 
+        # If a new avatar image was uploaded, save it
+        #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
+        if 'new_avatar' in request.files and request.files['new_avatar'].filename == avatar:
+            file = request.files['new_avatar']
+            # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+            filename = str(datetime.now().timestamp()).replace(".","-") + "_" + sanitize_filename(file.filename)
+            filename = filename[:filename.rfind(".")+1]+"png"
+            avatar = filename
+            image = Image.open(file)
+            image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+            image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+
         # Hash the password
         hashed = password_hash(password)
 
@@ -1338,9 +1433,10 @@ def add_user():
         save_users(users)  # Using save_users function to write the users to file
 
         flash('User added successfully!', 'success')
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('manage_users'))
 
-    return render_template('add_user.html')
+    avatars = list_avatars()
+    return render_template('add_user.html', avatars=avatars)
 
 
 @app.route('/edit_idea/<int:idea_id>', methods=['GET', 'POST'])
@@ -1606,6 +1702,18 @@ def manage_users():
             updated_password = request.form.get('password')
             updated_avatar = request.form.get('avatar')
 
+            # If a new avatar image was uploaded, save it
+            #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
+            if 'new_avatar' in request.files and request.files['new_avatar'].filename == updated_avatar:                
+                file = request.files['new_avatar']
+                # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+                filename = str(datetime.now().timestamp()).replace(".","-") + "_" + sanitize_filename(file.filename)
+                filename = filename[:filename.rfind(".")+1]+"png"
+                updated_avatar = filename
+                image = Image.open(file)
+                image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+                image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+
             for user in users:
                 if user['username'] == username:
                     user['full_name'] = updated_name
@@ -1627,6 +1735,9 @@ def manage_users():
         all_users = load_users()
         users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
+    # Get available avatars
+    avatars = list_avatars()
+
     # Transform users into tuples for the template
     users_data = [
         (
@@ -1639,7 +1750,7 @@ def manage_users():
         for user in users
     ]
 
-    return render_template('manage_users.html', users=users_data)
+    return render_template('manage_users.html', users=users_data, avatars=avatars)
 
 @app.route('/edit_email_settings', methods=['GET', 'POST'])
 @admin_required

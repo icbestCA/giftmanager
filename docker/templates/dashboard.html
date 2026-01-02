@@ -115,6 +115,7 @@
             width: 35px;
             height: 35px;
             margin-right: 10px;
+            object-fit: cover;
         }
 
         .sidebar {
@@ -522,7 +523,7 @@
                             <div class="user-list">
                                 {% for user in group.members %}
                                 <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
-                                    <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                                    <img class="user-avatar rounded-full" src="{{ url_for('show_avatar', filename=user.avatar) }}">
                                     <p class="text-center text-secondary">{{ user.full_name }}</p>
                                 </div>
                                 {% endfor %}
@@ -534,7 +535,7 @@
                     <div class="user-list">
                         {% for user in users %}
                         <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
-                            <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                            <img class="user-avatar rounded-full" src="{{ url_for('show_avatar', filename=user.avatar) }}">
                             <p class="text-center text-secondary">{{ user.full_name }}</p>
                         </div>
                         {% endfor -%}

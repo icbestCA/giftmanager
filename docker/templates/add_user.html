@@ -93,6 +93,44 @@
             color: var(--button-text-color);
             background-color: var(--card-bg-color);
         }
+
+        .avatar-picker {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .avatar-option {
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avatar-option img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+        }
+
+        .avatar-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 1px;
+            height: 1px;
+        }
+
+        .avatar-option input:checked + img {
+            outline: 3px solid #0070f3;
+        }
+
     </style>
     <script>
         // Inline script to apply the theme from the cookie immediately
@@ -124,7 +162,7 @@
     <main class="main container mx-auto p-8">
         <div class="section shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">New User</h1>
-            <form action="{{ url_for('add_user') }}" method="post">
+            <form action="{{ url_for('add_user') }}" method="post" enctype=multipart/form-data>
                 <div class="mb-4">
                     <label for="username" class="block sec-text font-bold">Username for login:</label>
                     <input type="text" name="username" id="username" class="border rounded py-2 px-3 w-full inputer" required>
@@ -146,27 +184,27 @@
                     <input type="email" name="email" id="email" class="border rounded py-2 px-3 w-full inputer">
                 </div>
                 <div class="mb-4">
-                    <label for="avatar" class="block sec-text font-bold">Avatar:</label>
-                    <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full inputer" required>
+                    <fieldset class="avatar-picker" id="avatar-picker">
+                        <legend>Select an avatar</legend>
+                        {% for avatar in avatars -%}
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="{{ avatar }}" class="sr-only peer" required />
+                            <img src="{{ url_for('show_avatar', filename=avatar) }}" alt="Avatar {{ avatar }}" class="rounded-full" />
+                        </label>
+                        {% endfor -%}
+                        <label class="avatar-option">
+                            <input type="file" name="new_avatar" id="new_avatar_input" class="sr-only peer"/>
+                            <img src="{{ url_for('static', filename='icons/add.svg') }}" alt="Add new Avatar" id="new_avatar_button"/>
+                        </label>
+                    </fieldset>
+                    <!--<select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full inputer" required>
                         <option value="icons/avatar1.png">Avatar 1</option>
                         <option value="icons/avatar2.png">Avatar 2</option>
                         <option value="icons/avatar3.png">Avatar 3</option>
                         <option value="icons/avatar4.png">Avatar 4</option>
                         <option value="icons/avatar5.png">Avatar 5</option>
                         <option value="icons/avatar6.png">Avatar 6</option>
-                    </select>
-                    <h3>Avatar 1</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar1.png') }}" width="50" height="50">
-                    <h3>Avatar 2</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar2.png') }}" width="50" height="50">
-                    <h3>Avatar 3</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar3.png') }}" width="50" height="50">
-                    <h3>Avatar 4</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar4.png') }}" width="50" height="50">
-                    <h3>Avatar 5</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar5.png') }}" width="50" height="50">
-                    <h3>Avatar 6</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar6.png') }}" width="50" height="50">
+                    </select>-->
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Add</button>
             </form>
@@ -178,17 +216,42 @@
         backButton.addEventListener('click', () => {
             window.location.href = '/admin'; // Replace '/dashboard' with the actual URL of your dashboard page
         });
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+              });
           });
-      });
-    }
+        }
+
+        const add_avatar_input = document.getElementById("new_avatar_input")
+        add_avatar_input.addEventListener('change', () => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                //add_avatar_input.setAttribute("disabled", "true")
+                var img = document.createElement("img")
+                img.src = event.target.result
+                img.alt = add_avatar_input.files[0].name
+                var radio = document.createElement("input")
+                radio.type = "radio"
+                radio.name = "avatar"
+                radio.value = add_avatar_input.files[0].name
+                var label = document.createElement("label")
+                label.classList.add("avatar-option")
+                label.appendChild(radio)
+                label.appendChild(img)
+                var picker = document.getElementById("avatar-picker")
+                picker.insertBefore(label, picker.children[picker.children.length-1])
+                radio.checked = true
+            }
+
+            reader.readAsDataURL(add_avatar_input.files[0]);
+        });
+
     </script>
 </body>
 </html>
