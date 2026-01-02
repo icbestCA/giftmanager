@@ -20,9 +20,6 @@ dotenv_path = os.path.join(os.path.dirname(__file__), './data/.env') # Load the 
 load_dotenv(dotenv_path)
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-import sys
-import logging
-
 # Disable SSL warnings to clean up your logs
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -35,9 +32,6 @@ app.config['DATA'] = "./data"  # Directory where files are stored
 app.config['IDEAS_FILE'] = Path(app.config['DATA'], 'ideas.json')
 app.config['USERS_FILE'] = Path(app.config['DATA'], 'users.json')
 app.config['AVATAR_DIR'] = Path(app.config['DATA'], 'avatars')
-
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.DEBUG)
 
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
