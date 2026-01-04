@@ -250,7 +250,15 @@
                     </div>
     
                     {% if gift_idea.bought_by %}
-                    <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
+                    <p class="text-green-500">Purchased by:
+                        {% if hide_purchaser and gift_idea.bought_by != session['username']-%}
+                            Anonymous
+                        {% elif hide_purchaser and gift_idea.bought_by == session['username'] -%}
+                            Me ({{ session['username']}})
+                        {% else -%}
+                            {{ get_full_name(gift_idea.bought_by) }}
+                        {% endif -%}
+                    </p>
                     {% if gift_idea.bought_by == session['username'] %}
                     <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
                     {% endif %}

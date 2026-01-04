@@ -10,6 +10,7 @@ import json, subprocess, secrets
 import os
 import random
 import re
+import shutil
 from PIL import Image
 from pathlib import Path
 from dotenv import load_dotenv, set_key
@@ -122,6 +123,8 @@ try:
 except FileExistsError:
     # If the directory already exists, we don't need to do anything
     pass
+for i in range(1, 9):
+    shutil.copy(Path("static", "icons",f"avatar{i}.png"), Path(app.config['AVATAR_DIR'], f"avatar{i}.png"))
 
 def load_gift_ideas():
     with open(app.config['IDEAS_FILE'], 'r') as file:
@@ -1292,7 +1295,13 @@ def user_gift_ideas(selected_user_id):
     # Call get_full_name function to fetch the user's full name directly in the route
     user_namels = get_full_name(selected_user_id)  # Get the full name based on the selected user ID
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
-    return render_template('user_gift_ideas.html', user_gift_ideas=user_gift_ideas, user_namels=user_namels, imgenabled=imgenabled, is_shared_list_member=is_shared_list_member)
+    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'false').lower() == 'true'
+    return render_template('user_gift_ideas.html',
+        user_gift_ideas=user_gift_ideas,
+        user_namels=user_namels,
+        imgenabled=imgenabled,
+        hide_purchaser=hide_purchaser,
+        is_shared_list_member=is_shared_list_member)
 
 
 @app.route('/my_ideas')
@@ -2134,6 +2143,7 @@ def update_group_assignments():
 @app.route('/setup_advanced', methods=['GET'])
 @admin_required
 def setup_advanced():
+    hide_purchaser = read_env_variable("HIDE_PURCHASER", 'false')
     current_reorder = read_env_variable("REORDERING")
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()
@@ -2142,14 +2152,23 @@ def setup_advanced():
     enable_link_sharing = read_env_variable("ENABLE_LINK_SHARING", "true").lower() == 'true'
     joining_code = read_env_variable("JOINING_CODE", "")
     
-    return render_template('advanced.html', 
-                         current_reorder=current_reorder, 
-                         images=images, 
+    return render_template('advanced.html',
+                         hide_purchaser=hide_purchaser,
+                         current_reorder=current_reorder,
+                         images=images,
                          current_currency_symbol=current_currency_symbol,
-                         current_currency_position=current_currency_position, 
+                         current_currency_position=current_currency_position,
                          enable_self_registration=enable_self_registration,
-                         joining_code=joining_code, 
+                         joining_code=joining_code,
                          enable_link_sharing=enable_link_sharing)
+
+# Route to update HIDE_PURCHASER (POST request)
+@app.route('/hide_purchaser', methods=['POST'])
+@admin_required
+def update_hide_purchaser():
+    reordering = request.form.get('hide_purchaser', 'true').strip()
+    set_key(dotenv_path, "HIDE_PURCHASER", reordering)
+    return redirect(url_for('setup_advanced'))
 
 
 # Route to update REORDERING (POST request)

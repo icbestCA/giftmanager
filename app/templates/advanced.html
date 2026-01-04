@@ -298,6 +298,25 @@
                 {% endwith %}
 
                 <div class="main p-6 rounded shadow section">
+
+                    <!-- Hide purchaser identity Section -->
+                    <form method="post" action="{{ url_for('update_hide_purchaser') }}">  
+                        <div class="mb-4">
+                            <p class="mb-2">Hide the identity of the user, who purchased a specifc gift.</p>
+                            <label for="hide_purchaser" class="block sec-text font-medium">Hide purchaser identity {{ hide_purchaser }}</label>
+                            <select id="hide_purchaser" name="hide_purchaser" class="p-3 w-full border rounded-lg inputer">
+                                <option value="true" {% if hide_purchaser == 'true' %}selected{% endif %}>True</option>
+                                <option value="false" {% if hide_purchaser == 'false' %}selected{% endif %}>False</option>
+                            </select>
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                            Save
+                        </button>
+                    </form>  
+                    
+                    <div class="my-6 border-t border-gray-300"></div>
                     
                     <!-- Reordering Section -->
                     <form method="post" action="{{ url_for('update_reordering') }}">  
