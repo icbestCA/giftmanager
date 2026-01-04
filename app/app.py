@@ -8,7 +8,7 @@ from argon2.exceptions import VerifyMismatchError
 from authlib.integrations.flask_client import OAuth
 import json, secrets
 import os
-import random
+import random, re
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
@@ -976,7 +976,7 @@ def dashboard():
         'guest': is_guest
     }
 
-    app_version = "v2.6.4"
+    app_version = "v2.6.5"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -1379,86 +1379,220 @@ def verify_password(hash, password):
         return False
 
 
+def is_valid_pool_name(name):
+    return bool(re.match(r'^[a-zA-Z0-9_-]+$', name))
+
+def create_secret_santa_assignments(participants, exclusions):
+
+  #  Returns (assignments, error_message) or (None, error) if impossible.
+
+    participants = list(participants)
+    
+    # Build bidirectional exclusion set
+    excluded = set()
+    for pair in exclusions:
+        if '-' in pair:
+            a, b = pair.split('-')[:2]
+            a, b = a.strip(), b.strip()
+            if a and b and a in participants and b in participants:
+                excluded.add((a, b))
+                excluded.add((b, a))
+    
+    # Quick feasibility check
+    for person in participants:
+        possible = [p for p in participants 
+                   if p != person and (person, p) not in excluded]
+        if not possible:
+            person = get_full_name(person)
+            return None, f"{person} has no possible recipients"
+    
+    # Try to find valid assignments (maximum 50,000 attempts)
+    for attempt in range(50000):
+        # Shuffle and create circular assignment
+        receivers = participants[:]
+        random.shuffle(receivers)
+        
+        # Check if this permutation works
+        assignments = {}
+        valid = True
+        
+        for giver, receiver in zip(participants, receivers):
+            # No self-gifting and no excluded pairs
+            if giver == receiver or (giver, receiver) in excluded:
+                valid = False
+                break
+            assignments[giver] = receiver
+        
+        # If valid and everyone has unique assignments
+        if valid and len(set(assignments.values())) == len(participants):
+            # Final verification
+            for giver, receiver in assignments.items():
+                if (giver, receiver) in excluded:
+                    return None, f"Unexpected exclusion violation: {giver} → {receiver}"
+            return assignments, None
+    
+    return None, "Could not find valid assignments after many attempts"
+
 @app.route('/secret_santa', methods=['GET', 'POST'])
 @admin_required
 @login_required
 def secret_santa():
-    # Load users from the JSON file
     users = load_users()
-
+    
     # Get existing pools
     existing_pools = set()
     for user in users:
         if 'assigned_users' in user:
             existing_pools.update(user['assigned_users'].keys())
-
+    
     if request.method == 'POST':
-        pool_name_to_delete = request.form.get('pool_name_to_delete')
-
-        if pool_name_to_delete:
-            # Handle deleting a specific pool
-            pool_exists = False
+        # Handle deletion
+        if 'pool_name_to_delete' in request.form:
+            pool_name = request.form['pool_name_to_delete']
+            
+            if not is_valid_pool_name(pool_name):
+                flash('Invalid pool name', 'error')
+                return redirect(url_for('secret_santa'))
+            
+            deleted = False
             for user in users:
-                if 'assigned_users' in user and pool_name_to_delete in user['assigned_users']:
-                    pool_exists = True
-                    del user['assigned_users'][pool_name_to_delete]
-
-            if not pool_exists:
-                flash(f'Pool "{pool_name_to_delete}" does not exist.', 'error')
-            else:
-                # Remove the corresponding instructions file if it exists
-                try:
-                    os.remove(f'santa_inst_{pool_name_to_delete}.txt')
-                except FileNotFoundError:
-                    pass  # Ignore if the file does not exist
-
-                # Save the updated users list
+                if 'assigned_users' in user and pool_name in user['assigned_users']:
+                    del user['assigned_users'][pool_name]
+                    deleted = True
+            
+            if deleted:
+                os.remove(f'santa_inst_{pool_name}.txt')
                 save_users(users)
-                flash(f'Pool "{pool_name_to_delete}" has been deleted!', 'success')
+                flash(f'Pool "{pool_name}" deleted', 'success')
+            else:
+                flash(f'Pool "{pool_name}" not found', 'error')
+            
+            return redirect(url_for('secret_santa'))
+        
+        # CREATE NEW POOL
+        pool_name = request.form.get('pool_name', '').strip()
+        participants = request.form.getlist('participants')
+        instructions = request.form.get('instructions', '')
+        
+        # Parse exclusions from JSON (sent by frontend)
+        exclusions = []
+        exclusions_json = request.form.get('all_exclusions', '[]')
+        try:
+            exclusions = json.loads(exclusions_json)
+        except:
+            # Fallback: try to parse from form fields
+            for key, value in request.form.items():
+                if key.startswith('exclusion_giver_'):
+                    pair_num = key.replace('exclusion_giver_', '')
+                    receiver_key = f'exclusion_receiver_{pair_num}'
+                    if receiver_key in request.form:
+                        giver = value.strip()
+                        receiver = request.form[receiver_key].strip()
+                        if giver and receiver and giver != receiver:
+                            exclusions.append(f"{giver}-{receiver}")
+        
+        # Validation - store errors to show on page
+        errors = []
+        
+        if not pool_name:
+            errors.append('Pool name required')
+        
+        if pool_name and not is_valid_pool_name(pool_name):
+            errors.append('Invalid pool name (letters, numbers, dashes, underscores only)')
+        
+        if len(participants) < 2:
+            errors.append('Need at least 2 participants')
+        
+        if len(set(participants)) != len(participants):
+            errors.append('Duplicate participants selected')
+        
+        # If basic validation errors, show them on the page
+        if errors:
+            return render_template('secret_santa.html', 
+                                 users=users, 
+                                 existing_pools=sorted(existing_pools),
+                                 form_data={
+                                     'pool_name': pool_name,
+                                     'participants': participants,
+                                     'instructions': instructions,
+                                     'exclusions': exclusions
+                                 },
+                                 errors=errors)
+        
+        # Create assignments
+        assignments, error = create_secret_santa_assignments(participants, exclusions)
+        
+        if assignments is None:
+            # Show error on the same page with form data preserved
+            return render_template('secret_santa.html',
+                                 users=users,
+                                 existing_pools=sorted(existing_pools),
+                                 form_data={
+                                     'pool_name': pool_name,
+                                     'participants': participants,
+                                     'instructions': instructions,
+                                     'exclusions': exclusions
+                                 },
+                                 errors=[f' {error}'])
 
-            return redirect(url_for('dashboard'))  # Redirect to dashboard after deletion
-
-        else:
-            # Handle creating Secret Santa assignments
-            selected_participants = request.form.getlist('participants')
-            secret_santa_instructions = request.form.get('instructions', '')  # Default to an empty string if not provided
-            pool_name = request.form.get('pool_name')
-
-            if not pool_name:
-                flash('Pool name is required!', 'error')
-                return redirect(url_for('secret_santa'))
-
-            if len(selected_participants) < 2:
-                flash('You need at least 2 participants for Secret Santa!', 'error')
-                return redirect(url_for('secret_santa'))
-
-            # Shuffle and assign participants
-            shuffled_participants = selected_participants[:]
-            random.shuffle(shuffled_participants)
-
-            assignments = {}
-            for i, participant in enumerate(shuffled_participants):
-                # Assign each participant the next one in the shuffled list, looping around
-                assignments[participant] = shuffled_participants[(i + 1) % len(shuffled_participants)]
-
-            # Save the assignments to the users JSON
+        
+        # Verify no exclusions are violated (double-check)
+        exclusion_violations = []
+        for exclusion in exclusions:
+            if '-' in exclusion:
+                a, b = exclusion.split('-')[:2]
+                a, b = a.strip(), b.strip()
+                if assignments.get(a) == b or assignments.get(b) == a:
+                    exclusion_violations.append(f'Assignment violates {a} ↔ {b}')
+        
+        if exclusion_violations:
+            return render_template('secret_santa.html',
+                                 users=users,
+                                 existing_pools=sorted(existing_pools),
+                                 form_data={
+                                     'pool_name': pool_name,
+                                     'participants': participants,
+                                     'instructions': instructions,
+                                     'exclusions': exclusions
+                                 },
+                                 errors=[f' Critical error: {exclusion_violations[0]}'])
+        
+        try:
+            # Save to users
             for user in users:
                 if user['username'] in assignments:
                     if 'assigned_users' not in user:
                         user['assigned_users'] = {}
                     user['assigned_users'][pool_name] = assignments[user['username']]
-
-            # Save the updated users data
+            
             save_users(users)
-
-            # Save the instructions to a text file specific to the pool
-            with open(f'santa_inst_{pool_name}.txt', 'w') as file:
-                file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
-
-            flash('Secret Santa assignments have been made!', 'success')
-            return redirect(url_for('secret_santa_assignments'))
-
-    return render_template('secret_santa.html', users=users, existing_pools=sorted(existing_pools))
+            
+            # Save instructions
+            with open(f'santa_inst_{pool_name}.txt', 'w') as f:
+                f.write(instructions)
+            
+            flash(f' Pool "{pool_name}" created', 'success')
+            return redirect(url_for('secret_santa'))
+            
+        except Exception as e:
+            print(f"Error saving: {e}")
+            return render_template('secret_santa.html',
+                                 users=users,
+                                 existing_pools=sorted(existing_pools),
+                                 form_data={
+                                     'pool_name': pool_name,
+                                     'participants': participants,
+                                     'instructions': instructions,
+                                     'exclusions': exclusions
+                                 },
+                                 errors=[f' Error saving: {str(e)}'])
+    
+    # GET request - just show empty form
+    return render_template('secret_santa.html', 
+                         users=users, 
+                         existing_pools=sorted(existing_pools),
+                         form_data={},
+                         errors=[])
 
 
 @app.route('/secret_santa_assignments', methods=['GET'])
