@@ -111,12 +111,6 @@
             background-color: var(--card-hover-bg-color);
         }
 
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            margin-right: 10px;
-        }
-
         .sidebar {
             position: fixed;
             overflow-y: auto;
@@ -240,7 +234,7 @@
         /* Dropdown styles */
         .dropdown-container {
             background-color: var(--card-bg-color);
-            padding: 16px;
+            padding: 0px;
             margin-bottom: 16px;
         }
         
@@ -384,7 +378,12 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-content">
-                <h2 class="text-lg font-semibold mb-4 text-primary">Menu</h2>
+                <div class="flex flex-row justify-between">
+                    <h2 class="text-lg font-semibold mb-4 text-primary">Menu</h2>
+                    {% if profile_info['avatar'] -%}
+                    <img class="w-16 h-16 rounded-full object-cover" src="{{ url_for('show_avatar', filename=profile_info.avatar) }}">
+                    {% endif -%}
+                </div>
                 
                 <!-- Display Error Messages -->
                 {% if password_messages %}
@@ -417,6 +416,39 @@
                 </div>
 
                 {% if not profile_info.guest %}
+                <!-- Avatar Change Dropdown -->
+                <div class="dropdown-container">
+                    <div class="dropdown-header" onclick="toggleDropdown('avatarDropdown', 'avatarChevron')">
+                        <span>Change Avatar</span>
+                        <i class="fa-solid fa-chevron-down dropdown-chevron" id="avatarChevron"></i>
+                    </div>
+                    <div class="dropdown-content" id="avatarDropdown">
+                        <form method="POST" action="/change_avatar" enctype="multipart/form-data">
+                            <fieldset class="relative rounded-lg w-min" id="avatar-picker">
+                                <div class="flex items-center gap-4">
+                                    <label class="relative w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
+                                        <input type="text" name="avatar" value="{{ avatar }}" class="sr-only" id="avatar_input"/>
+                                        <img src="{{ url_for('show_avatar', filename=profile_info['avatar']) }}" alt="Avatar" class="w-full h-full object-cover" id="avatar_image"/>
+                                    </label>
+
+                                    <div class="flex flex-col gap-2">
+                                        <div class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition" id="generate_button">
+                                            Random avatar
+                                        </div>
+
+                                        <label class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition">
+                                            Upload image
+                                            <input type="file" name="new_avatar" accept="image/*" class="sr-only" id="new_avatar_input"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            
+                            <button type="submit" class="rounded-blue-button mt-2">Change Avatar</button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Password Change Dropdown -->
                 <div class="dropdown-container">
                     <div class="dropdown-header" onclick="toggleDropdown('passwordDropdown', 'passwordChevron')">
@@ -522,7 +554,7 @@
                             <div class="user-list">
                                 {% for user in group.members %}
                                 <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
-                                    <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                                    <img class="w-12 h-12 rounded-full object-cover" src="{{ url_for('show_avatar', filename=user.avatar) }}">
                                     <p class="text-center text-secondary">{{ user.full_name }}</p>
                                 </div>
                                 {% endfor %}
@@ -534,7 +566,7 @@
                     <div class="user-list">
                         {% for user in users %}
                         <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">
-                            <img class="user-avatar" src="{{ url_for('static', filename=user.avatar) }}">
+                            <img class="w-12 h-12 rounded-full object-cover" src="{{ url_for('show_avatar', filename=user.avatar) }}">
                             <p class="text-center text-secondary">{{ user.full_name }}</p>
                         </div>
                         {% endfor -%}
@@ -624,6 +656,26 @@
               });
           });
         }
+
+        const add_avatar_input = document.getElementById("new_avatar_input")
+        add_avatar_input.addEventListener('change', () => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById("avatar_image").src = event.target.result
+                document.getElementById("avatar_input").value = add_avatar_input.files[0].name
+            }
+
+            reader.readAsDataURL(add_avatar_input.files[0]);
+        });
+
+        async function generate_new_avatar(){
+            const response = await fetch("{{ url_for('generate_avatar') }}")
+            const data = await response.json()
+            document.getElementById("avatar_image").src = `/avatars/${data['filename']}`
+            document.getElementById("avatar_input").value = data['filename']
+        }
+        const generate_avatar_button = document.getElementById("generate_button")
+        generate_avatar_button.addEventListener('click', generate_new_avatar)
     </script>
 </body>
 </html>

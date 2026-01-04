@@ -276,7 +276,7 @@
                                             <div class="flex justify-center items-center">{{ user[1] }}</div>
                                             <div class="flex justify-center items-center">{{ user[2] }}</div>
                                             <div class="flex justify-center items-center">
-                                                <img src="{{ url_for('static', filename=user[3]) }}" alt="Avatar" class="w-8 h-8 rounded-full mx-auto">
+                                                <img src="{{ url_for('show_avatar', filename=user[3]) }}" alt="Avatar" class="w-16 h-16 object-cover rounded-full mx-auto">
                                             </div>
                                             <div class="flex justify-center items-center">
                                                 <form action="{{ url_for('manage_users') }}" method="POST" class="inline-block">
@@ -298,20 +298,31 @@
                     
                                         <!-- Edit Form Row -->
                                         <div id="edit-form-{{ user[0] }}" class="hidden mt-4">
-                                            <form action="{{ url_for('manage_users') }}" method="POST" class="flex flex-wrap space-x-4">
+                                            <form action="{{ url_for('manage_users') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap space-x-4">
                                                 <input type="hidden" name="username" value="{{ user[0] }}" class="inputer">
                                                 <input type="text" name="name" placeholder="Full Name" value="{{ user[1] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
                                                 <input type="email" name="email" placeholder="Email" value="{{ user[2] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
                                                 <input type="password" name="password" placeholder="New Password" class="border rounded px-3 py-1 w-1/4 inputer">
-                                                <select name="avatar" class="border rounded px-3 py-1 w-1/4 inputer">
-                                                    <option value="{{ user[3] }}" selected>Current Avatar</option>
-                                                    <option value="icons/avatar1.png">Avatar 1</option>
-                                                    <option value="icons/avatar2.png">Avatar 2</option>
-                                                    <option value="icons/avatar3.png">Avatar 3</option>
-                                                    <option value="icons/avatar4.png">Avatar 4</option>
-                                                    <option value="icons/avatar5.png">Avatar 5</option>
-                                                    <option value="icons/avatar6.png">Avatar 6</option>
-                                                </select>
+                                                <fieldset class="relative border border-gray-300 rounded-lg p-4 w-min" id="avatar-picker_{{ user[0] }}">
+                                                    <div class="flex items-center gap-4">
+                                                        <legend class="main absolute -top-3 left-4 px-2 text-sm font-semibold text-gray-700">Select an avatar</legend>
+                                                        <label class="relative w-32 h-32 rounded-full overflow-hidden flex-shrink-0">
+                                                            <input type="text" name="avatar" value="{{ user[3] }}" class="sr-only" id="avatar_input_{{ user[0] }}"/>
+                                                            <img src="{{ url_for('show_avatar', filename=user[3])}}" alt="Avatar" class="w-full h-full object-cover" id="avatar_image_{{ user[0] }}"/>
+                                                        </label>
+
+                                                        <div class="flex flex-col gap-2">
+                                                            <div class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition" id="generate_button_{{ user[0] }}" onclick="generate_new_avatar('{{ user[0] }}')">
+                                                                Random avatar
+                                                            </div>
+
+                                                            <label class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition">
+                                                                Upload image
+                                                                <input type="file" name="new_avatar" accept="image/*" class="sr-only" id="new_avatar_input_{{ user[0] }}" onchange="upload_avatar('{{ user[0] }}')"/>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
                                                 <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded">Save Changes</button>
                                                 <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-gray-300 text-black px-3 py-1 rounded">Cancel</button>
                                             </form>
@@ -365,16 +376,34 @@
             });
         });
         if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+        
+        async function generate_new_avatar(userId){
+            const response = await fetch("{{ url_for('generate_avatar') }}")
+            const data = await response.json()
+            document.getElementById(`avatar_image_${userId}`).src = `/avatars/${data['filename']}`
+            document.getElementById(`avatar_input_${userId}`).value = data['filename']
+        }
+
+        function upload_avatar(userId){
+            const new_avatar_input = document.getElementById(`new_avatar_input_${userId}`)
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById(`avatar_image_${userId}`).src = event.target.result
+                document.getElementById(`avatar_input_${userId}`).value = new_avatar_input.files[0].name
+            }
+
+            reader.readAsDataURL(new_avatar_input.files[0]);
+        }
     </script>
 </body>
 </html>

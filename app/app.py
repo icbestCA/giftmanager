@@ -6,26 +6,40 @@ from datetime import datetime, timedelta
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from authlib.integrations.flask_client import OAuth
-import json, secrets
+import json, subprocess, secrets
 import os
 import random
+import re
+from PIL import Image
+from pathlib import Path
+from dotenv import load_dotenv, set_key
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from dotenv import load_dotenv, set_key, dotenv_values
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
+dotenv_path = os.path.join(os.path.dirname(__file__), './data/.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+import python_avatars
+
+# Disable SSL warnings to clean up your logs
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
+app.config['DATA'] = "./data"  # Directory where files are stored
+
+
+app.config['IDEAS_FILE'] = Path(app.config['DATA'], 'ideas.json')
+app.config['USERS_FILE'] = Path(app.config['DATA'], 'users.json')
+app.config['AVATAR_DIR'] = Path(app.config['DATA'], 'avatars')
+
+app.config['AVATAR_CLAIM_TIMEOUT'] = 3600 # in seconds
 
 mailjet_api_key = os.getenv("MAILJET_API_KEY")
 mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
 mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
 ph = PasswordHasher()
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def read_env_variable(key, default=None):
@@ -54,20 +68,75 @@ def read_env_variable(key, default=None):
     return os.getenv(key, default)
 
 
+def prepopulate_file(filename: str, data: str):
+    if Path(filename).exists():
+        return
+
+    # Prepopulate user data
+    Path(filename).parent.mkdir(exist_ok=True, parents=True)
+    with open(filename, 'w') as file:
+        file.write(data)
+
+prepopulate_file(app.config['IDEAS_FILE'], """
+        [
+            {
+                "user_id": "demo",
+                "gift_idea_id": 1,
+                "gift_name": "Default",
+                "description": "dont delete",
+                "link": "icbest.ca",
+                "added_by": "demo",
+                "bought_by": ""
+            }
+        ]""")
+
+prepopulate_file(app.config['USERS_FILE'], """
+        [
+        ]""")
+
+prepopulate_file('./data/.env', """
+MAILJET_API_KEY=''
+MAILJET_API_SECRET=''
+SECRET_KEY='changethis'
+SYSTEM_EMAIL=''
+DELETE_DAYS='30'
+OIDC_CLIENT_ID=''
+OIDC_CLIENT_SECRET=''
+OIDC_SERVER_METADATA_URL=''
+OIDC_LOGOUT_URL=''
+PRIMARY_OIDC_FIELD='email'
+SECONDARY_OIDC_FIELD='preferred_username'
+PRIMARY_DB_FIELD='email'
+SECONDARY_DB_FIELD='username'
+ENABLE_AUTO_REGISTRATION='false'
+LOGIN_PAGE_MESSAGE='No account? Contact a family member to create an account!'
+ENABLE_DEFAULT_LOGIN='true'
+REORDERING='true'
+IMGENABLED='false'
+                 
+""")
+
+# Setup directory for avatars
+try:
+    os.mkdir(app.config['AVATAR_DIR'])
+except FileExistsError:
+    # If the directory already exists, we don't need to do anything
+    pass
+
 def load_gift_ideas():
-    with open('ideas.json', 'r') as file:
+    with open(app.config['IDEAS_FILE'], 'r') as file:
         return json.load(file)
 
 def save_gift_ideas(gift_ideas):
-    with open('ideas.json', 'w') as file:
+    with open(app.config['IDEAS_FILE'], 'w') as file:
         json.dump(gift_ideas, file, indent=4)
 
 def load_users():
-    with open('users.json', 'r') as file:
+    with open(app.config['USERS_FILE'], 'r') as file:
         return json.load(file)
 
 def save_users(users):
-    with open('users.json', 'w') as file:
+    with open(app.config['USERS_FILE'], 'w') as file:
         json.dump(users, file, indent=4)
 
 
@@ -153,6 +222,51 @@ def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
 
+@app.route('/avatars/<filename>', methods=['GET'])
+@login_required
+@guest_allowed
+def show_avatar(filename):
+    # Read user data from the JSON file
+    users = load_users()
+    return send_from_directory('data/avatars', filename)
+
+@app.route('/change_avatar', methods=['POST'])
+@login_required
+def change_avatar():
+    # Load the latest state from the JSON file to ensure consistency
+    users = load_users()  # Using load_users function to read the users
+
+    # Get the current user's data from the session
+    current_user = next((user for user in users if user['username'] == session['username']), None)
+    
+    if not current_user:
+        flash('User data not found', 'danger')
+        return redirect(url_for('login'))
+
+    avatar = request.form.get('avatar')
+
+    # If a new avatar image was uploaded, save it
+    #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
+    if 'new_avatar' in request.files and request.files['new_avatar'].filename == avatar:
+        file = request.files['new_avatar']
+        # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+        filename = str(datetime.now().timestamp()) + ".png"
+        avatar = filename
+        image = Image.open(file)
+        image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+        image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+    else:
+        # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
+        if not os.path.isfile(Path(app.config['AVATAR_DIR'], avatar)):
+            flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
+            return redirect(url_for('dashboard'))
+    
+    current_user['avatar'] = avatar
+
+    # Save the updated users list back to the JSON file
+    save_users(users)  # Using save_users function to write the users to file
+
+    return redirect(url_for('dashboard'))
 
 @app.route('/change_email', methods=['POST'])
 @login_required
@@ -393,6 +507,9 @@ def setup_profile():
 
 @app.route('/')
 def index():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return redirect(url_for('need_restart'))
+
     # Redirect logged-in users to the dashboard
     if 'username' in session:
         return redirect(url_for('dashboard'))
@@ -635,6 +752,13 @@ def add2():
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the filtered user list
     return render_template('add2.html', user_list=user_list, imgenabled=imgenabled)
+
+@app.route('/need_restart', methods=['GET'])
+def need_restart():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return render_template('restartneeded.html')
+    else:
+        return redirect(url_for('setup'))    
 
 
 @app.route('/add_idea/<path:selected_user_id>', methods=['GET', 'POST'])
@@ -973,7 +1097,8 @@ def dashboard():
         'full_name': current_user.get('full_name'),
         'birthday': current_user.get('birthday'),
         'admin': current_user.get('admin'),
-        'guest': is_guest
+        'guest': is_guest,
+        'avatar': current_user.get('avatar', None)
     }
 
     app_version = "v2.6.4"
@@ -1231,6 +1356,29 @@ def update_order():
 def noidea():
     return render_template('noideas.html')
 
+@app.route('/generate_avatar', methods=['GET'])
+@login_required
+def generate_avatar():
+    # Read user data from the JSON file
+    users = load_users()
+
+    filename = generate_random_avatar(users)
+    return jsonify({"filename": filename})
+
+def generate_random_avatar(users):
+    # Check existing avatar images and remove them if they are unclaimed for the timeout period
+    avatar_images = [d for d in os.listdir(app.config['AVATAR_DIR']) if re.match(r'^[0-9]{10}\.[0-9]{1,6}\.(svg|png)$', d)]
+    for image in avatar_images:
+        timestamp = datetime.fromtimestamp(float(image[:-4]))
+        claimed = len([d for d in users if 'avatar' in d.keys() and d['avatar'] == image]) > 0
+        if not claimed and (datetime.now() - timestamp).seconds > app.config['AVATAR_CLAIM_TIMEOUT']:
+            os.remove(Path(app.config['AVATAR_DIR'], image))
+    # Generate new avatar
+    random_avatar = python_avatars.Avatar.random()
+    filename = str(datetime.now().timestamp())+".svg"
+    random_avatar.render(Path(app.config['AVATAR_DIR'], filename))
+    return filename
+
 @app.route('/add_user', methods=['GET', 'POST'])
 @admin_required
 def add_user():
@@ -1245,6 +1393,22 @@ def add_user():
         birthday = request.form['birthday']
         email = request.form.get('email')  # Optional field
         avatar = request.form.get('avatar')
+
+        # If a new avatar image was uploaded, save it
+        #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
+        if 'new_avatar' in request.files and request.files['new_avatar'].filename == avatar:
+            file = request.files['new_avatar']
+            # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+            filename = str(datetime.now().timestamp()) + ".png"
+            avatar = filename
+            image = Image.open(file)
+            image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+            image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+        else:
+            # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
+            if not os.path.isfile(Path(app.config['AVATAR_DIR'], avatar)):
+                flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
+                return redirect(url_for('add_user'))
 
         # Hash the password
         hashed = password_hash(password)
@@ -1273,9 +1437,14 @@ def add_user():
         save_users(users)  # Using save_users function to write the users to file
 
         flash('User added successfully!', 'success')
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('manage_users'))
+    
+    # Read user data from the JSON file
+    users = load_users()
 
-    return render_template('add_user.html')
+    filename = generate_random_avatar(users)
+
+    return render_template('add_user.html', avatar=filename)
 
 
 @app.route('/edit_idea/<int:idea_id>', methods=['GET', 'POST'])
@@ -1408,7 +1577,7 @@ def secret_santa():
             else:
                 # Remove the corresponding instructions file if it exists
                 try:
-                    os.remove(f'santa_inst_{pool_name_to_delete}.txt')
+                    os.remove(Path(app.config['DATA'], f'santa_inst_{pool_name_to_delete}.txt'))
                 except FileNotFoundError:
                     pass  # Ignore if the file does not exist
 
@@ -1452,7 +1621,7 @@ def secret_santa():
             save_users(users)
 
             # Save the instructions to a text file specific to the pool
-            with open(f'santa_inst_{pool_name}.txt', 'w') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
             flash('Secret Santa assignments have been made!', 'success')
@@ -1483,7 +1652,7 @@ def secret_santa_assignments():
     pool_instructions = {}
     for pool_name in assigned_users.keys():
         try:
-            with open(f'santa_inst_{pool_name}.txt', 'r') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'r') as file:
                 pool_instructions[pool_name] = file.read()
         except FileNotFoundError:
             pool_instructions[pool_name] = "No specific instructions provided."
@@ -1540,6 +1709,22 @@ def manage_users():
             updated_email = request.form.get('email')
             updated_password = request.form.get('password')
             updated_avatar = request.form.get('avatar')
+
+            # If a new avatar image was uploaded, save it
+            #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
+            if 'new_avatar' in request.files and request.files['new_avatar'].filename == updated_avatar:
+                file = request.files['new_avatar']
+                # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+                filename = str(datetime.now().timestamp()) + ".png"
+                updated_avatar = filename
+                image = Image.open(file)
+                image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+                image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+            else:
+                # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
+                if not os.path.isfile(Path(app.config['AVATAR_DIR'], updated_avatar)):
+                    flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
+                    return redirect(url_for('manage_users'))
 
             for user in users:
                 if user['username'] == username:
@@ -1734,7 +1919,7 @@ def change_delete_days():
                 new_days = int(new_days)
 
                 # Update the .env file with the new value
-                set_key(".env", "DELETE_DAYS", str(new_days))  # Update the DELETE_DAYS value
+                set_key(dotenv_path, "DELETE_DAYS", str(new_days))  # Update the DELETE_DAYS value
 
                 flash(f"The number of days to delete old gift ideas has been updated to {new_days}.", "success")
                 return redirect(url_for('change_delete_days'))
@@ -1821,7 +2006,7 @@ def setupenv():
 
         # Save each variable to .env file
         for key, value in env_variables.items():
-            set_key(".env", key, value)
+            set_key(dotenv_path, key, value)
 
         flash('Environment variables saved successfully!', 'success')
         return redirect(url_for('index'))
@@ -1972,7 +2157,7 @@ def setup_advanced():
 @admin_required
 def update_reordering():
     reordering = request.form.get('reordering', 'true').strip()
-    set_key(".env", "REORDERING", reordering)
+    set_key(dotenv_path, "REORDERING", reordering)
     return redirect(url_for('setup_advanced'))
 
 # Route to update IMGENABLED (POST request)
@@ -1980,7 +2165,7 @@ def update_reordering():
 @admin_required
 def update_images():
     images = request.form.get('images', 'true').strip()
-    set_key(".env", "IMGENABLED", images)
+    set_key(dotenv_path, "IMGENABLED", images)
     return redirect(url_for('setup_advanced'))
 
 @app.route('/rundl')
@@ -2177,8 +2362,8 @@ def update_currency_settings():
     symbol = request.form.get('currency_symbol', '$')
     position = request.form.get('currency_position', 'before')
     
-    set_key(".env", "CURRENCY_SYMBOL", symbol)
-    set_key(".env", "CURRENCY_POSITION", position)
+    set_key(dotenv_path, "CURRENCY_SYMBOL", symbol)
+    set_key(dotenv_path, "CURRENCY_POSITION", position)
     
     flash('Currency settings updated! Please restart to see changes', 'success')
     return redirect(url_for('setup_advanced'))
@@ -2190,8 +2375,8 @@ def update_self_registration_settings():
     enable_self_registration = request.form.get('enable_self_registration', 'false')
     joining_code = request.form.get('joining_code', '')
     
-    set_key(".env", "ENABLE_SELF_REGISTRATION", enable_self_registration)
-    set_key(".env", "JOINING_CODE", joining_code)
+    set_key(dotenv_path, "ENABLE_SELF_REGISTRATION", enable_self_registration)
+    set_key(dotenv_path, "JOINING_CODE", joining_code)
     
     flash('Self-registration settings updated successfully!', 'success')
     return redirect(url_for('setup_advanced'))
@@ -2328,7 +2513,7 @@ def update_link_sharing():
     """Update global link sharing setting"""
     enable_link_sharing = request.form.get('enable_link_sharing', 'false').lower() == 'true'
     
-    set_key(".env", "ENABLE_LINK_SHARING", str(enable_link_sharing).lower())
+    set_key(dotenv_path, "ENABLE_LINK_SHARING", str(enable_link_sharing).lower())
     
     flash('Link sharing settings updated!', 'success')
     return redirect(url_for('setup_advanced'))
