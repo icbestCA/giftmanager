@@ -30,7 +30,6 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
 app.config['DATA'] = "./data"  # Directory where files are stored
 
-
 app.config['IDEAS_FILE'] = Path(app.config['DATA'], 'ideas.json')
 app.config['USERS_FILE'] = Path(app.config['DATA'], 'users.json')
 app.config['AVATAR_DIR'] = Path(app.config['DATA'], 'avatars')
@@ -1189,18 +1188,26 @@ def mark_as_bought(idea_id):
     # Find the idea by its ID
     idea = find_idea_by_id(gift_ideas_data, idea_id)
 
+    data = request.get_json()
+    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'false').lower() == 'true'
+    bought_anonymously = True if 'anonymous' in data.keys() and data['anonymous'] else False
+
     if idea:
         if not idea['bought_by']:
             # Mark the idea as bought by the current user
             idea['bought_by'] = session['username']
             idea['date_bought'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Record the current date and time
+            idea['bought_anonymously'] = bought_anonymously
             flash(f'Marked "{idea["gift_name"]}" as bought!', 'success')
 
             # Save the updated gift ideas back to the JSON file
             save_gift_ideas(gift_ideas_data)  # Save the updated list
         else:
             # If already bought, display a warning
-            flash(f'"{idea["gift_name"]}" has already been bought by {idea["bought_by"]}.', 'warning')
+            if hide_purchaser or bought_anonymously:
+                flash(f'"{idea["gift_name"]}" has already been bought by an anonymous user.', 'warning')
+            else:    
+                flash(f'"{idea["gift_name"]}" has already been bought by {idea["bought_by"]}.', 'warning')
     else:
         flash('Idea not found', 'danger')
 
@@ -1284,18 +1291,27 @@ def user_gift_ideas(selected_user_id):
         flash('No gift ideas for this user.', 'info')
         return redirect(url_for('noidea'))
     
+    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
+    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'false').lower() == 'true'
+
     # Ensure each idea has custom_fields and last_updated fields for template
     for idea in user_gift_ideas:
         if 'custom_fields' not in idea:
             idea['custom_fields'] = {}
+        # Replace bought_by if bought anonymously or globally hiding purchaser, for not leaking the info, but not for items bought by current user
+        if ('bought_by' in idea and
+            idea['bought_by'] and 
+            idea['bought_by'] != connected_user and
+            (('bought_anonymously' in idea and 
+                idea['bought_anonymously'] == True ) or
+            hide_purchaser)):
+            idea['bought_by'] = "Anonymous"
 
     users = load_users()
     shared_list = next((user for user in users if user['username'] == selected_user_id and user.get('shared_list')), None)
     is_shared_list_member = shared_list and connected_user in shared_list.get('list_members', [])
     # Call get_full_name function to fetch the user's full name directly in the route
     user_namels = get_full_name(selected_user_id)  # Get the full name based on the selected user ID
-    imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
-    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'false').lower() == 'true'
     return render_template('user_gift_ideas.html',
         user_gift_ideas=user_gift_ideas,
         user_namels=user_namels,
