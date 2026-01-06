@@ -224,51 +224,18 @@ def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
 
-@app.route('/avatars/<filename>', methods=['GET'])
+@app.route('/avatars/<path:filename>')
 @login_required
 @guest_allowed
 def show_avatar(filename):
-    # Read user data from the JSON file
-    users = load_users()
-    return send_from_directory('data/avatars', filename)
+    base = Path(app.config['AVATAR_DIR'])
+    avatar = base / filename
 
-@app.route('/change_avatar', methods=['POST'])
-@login_required
-def change_avatar():
-    # Load the latest state from the JSON file to ensure consistency
-    users = load_users()  # Using load_users function to read the users
+    if avatar.exists():
+        return send_from_directory(base, filename)
 
-    # Get the current user's data from the session
-    current_user = next((user for user in users if user['username'] == session['username']), None)
-    
-    if not current_user:
-        flash('User data not found', 'danger')
-        return redirect(url_for('login'))
+    return send_from_directory(base, 'avatar1.png')
 
-    avatar = request.form.get('avatar')
-
-    # If a new avatar image was uploaded, save it
-    #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
-    if 'new_avatar' in request.files and request.files['new_avatar'].filename == avatar:
-        file = request.files['new_avatar']
-        # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
-        filename = str(datetime.now().timestamp()) + ".png"
-        avatar = filename
-        image = Image.open(file)
-        image.thumbnail((512, 512), Image.Resampling.LANCZOS)
-        image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
-    else:
-        # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
-        if not os.path.isfile(Path(app.config['AVATAR_DIR'], avatar)):
-            flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
-            return redirect(url_for('dashboard'))
-    
-    current_user['avatar'] = avatar
-
-    # Save the updated users list back to the JSON file
-    save_users(users)  # Using save_users function to write the users to file
-
-    return redirect(url_for('dashboard'))
 
 @app.route('/change_email', methods=['POST'])
 @login_required
@@ -1292,7 +1259,7 @@ def user_gift_ideas(selected_user_id):
         return redirect(url_for('noidea'))
     
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
-    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'false').lower() == 'true'
+    hide_purchaser = read_env_variable('HIDE_PURCHASER', 'user_choice')
 
     # Ensure each idea has custom_fields and last_updated fields for template
     for idea in user_gift_ideas:
@@ -1381,28 +1348,172 @@ def update_order():
 def noidea():
     return render_template('noideas.html')
 
+
+# Generate avatar
+def generate_random_avatar(filename=None):
+    def pick_random(enum_class):
+        return random.choice(list(enum_class))
+
+    human_eyes = [eye for eye in python_avatars.EyeType
+                  if not any(w in eye.name.upper() for w in 
+                             ['HEART', 'CRY', 'SIDE', 'X_DIZZY', 'STAR', 'CLOSED'])]
+
+    age_group = random.choice(["child", "adult"])
+    gender_expression = random.choice(["feminine", "masculine", "neutral"])
+    facial_hair = python_avatars.FacialHairType.NONE if age_group=="child" or gender_expression=="feminine" else pick_random(python_avatars.FacialHairType)
+
+    avatar = python_avatars.Avatar(
+        style=python_avatars.AvatarStyle.CIRCLE,
+        background_color=python_avatars.BackgroundColor.DEFAULT,
+        accessory=python_avatars.AccessoryType.NONE,
+        top=pick_random(python_avatars.HairType),
+        hair_color=pick_random(python_avatars.HairColor),
+        skin_color=pick_random(python_avatars.SkinColor),
+        eyes=random.choice(human_eyes) if human_eyes else pick_random(python_avatars.EyeType),
+        eyebrows=pick_random(python_avatars.EyebrowType),
+        facial_hair=facial_hair,
+        clothing=pick_random(python_avatars.ClothingType),
+        clothing_color=pick_random(python_avatars.ClothingColor),
+    )
+
+    if filename is None:
+        filename = f"{datetime.now().timestamp()}.svg"
+    path = Path(app.config['AVATAR_DIR'], filename)
+    avatar.render(path)
+    return filename
+
+# Cleanup unused avatars
+def cleanup_unused_avatars(users):
+    """Delete only unused SVG avatars, never delete PNGs"""
+    avatar_dir = Path(app.config['AVATAR_DIR'])
+    assigned_avatars = set(u.get('avatar') for u in users if u.get('avatar'))
+
+    for file_path in avatar_dir.iterdir():
+        if not file_path.is_file():
+            continue
+
+        # Skip PNGs entirely
+        if file_path.suffix.lower() == '.png':
+            continue
+
+        # Only delete if not assigned to any user
+        if file_path.name not in assigned_avatars:
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"[cleanup_unused_avatars] Error deleting {file_path.name}: {e}")
+
+# Generate avatar route
 @app.route('/generate_avatar', methods=['GET'])
 @login_required
 def generate_avatar():
-    # Read user data from the JSON file
-    users = load_users()
+    username = session['username']
+    avatar_dir = Path(app.config['AVATAR_DIR'])
 
-    filename = generate_random_avatar(users)
+    # Generate unique filename (timestamp + random string)
+    filename = f"{datetime.now().timestamp()}.svg"
+    path = avatar_dir / filename
+
+    # Generate avatar
+    generate_random_avatar(filename)
+
+    # Cleanup unassigned avatars
+    users = load_users()
+    assigned_avatars = {u.get('avatar') for u in users if u.get('avatar')}
+
+    for file_path in avatar_dir.iterdir():
+        if not file_path.is_file():
+            continue
+
+        if file_path.suffix.lower() == '.png':
+            continue  # never delete PNGs
+
+        # Keep the avatar we just generated
+        if file_path.name == filename:
+            continue
+
+        # Delete if not assigned
+        if file_path.name not in assigned_avatars:
+            try:
+                file_path.unlink()
+            except Exception as e:
+                print(f"[generate_avatar] Error deleting {file_path.name}: {e}")
+
     return jsonify({"filename": filename})
 
-def generate_random_avatar(users):
-    # Check existing avatar images and remove them if they are unclaimed for the timeout period
-    avatar_images = [d for d in os.listdir(app.config['AVATAR_DIR']) if re.match(r'^[0-9]{10}\.[0-9]{1,6}\.(svg|png)$', d)]
-    for image in avatar_images:
-        timestamp = datetime.fromtimestamp(float(image[:-4]))
-        claimed = len([d for d in users if 'avatar' in d.keys() and d['avatar'] == image]) > 0
-        if not claimed and (datetime.now() - timestamp).seconds > app.config['AVATAR_CLAIM_TIMEOUT']:
-            os.remove(Path(app.config['AVATAR_DIR'], image))
-    # Generate new avatar
-    random_avatar = python_avatars.Avatar.random()
-    filename = str(datetime.now().timestamp())+".svg"
-    random_avatar.render(Path(app.config['AVATAR_DIR'], filename))
-    return filename
+
+# Change avatar route
+@app.route('/change_avatar', methods=['POST'])
+@login_required
+def change_avatar():
+    users = load_users()
+    user = next((u for u in users if u['username'] == session['username']), None)
+    if not user:
+        flash('User not found', 'danger')
+        return redirect(url_for('login'))
+
+    avatar = request.form.get('avatar')
+
+    # Handle uploaded avatar
+    if 'new_avatar' in request.files and request.files['new_avatar'].filename:
+        file = request.files['new_avatar']
+        
+        # Get the original file extension from the uploaded file
+        if '.' in file.filename:
+            file_extension = file.filename.rsplit('.', 1)[1].lower()
+        else:
+            # No extension provided, default to png
+            file_extension = 'png'
+            file.filename = f"{file.filename}.png"
+        
+        # Create filename with timestamp and original extension
+        filename = f"{datetime.now().timestamp()}.{file_extension}"
+        
+        # Try to open and process with PIL if it's a supported format
+        try:
+            img = Image.open(file)
+            img.thumbnail((512, 512), Image.Resampling.LANCZOS)
+            
+            # Determine the format from the extension
+            # Map common extensions to PIL format codes
+            format_map = {
+                'png': 'PNG',
+                'jpg': 'JPEG',
+                'jpeg': 'JPEG',
+                'gif': 'GIF',
+                'bmp': 'BMP',
+                'tiff': 'TIFF',
+                'tif': 'TIFF',
+                'webp': 'WEBP'
+            }
+            
+            # Get format or default to PNG
+            img_format = format_map.get(file_extension, 'PNG')
+            
+            # Save in the original format
+            img.save(Path(app.config['AVATAR_DIR'], filename), img_format)
+            
+        except Exception as e:
+            file.seek(0)  # Reset file pointer
+            file.save(Path(app.config['AVATAR_DIR'], filename))
+        
+        avatar = filename
+
+    # Validate file exists
+    avatar_path = Path(app.config['AVATAR_DIR'], avatar)
+    if not avatar or not avatar_path.is_file():
+        flash('Avatar file not found!', 'danger')
+        return redirect(url_for('dashboard'))
+
+    user['avatar'] = avatar
+    save_users(users)
+
+    # Cleanup unused avatars
+    cleanup_unused_avatars(users)
+
+    return redirect(url_for('dashboard'))
+
+
 
 @app.route('/add_user', methods=['GET', 'POST'])
 @admin_required
@@ -1420,18 +1531,17 @@ def add_user():
         avatar = request.form.get('avatar')
 
         # If a new avatar image was uploaded, save it
-        #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
         if 'new_avatar' in request.files and request.files['new_avatar'].filename == avatar:
             file = request.files['new_avatar']
-            # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
+            # Sanitize filename and prepend the unix epoch
             filename = str(datetime.now().timestamp()) + ".png"
             avatar = filename
             image = Image.open(file)
             image.thumbnail((512, 512), Image.Resampling.LANCZOS)
             image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
         else:
-            # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
-            if not os.path.isfile(Path(app.config['AVATAR_DIR'], avatar)):
+            # User has chosen a randomly generated avatar
+            if avatar and not os.path.isfile(Path(app.config['AVATAR_DIR'], avatar)):
                 flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
                 return redirect(url_for('add_user'))
 
@@ -1451,7 +1561,7 @@ def add_user():
             "birthday": birthday,
             "admin": False,
             "email": email if email else "",
-            "avatar": avatar if avatar else "",
+            "avatar": avatar if avatar else "default.svg",  # Always set a default
             "groups": []  # New user starts with no groups
         }
 
@@ -1464,11 +1574,10 @@ def add_user():
         flash('User added successfully!', 'success')
         return redirect(url_for('manage_users'))
     
-    # Read user data from the JSON file
-    users = load_users()
-
-    filename = generate_random_avatar(users)
-
+    # For GET request, generate an avatar preview
+    # We need a version that doesn't delete any user's avatar since no one is logged in
+    filename = generate_random_avatar()
+    
     return render_template('add_user.html', avatar=filename)
 
 
@@ -1828,6 +1937,7 @@ def admin_dashboard():
 @app.route('/users', methods=['GET', 'POST'])
 @admin_required
 def manage_users():
+    
     # Load ALL users (including shared lists) for processing
     all_users = load_users()
     
@@ -1835,8 +1945,9 @@ def manage_users():
     users = [user for user in all_users if not user.get('guest', False) and not user.get('shared_list', False)]
 
     if request.method == 'POST':
+        
         username = request.form.get('username')
-
+        
         # Handle delete
         if 'delete_user' in request.form:
             # Remove only the regular user from both arrays
@@ -1868,36 +1979,65 @@ def manage_users():
             updated_email = request.form.get('email')
             updated_password = request.form.get('password')
             updated_avatar = request.form.get('avatar')
-
-            # If a new avatar image was uploaded, save it
-            #   but only, if the filename is the same as the avatar parameter, means the new avatar was also selected
-            if 'new_avatar' in request.files and request.files['new_avatar'].filename == updated_avatar:
-                file = request.files['new_avatar']
-                # Sanitize filename and prepend the unix epoch to make sure, one user does not overwrite the avator of an other user
-                filename = str(datetime.now().timestamp()) + ".png"
-                updated_avatar = filename
-                image = Image.open(file)
-                image.thumbnail((512, 512), Image.Resampling.LANCZOS)
-                image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
-            else:
-                # User has chosen a randomly generated avatar. Check, if the image was already deleted after the timeout
-                if not os.path.isfile(Path(app.config['AVATAR_DIR'], updated_avatar)):
-                    flash('Generated user avatar timed out and was deleted! Try again to add the new user.', 'error')
+            
+            
+            # Check if a new avatar file was uploaded
+            new_avatar_file = request.files.get('new_avatar')
+            
+            
+            if new_avatar_file and new_avatar_file.filename:
+                # A new file was uploaded
+                try:
+                    # Sanitize filename and prepend timestamp
+                    filename = f"{int(datetime.now().timestamp())}.png"
+                    updated_avatar = filename
+                    
+                    
+                    # Process and save the image
+                    image = Image.open(new_avatar_file)
+                    image.thumbnail((512, 512), Image.Resampling.LANCZOS)
+                    image.save(Path(app.config['AVATAR_DIR'], filename), "PNG")
+                    
+                    flash('Avatar uploaded successfully!', 'success')
+                except Exception as e:
+                    flash(f'Error uploading avatar: {str(e)}', 'error')
                     return redirect(url_for('manage_users'))
+            else:
+                # No new file uploaded, but check if we're using a generated avatar
+                original_avatar = None
+                for user in users:
+                    if user['username'] == username:
+                        original_avatar = user.get('avatar', 'avatar1.png')
+                        break
+                                
+                # If avatar changed from original, check if the new one exists
+                if updated_avatar and updated_avatar != original_avatar:
+                    avatar_path = Path(app.config['AVATAR_DIR'], updated_avatar)
+                    file_exists = os.path.isfile(avatar_path)
+                    
+                    if not file_exists:
+                        flash('Generated avatar timed out and was deleted! Please generate a new one.', 'error')
+                        return redirect(url_for('manage_users'))
 
+            # Update user details
             for user in users:
                 if user['username'] == username:
+                    
                     user['full_name'] = updated_name
                     user['email'] = updated_email if updated_email else user.get('email', 'N/A')
                     user['avatar'] = updated_avatar if updated_avatar else user.get('avatar', 'avatar1.png')
                     if updated_password:
                         user['password'] = ph.hash(updated_password)
+                    
+                    
                     # Also update in all_users
                     for u in all_users:
                         if u['username'] == username and not u.get('shared_list'):
                             u.update(user)
+                    
                     flash('User updated successfully!', 'success')
                     break
+            
 
         # Save ALL users (including shared lists) back to the file
         save_users(all_users)
@@ -1918,7 +2058,18 @@ def manage_users():
         for user in users
     ]
 
-    return render_template('manage_users.html', users=users_data)
+    DEFAULT_AVATAR = "avatar1.png"
+    fixed_users = []
+
+    for user in users_data:
+        user = list(user)          # convert tuple → list if needed
+        if not user[3]:            # None, "", False
+            user[3] = DEFAULT_AVATAR
+        fixed_users.append(user)
+    
+
+
+    return render_template('manage_users.html', users=fixed_users)
 
 @app.route('/edit_email_settings', methods=['GET', 'POST'])
 @admin_required
@@ -2109,7 +2260,6 @@ def setup():
         admin_email = request.form.get('admin_email')
         full_name = request.form.get('full_name')
         birthday = request.form.get('birthday')
-        avatar_url = request.form.get('avatar')  # Selected avatar from the dropdown
 
         # Hash the admin password
         admin_password_hash = ph.hash(admin_password)
@@ -2121,7 +2271,7 @@ def setup():
             "email": admin_email,
             "full_name": full_name,
             "birthday": birthday,
-            "avatar": avatar_url,
+            "avatar": "icons/avatar1.png",
             "admin": True
         }
 
@@ -2316,8 +2466,14 @@ def setup_advanced():
 @app.route('/hide_purchaser', methods=['POST'])
 @admin_required
 def update_hide_purchaser():
-    reordering = request.form.get('hide_purchaser', 'true').strip()
-    set_key(dotenv_path, "HIDE_PURCHASER", reordering)
+    hide_purchaser_value = request.form.get('hide_purchaser', 'user_choice').strip()
+    
+    # Validate the input is one of our allowed values
+    allowed_values = ['global', 'disabled', 'user_choice']
+    if hide_purchaser_value not in allowed_values:
+        hide_purchaser_value = 'user_choice'  # Default fallback
+    
+    set_key(dotenv_path, "HIDE_PURCHASER", hide_purchaser_value)
     return redirect(url_for('setup_advanced'))
 
 

@@ -45,27 +45,33 @@
             </div>
 
             <div class="mb-4">
-                <label for="avatar" class="block text-gray-700 font-bold">Avatar:</label>
-                <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full" required>
-                    <option value="icons/avatar1.png">Avatar 1</option>
-                    <option value="icons/avatar2.png">Avatar 2</option>
-                    <option value="icons/avatar3.png">Avatar 3</option>
-                    <option value="icons/avatar4.png">Avatar 4</option>
-                    <option value="icons/avatar5.png">Avatar 5</option>
-                    <option value="icons/avatar6.png">Avatar 6</option>
-                </select>
-                <h3>Avatar 1</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar1.png') }}"width="50" height="50">
-                <h3>Avatar 2</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar2.png') }}"width="50" height="50">
-                <h3>Avatar 3</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar3.png') }}"width="50" height="50">
-                <h3>Avatar 4</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar4.png') }}"width="50" height="50">
-                <h3>Avatar 5</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar5.png') }}"width="50" height="50">
-                <h3>Avatar 6</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar6.png') }}"width="50" height="50">
+                <label class="block text-gray-700 font-bold mb-2">Avatar:</label>
+                <div class="flex items-center gap-4">
+                    <!-- Hidden input to store the generated avatar filename -->
+                    <input type="hidden" name="avatar" id="avatar_input" value="">
+                    
+                    <!-- Avatar preview container (initially hidden) -->
+                    <div id="avatar_container" class="hidden">
+                        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+                            <img id="avatar_preview" src="" alt="Generated Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-sm text-gray-600 mt-2">
+                            <p class="text-green-600 font-medium">✓ Avatar generated successfully</p>
+                            <p class="text-xs italic mt-1">You can change it later in profile settings</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading state -->
+                    <div id="avatar_loading" class="flex items-center gap-3">
+                        <div class="w-24 h-24 rounded-full border-2 border-gray-300 border-dashed flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p class="font-medium">Generating avatar...</p>
+                            <p class="text-xs italic mt-1">Please wait a moment</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Save</button>
@@ -83,6 +89,49 @@
           });
       });
     }
+      // Function to generate and set avatar automatically
+        async function generateAndSetAvatar() {
+            try {
+                console.log('Generating avatar in background...');
+                
+                // Call your existing generate_avatar route
+                const response = await fetch("{{ url_for('generate_avatar') }}", {
+                    method: 'GET',
+                    credentials: 'same-origin' // Include cookies/session
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Get the generated filename
+                const filename = data.filename;
+                
+                // Set the hidden input value
+                document.getElementById('avatar_input').value = filename;
+                
+                // Show the avatar preview
+                document.getElementById('avatar_preview').src = `/avatars/${filename}?t=${Date.now()}`;
+                
+                // Hide loading, show preview
+                document.getElementById('avatar_loading').classList.add('hidden');
+                document.getElementById('avatar_container').classList.remove('hidden');
+                
+                console.log('Avatar generated:', filename);
+                
+            } catch (error) {
+                console.error('Error generating avatar:', error);
+                // Don't use fallback - just keep loading state
+                // User can't proceed without avatar anyway
+            }
+        }
+
+        // Generate avatar immediately when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            generateAndSetAvatar();
+        });
     </script>
 </body>
 </html>

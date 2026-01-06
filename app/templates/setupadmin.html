@@ -33,29 +33,6 @@
                 <label for="birthday" class="block text-gray-700 font-bold">Birthday:</label>
                 <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full" required>
             </div>
-            <div class="mb-4">
-                <label for="avatar" class="block text-gray-700 font-bold">Avatar:</label>
-                <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full" required>
-                    <option value="icons/avatar1.png">Avatar 1</option>
-                    <option value="icons/avatar2.png">Avatar 2</option>
-                    <option value="icons/avatar3.png">Avatar 3</option>
-                    <option value="icons/avatar4.png">Avatar 4</option>
-                    <option value="icons/avatar5.png">Avatar 5</option>
-                    <option value="icons/avatar6.png">Avatar 6</option>
-                </select>
-                <h3>Avatar 1</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar1.png') }}"width="50" height="50">
-                <h3>Avatar 2</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar2.png') }}"width="50" height="50">
-                <h3>Avatar 3</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar3.png') }}"width="50" height="50">
-                <h3>Avatar 4</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar4.png') }}"width="50" height="50">
-                <h3>Avatar 5</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar5.png') }}"width="50" height="50">
-                <h3>Avatar 6</h3>
-                <img class="user-avatar" src="{{ url_for('static', filename='icons/avatar6.png') }}"width="50" height="50">
-            </div>
 
             <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Create Admin Account</button>
         </div>

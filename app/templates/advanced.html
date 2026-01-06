@@ -302,19 +302,25 @@
                     <!-- Hide purchaser identity Section -->
                     <form method="post" action="{{ url_for('update_hide_purchaser') }}">  
                         <div class="mb-4">
-                            <p class="mb-2">Hide the identity of the user, who purchased a specifc gift.</p>
-                            <label for="hide_purchaser" class="block sec-text font-medium">Hide purchaser identity {{ hide_purchaser }}</label>
+                            <p class="mb-2">Hide the identity of the user, who purchased a specific gift.</p>
+                            <label for="hide_purchaser" class="block sec-text font-medium">Hide purchaser identity</label>
                             <select id="hide_purchaser" name="hide_purchaser" class="p-3 w-full border rounded-lg inputer">
-                                <option value="true" {% if hide_purchaser == 'true' %}selected{% endif %}>True</option>
-                                <option value="false" {% if hide_purchaser == 'false' %}selected{% endif %}>False</option>
+                                <option value="global" {% if hide_purchaser == 'global' %}selected{% endif %}>Apply to everyone (global)</option>
+                                <option value="disabled" {% if hide_purchaser == 'disabled' %}selected{% endif %}>Disabled</option>
+                                <option value="user_choice" {% if hide_purchaser == 'user_choice' %}selected{% endif %}>User choice</option>
                             </select>
+                            <p class="text-sm text-gray-500 mt-1">
+                                • Global: All purchases are always anonymous<br>
+                                • Disabled: Purchaser identity is always shown<br>
+                                • User choice: Each user decides whether to purchase anonymously
+                            </p>
                         </div>
                         <button 
                             type="submit" 
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
                             Save
                         </button>
-                    </form>  
+                    </form>
                     
                     <div class="my-6 border-t border-gray-300"></div>
                     
