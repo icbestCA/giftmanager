@@ -158,6 +158,46 @@
             white-space: nowrap;
         }
 
+        /* Minimal Checkbox Styling */
+        .minimal-checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border-radius: 4px;
+            border: 2px solid var(--card-border-color);
+            background-color: var(--input-bg-color);
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .minimal-checkbox:checked {
+            background-color: var(--button-bg-color);
+            border-color: var(--button-bg-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 12px 12px;
+        }
+
+        .minimal-checkbox:focus {
+            outline: 2px solid var(--button-bg-color);
+            outline-offset: 2px;
+        }
+
+        .minimal-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--primary-text-color);
+            font-weight: 500;
+        }
+
+        .minimal-checkbox-form {
+            display: inline;
+        }
+
         [data-theme="dark"] .bg-blue-100 {
             background-color: #2d3748;
         }
@@ -250,13 +290,94 @@
                     </div>
     
                     {% if gift_idea.bought_by %}
-                    <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
-                    {% if gift_idea.bought_by == session['username'] %}
-                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
-                    {% endif %}
+                        <p class="text-green-500">Purchased by:
+                            {% set is_anonymous = False %}
+                            {% if hide_purchaser == 'global' %}
+                                {% set is_anonymous = True %}
+                            {% elif hide_purchaser == 'user_choice' %}
+                                {% if gift_idea.get('bought_anonymously', False) %}
+                                    {% set is_anonymous = True %}
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% if is_anonymous and gift_idea.bought_by != session['username'] %}
+                                Anonymous
+                            {% elif gift_idea.bought_by == session['username'] %}
+                                Me ({{ session['username']}})
+                                {% if hide_purchaser == 'user_choice' and gift_idea.get('bought_anonymously', False) %}
+                                    (anonymously)
+                                {% elif hide_purchaser == 'global' %}
+                                    (anonymously)
+                                {% endif %}
+                            {% else %}
+                                {{ get_full_name(gift_idea.bought_by) }}
+                            {% endif %}
+                        </p>
+                        {% if gift_idea.bought_by == session['username'] %}
+                        <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
+                        {% endif %}
                     {% else %}
-                    <strong>Available idea</strong>
-                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
+                        <div class="flex flex-col">
+                            <strong>Available idea</strong>
+                            <div>
+                                {% if hide_purchaser == 'global' %}
+                                    <!-- Global mode - only anonymous purchase button -->
+                                    <button
+                                        type="button"
+                                        class="mark-as-bought-anon-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                        Purchase (anonymously)
+                                    </button>
+                                {% elif hide_purchaser == 'disabled' %}
+                                    <!-- Disabled mode - only regular purchase button -->
+                                    <button
+                                        type="button"
+                                        class="mark-as-bought-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                        Purchase
+                                    </button>
+                                {% else %}
+                                    <!-- User choice mode - dropdown with both options -->
+                                    <div class="relative inline-flex">
+                                        <!-- Primary action -->
+                                        <button
+                                            type="button"
+                                            class="mark-as-bought-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-l-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                            Purchase
+                                        </button>
+
+                                        <!-- Dropdown trigger -->
+                                        <button
+                                            type="button"
+                                            class="px-2 py-2 bg-green-600 text-white rounded-r-md border-l border-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            onclick="this.parentElement.nextElementSibling.classList.toggle('hidden')">
+                                            <svg
+                                                class="w-4 h-4"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                                                    clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- Dropdown menu -->
+                                    <div class="relative hidden">
+                                        <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white border border-gray-200 z-10">
+                                            <button
+                                                type="button"
+                                                class="mark-as-bought-anon-button block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                                data-idea-id="{{ gift_idea.gift_idea_id }}">
+                                                Purchase anonymously
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     {% endif %}
                     <div class="mt-2 text-xs text-gray-500">
                         
@@ -306,9 +427,19 @@
             window.location.href = '/dashboard'; 
         });
     
-        function markIdeaAsBought(ideaId, button) {
+        function markIdeaAsBought(ideaId, butto, anonymous=false) {
+            console.log("bought anon"+JSON.stringify(anonymous))
             fetch(`/mark_as_bought/${ideaId}`, {
                 method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({
+                    anonymous: anonymous
+                })
             })
             .then(response => {
                 // Always reload the page, regardless of the response status
@@ -354,6 +485,13 @@
             button.addEventListener('click', () => {
                 const ideaId = button.getAttribute('data-idea-id');
                 markIdeaAsNotBought(ideaId, button);
+            });
+        });
+        
+        document.querySelectorAll('.mark-as-bought-anon-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const ideaId = button.getAttribute('data-idea-id');
+                markIdeaAsBought(ideaId, button, true);
             });
         });
     
