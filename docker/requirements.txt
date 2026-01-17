@@ -6,3 +6,5 @@ authlib
 gunicorn
 requests
 beautifulsoup4
+python-avatars
+pillow

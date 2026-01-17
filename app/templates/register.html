@@ -168,44 +168,21 @@
                     <p class="text-sm sec-text mt-1">Please ask your family for the joining code</p>
                 </div>
                 {% endif %}
-
-                <div class="mb-4">
-                    <label for="avatar" class="block sec-text font-bold">Avatar:</label>
-                    <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full inputer" required>
-                        <option value="icons/avatar1.png">Avatar 1</option>
-                        <option value="icons/avatar2.png">Avatar 2</option>
-                        <option value="icons/avatar3.png">Avatar 3</option>
-                        <option value="icons/avatar4.png">Avatar 4</option>
-                        <option value="icons/avatar5.png">Avatar 5</option>
-                        <option value="icons/avatar6.png">Avatar 6</option>
-                    </select>
                     
-                    <div class="mt-4">
-                        <h3 class="sec-text font-bold mb-2">Avatar Preview:</h3>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 1</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar1.png') }}" width="50" height="50">
-                            </div>
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 2</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar2.png') }}" width="50" height="50">
-                            </div>
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 3</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar3.png') }}" width="50" height="50">
-                            </div>
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 4</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar4.png') }}" width="50" height="50">
-                            </div>
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 5</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar5.png') }}" width="50" height="50">
-                            </div>
-                            <div class="text-center">
-                                <h4 class="sec-text">Avatar 6</h4>
-                                <img class="user-avatar sec-text mx-auto" src="{{ url_for('static', filename='icons/avatar6.png') }}" width="50" height="50">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Avatar:</label>
+                        <div class="flex items-center gap-4">
+                            <!-- Hidden input to store the generated avatar filename -->
+                            <input type="hidden" name="avatar" id="avatar_input" value="avatar1.png">
+                            
+                            <!-- Avatar preview container (initially hidden) -->
+                            <div id="avatar_container">
+                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+                                    <img id="avatar_preview" src="{{ url_for('static', filename='icons/avatar1.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-sm text-gray-600 mt-2">
+                                    <p class="text-m italic mt-1">You can change your avatar later in profile settings</p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -72,6 +72,7 @@
             border-radius: 8px;
             padding: 24px;
         }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -124,7 +125,7 @@
     <main class="main container mx-auto p-8">
         <div class="section shadow-lg rounded-lg p-6">
             <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">New User</h1>
-            <form action="{{ url_for('add_user') }}" method="post">
+            <form action="{{ url_for('add_user') }}" method="post" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="username" class="block sec-text font-bold">Username for login:</label>
                     <input type="text" name="username" id="username" class="border rounded py-2 px-3 w-full inputer" required>
@@ -146,27 +147,26 @@
                     <input type="email" name="email" id="email" class="border rounded py-2 px-3 w-full inputer">
                 </div>
                 <div class="mb-4">
-                    <label for="avatar" class="block sec-text font-bold">Avatar:</label>
-                    <select name="avatar" id="avatar" class="border rounded py-2 px-3 w-full inputer" required>
-                        <option value="icons/avatar1.png">Avatar 1</option>
-                        <option value="icons/avatar2.png">Avatar 2</option>
-                        <option value="icons/avatar3.png">Avatar 3</option>
-                        <option value="icons/avatar4.png">Avatar 4</option>
-                        <option value="icons/avatar5.png">Avatar 5</option>
-                        <option value="icons/avatar6.png">Avatar 6</option>
-                    </select>
-                    <h3>Avatar 1</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar1.png') }}" width="50" height="50">
-                    <h3>Avatar 2</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar2.png') }}" width="50" height="50">
-                    <h3>Avatar 3</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar3.png') }}" width="50" height="50">
-                    <h3>Avatar 4</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar4.png') }}" width="50" height="50">
-                    <h3>Avatar 5</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar5.png') }}" width="50" height="50">
-                    <h3>Avatar 6</h3>
-                    <img class="user-avatar sec-text" src="{{ url_for('static', filename='icons/avatar6.png') }}" width="50" height="50">
+                    <fieldset class="relative border border-gray-300 rounded-lg p-4 w-min" id="avatar-picker">
+                        <div class="flex items-center gap-4">
+                            <legend class="main absolute -top-3 left-4 px-2 text-sm font-semibold text-secondary">Select an avatar</legend>
+                            <label class="relative w-32 h-32 rounded-full overflow-hidden flex-shrink-0">
+                                <input type="text" name="avatar" value="{{ avatar }}" class="sr-only" id="avatar_input"/>
+                                <img src="{{ url_for('show_avatar', filename=avatar)}}" alt="Avatar" class="w-full h-full object-cover" id="avatar_image"/>
+                            </label>
+
+                            <div class="flex flex-col gap-2">
+                                <div class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer inputer" id="generate_button">
+                                    Random avatar
+                                </div>
+
+                                <label class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer inputer">
+                                    Upload image
+                                    <input type="file" name="new_avatar" accept="image/*" class="sr-only" id="new_avatar_input"/>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
                 <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Add</button>
             </form>
@@ -178,17 +178,38 @@
         backButton.addEventListener('click', () => {
             window.location.href = '/admin'; // Replace '/dashboard' with the actual URL of your dashboard page
         });
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        const add_avatar_input = document.getElementById("new_avatar_input")
+        add_avatar_input.addEventListener('change', () => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById("avatar_image").src = event.target.result
+                document.getElementById("avatar_input").value = add_avatar_input.files[0].name
+            }
+
+            reader.readAsDataURL(add_avatar_input.files[0]);
+        });
+
+        async function generate_new_avatar(){
+            const response = await fetch("{{ url_for('generate_avatar') }}")
+            const data = await response.json()
+            document.getElementById("avatar_image").src = `/avatars/${data['filename']}`
+            document.getElementById("avatar_input").value = data['filename']
+        }
+        const generate_avatar_button = document.getElementById("generate_button")
+        generate_avatar_button.addEventListener('click', generate_new_avatar)
+        
     </script>
 </body>
 </html>

@@ -268,55 +268,125 @@
                         <tbody style="background-color: var(--section-bg-color);">
                             {% for user in users %}
                             <tr class="border-b" style="background-color: var(--section-bg-color); border-bottom: var(--section-bg-color);">
-                                <!-- User Row -->
                                 <td colspan="6" class="px-4 py-2" style="background-color: var(--section-bg-color);">
-                                    <div class="rounded-lg border bg-gray-50 p-4 mb-4 shadow-sm" style="margin: 0; background-color: var(--section-bg-color);">
-                                        <div class="grid grid-cols-6 gap-4">
-                                            <div class="flex justify-center items-center">{{ user[0] }}</div>
-                                            <div class="flex justify-center items-center">{{ user[1] }}</div>
-                                            <div class="flex justify-center items-center">{{ user[2] }}</div>
-                                            <div class="flex justify-center items-center">
-                                                <img src="{{ url_for('static', filename=user[3]) }}" alt="Avatar" class="w-8 h-8 rounded-full mx-auto">
-                                            </div>
-                                            <div class="flex justify-center items-center">
-                                                <form action="{{ url_for('manage_users') }}" method="POST" class="inline-block">
-                                                    <input type="hidden" name="username" value="{{ user[0] }}">
-                                                    <input type="hidden" name="toggle_admin" value="{{ '1' if user[4] == 0 else '0' }}">
-                                                    <button type="submit" class="px-3 py-1 rounded {{ 'bg-green-500 text-white' if user[4] == 0 else 'bg-gray-500 text-white' }}" {% if user[0] == session['username'] %} disabled {% endif %}>
+                                    <form action="{{ url_for('manage_users') }}" method="POST" enctype="multipart/form-data" id="user-form-{{ user[0] }}">
+                                        <input type="hidden" name="username" value="{{ user[0] }}">
+                                        
+                                        <div class="rounded-lg border bg-gray-50 p-4 mb-4 shadow-sm" style="margin: 0; background-color: var(--section-bg-color);">
+                                            <div class="grid grid-cols-6 gap-4">
+                                                <!-- Display View -->
+                                                <div class="flex justify-center items-center">{{ user[0] }}</div>
+                                                <div class="flex justify-center items-center">{{ user[1] }}</div>
+                                                <div class="flex justify-center items-center">{{ user[2] }}</div>
+                                                <div class="flex justify-center items-center">
+                                                    <img src="{{ url_for('show_avatar', filename=user[3]) }}" alt="Avatar" class="w-16 h-16 object-cover rounded-full mx-auto">
+                                                </div>
+                                                <div class="flex justify-center items-center">
+                                                    <!-- Admin toggle button -->
+                                                    <button type="submit" 
+                                                            name="toggle_admin" 
+                                                            value="{{ '1' if user[4] == 0 else '0' }}"
+                                                            class="px-3 py-1 rounded {{ 'bg-green-500 text-white' if user[4] == 0 else 'bg-gray-500 text-white' }}" 
+                                                            {% if user[0] == session['username'] %} disabled {% endif %}
+                                                            onclick="return confirm('Are you sure you want to change admin status?')">
                                                         {{ 'Make Admin' if user[4] == 0 else 'Revoke Admin' }}
                                                     </button>
-                                                </form>
+                                                </div>
+                                                <div class="flex justify-center items-center space-x-2">
+                                                    <!-- Edit button -->
+                                                    <button type="button" 
+                                                            onclick="toggleEdit('{{ user[0] }}')" 
+                                                            class="bg-blue-500 text-white px-3 py-1 rounded">
+                                                        Edit
+                                                    </button>
+                                                    
+                                                    <!-- Delete button -->
+                                                    <button type="submit" 
+                                                            name="delete_user" 
+                                                            value="1"
+                                                            class="bg-red-500 text-white px-3 py-1 rounded" 
+                                                            onclick="return confirm('Are you sure you want to delete this user?')" 
+                                                            {% if user[0] == session['username'] %} disabled {% endif %}>
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div class="flex justify-center items-center">
-                                                <form action="{{ url_for('manage_users') }}" method="POST" class="inline-block">
-                                                    <input type="hidden" name="username" value="{{ user[0] }}">
-                                                    <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</button>
-                                                    <button type="submit" name="delete_user" class="bg-red-500 text-white px-3 py-1 rounded" onclick="return confirm('Are you sure you want to delete this user?')" {% if user[0] == session['username'] %} disabled {% endif %}>Delete</button>
-                                                </form>
+
+                                            <!-- Edit Form (Hidden) -->
+                                            <div id="edit-form-{{ user[0] }}" class="hidden mt-4 p-4 border rounded" style="background-color: var(--card-bg-color);">
+                                                <h3 class="font-semibold mb-4">Edit User: {{ user[0] }}</h3>
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Full Name</label>
+                                                        <input type="text" 
+                                                            name="name" 
+                                                            value="{{ user[1] }}" 
+                                                            class="w-full border rounded px-3 py-2 inputer">
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Email</label>
+                                                        <input type="email" 
+                                                            name="email" 
+                                                            value="{{ user[2] }}" 
+                                                            class="w-full border rounded px-3 py-2 inputer">
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">New Password (leave empty to keep current)</label>
+                                                        <input type="password" 
+                                                            name="password" 
+                                                            placeholder="New Password" 
+                                                            class="w-full border rounded px-3 py-2 inputer">
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Avatar</label>
+                                                        <input type="hidden" name="avatar" id="avatar_input_{{ user[0] }}" value="{{ user[3] }}">
+                                                        
+                                                        <div class="flex items-center space-x-4">
+                                                            <img src="{{ url_for('show_avatar', filename=user[3]) }}" 
+                                                                alt="Avatar" 
+                                                                class="w-16 h-16 object-cover rounded-full"
+                                                                id="avatar_image_{{ user[0] }}">
+                                                            
+                                                            <div class="flex flex-col space-y-2">
+                                                                <button type="button" 
+                                                                        class="px-3 py-2 rounded-md border bg-gray-100 text-sm cursor-pointer hover:bg-gray-200 transition"
+                                                                        onclick="generate_new_avatar('{{ user[0] }}')">
+                                                                    Random Avatar
+                                                                </button>
+                                                                
+                                                                <label class="px-3 py-2 rounded-md border bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition">
+                                                                    Upload Image
+                                                                    <input type="file" 
+                                                                        name="new_avatar" 
+                                                                        accept="image/*" 
+                                                                        class="sr-only" 
+                                                                        id="new_avatar_input_{{ user[0] }}"
+                                                                        onchange="upload_avatar('{{ user[0] }}')">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="flex justify-end space-x-2">
+                                                    <button type="button" 
+                                                            onclick="toggleEdit('{{ user[0] }}')" 
+                                                            class="bg-gray-300 text-black px-4 py-2 rounded">
+                                                        Cancel
+                                                    </button>
+                                                    
+                                                    <button type="submit" 
+                                                            class="bg-green-500 text-white px-4 py-2 rounded">
+                                                        Save Changes
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                    
-                                        <!-- Edit Form Row -->
-                                        <div id="edit-form-{{ user[0] }}" class="hidden mt-4">
-                                            <form action="{{ url_for('manage_users') }}" method="POST" class="flex flex-wrap space-x-4">
-                                                <input type="hidden" name="username" value="{{ user[0] }}" class="inputer">
-                                                <input type="text" name="name" placeholder="Full Name" value="{{ user[1] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
-                                                <input type="email" name="email" placeholder="Email" value="{{ user[2] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
-                                                <input type="password" name="password" placeholder="New Password" class="border rounded px-3 py-1 w-1/4 inputer">
-                                                <select name="avatar" class="border rounded px-3 py-1 w-1/4 inputer">
-                                                    <option value="{{ user[3] }}" selected>Current Avatar</option>
-                                                    <option value="icons/avatar1.png">Avatar 1</option>
-                                                    <option value="icons/avatar2.png">Avatar 2</option>
-                                                    <option value="icons/avatar3.png">Avatar 3</option>
-                                                    <option value="icons/avatar4.png">Avatar 4</option>
-                                                    <option value="icons/avatar5.png">Avatar 5</option>
-                                                    <option value="icons/avatar6.png">Avatar 6</option>
-                                                </select>
-                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded">Save Changes</button>
-                                                <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-gray-300 text-black px-3 py-1 rounded">Cancel</button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                    </form>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -365,16 +435,51 @@
             });
         });
         if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+        
+       async function generate_new_avatar(userId) {
+    const response = await fetch("{{ url_for('generate_avatar') }}");
+    const data = await response.json();
+    document.getElementById(`avatar_image_${userId}`).src = `/avatars/${data['filename']}`;
+    document.getElementById(`avatar_input_${userId}`).value = data['filename'];
+}
+
+function upload_avatar(userId) {
+    const new_avatar_input = document.getElementById(`new_avatar_input_${userId}`);
+    const avatar_input = document.getElementById(`avatar_input_${userId}`);
+    const avatar_image = document.getElementById(`avatar_image_${userId}`);
+
+    const file = new_avatar_input.files[0];
+    if (!file) {
+        return;
     }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        avatar_image.src = event.target.result;
+        avatar_input.value = file.name;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            // no debug logic
+        });
+    });
+});
+
     </script>
 </body>
 </html>
