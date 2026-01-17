@@ -224,14 +224,15 @@ def favicon():
     # Redirect to an external URL where your PNG favicon is hosted
     return redirect("https://r2.icbest.ca/favicon-32x32.png")
 
+@app.route('/avatars/')
 @app.route('/avatars/<path:filename>')
 @login_required
 @guest_allowed
-def show_avatar(filename):
+def show_avatar(filename=""):
     base = Path(app.config['AVATAR_DIR'])
     avatar = base / filename
 
-    if avatar.exists():
+    if os.path.isfile(avatar):
         return send_from_directory(base, filename)
 
     return send_from_directory(base, 'avatar1.png')
@@ -2443,7 +2444,7 @@ def update_group_assignments():
 @app.route('/setup_advanced', methods=['GET'])
 @admin_required
 def setup_advanced():
-    hide_purchaser = read_env_variable("HIDE_PURCHASER", 'false')
+    hide_purchaser = read_env_variable("HIDE_PURCHASER", "user_choice")
     current_reorder = read_env_variable("REORDERING")
     images = read_env_variable("IMGENABLED")
     current_currency_symbol = get_currency_symbol()

@@ -149,18 +149,18 @@
                 <div class="mb-4">
                     <fieldset class="relative border border-gray-300 rounded-lg p-4 w-min" id="avatar-picker">
                         <div class="flex items-center gap-4">
-                            <legend class="main absolute -top-3 left-4 px-2 text-sm font-semibold text-gray-700">Select an avatar</legend>
+                            <legend class="main absolute -top-3 left-4 px-2 text-sm font-semibold text-secondary">Select an avatar</legend>
                             <label class="relative w-32 h-32 rounded-full overflow-hidden flex-shrink-0">
                                 <input type="text" name="avatar" value="{{ avatar }}" class="sr-only" id="avatar_input"/>
                                 <img src="{{ url_for('show_avatar', filename=avatar)}}" alt="Avatar" class="w-full h-full object-cover" id="avatar_image"/>
                             </label>
 
                             <div class="flex flex-col gap-2">
-                                <div class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition" id="generate_button">
+                                <div class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer inputer" id="generate_button">
                                     Random avatar
                                 </div>
 
-                                <label class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer hover:bg-gray-200 transition">
+                                <label class="px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm text-center cursor-pointer inputer">
                                     Upload image
                                     <input type="file" name="new_avatar" accept="image/*" class="sr-only" id="new_avatar_input"/>
                                 </label>
