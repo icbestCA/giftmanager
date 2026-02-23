@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ share_owner.full_name }}'s Gift List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/png">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --button-bg-color: rgb(42, 42, 218);
+            --button-hover-bg-color: rgb(10, 10, 190);
+            --button-text-color: white;
+            --card-bg-color: white;
+            --card-border-color: #ebebeb;
+            --card-hover-bg-color: #ddd;
+            --sidebar-bg-color: #f0f0f0;
+            --overlay-bg-color: rgba(0, 0, 0, 0.5);
+            --hr-border-color: #333;
+            --alert-bg-color: #ffe6e6;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #b30000;
+            --primary-text-color: #333;
+            --secondary-text-color: rgba(75,85,99);
+            --header-bg-color: #ffffff;
+            --header-text-color: #333;
+            --main-bg-color: #ffffff;
+            --section-bg-color: #f3f4f6;
+            --helplogo-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: rgb(38 38 38);
+            --text-color: #e0e0e0;
+            --button-bg-color: rgb(218, 42, 42);
+            --button-hover-bg-color: rgb(190, 10, 10);
+            --button-text-color: white;
+            --card-bg-color: black;
+            --card-border-color: #333;
+            --card-hover-bg-color: #2e2e2e;
+            --sidebar-bg-color: #1e1e1e;
+            --overlay-bg-color: rgba(0, 0, 0, 0.8);
+            --hr-border-color: #e0e0e0;
+            --alert-bg-color: #4d1919;
+            --alert-border-color: #ff4d4d;
+            --alert-text-color: #ffb3b3;
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #aaaaaa;
+            --header-bg-color: rgb(18, 18, 18);
+            --header-text-color: #e0e0e0;
+            --main-bg-color: #121212;
+            --section-bg-color: #1e1e1e;
+            --helplogo-color: #e0e0e0;
+        }
+
+        .description {
+            max-width: 400px;
+            word-wrap: break-word;
+            color: var(--secondary-text-color);
+        }
+
+        @media (max-width: 640px) {
+            .idea-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .idea-actions {
+                flex-direction: row;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .idea-actions button,
+            .idea-actions a {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+        }
+
+        .main {
+            background-color: var(--bg-color);
+        }
+
+        .section {
+            background-color: var(--section-bg-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .helplogo {
+            fill: var(--helplogo-color);
+            width: 24px;
+            height: 24px;
+        }
+        .actions-container{
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+        }
+        .sec-text{
+            color: var(--secondary-text-color);
+        }
+
+        [data-theme="dark"] .helplogo {
+            filter: invert(1) brightness(1.5);
+        }
+        
+        .image{
+            justify-self: center;
+            width: 100%;
+            height: auto;
+        }
+        .divimage{
+            width: 10%;
+            height: fit-content;
+        }
+        
+        @media screen and (max-width: 640px) {
+            .image {
+                width: 100%;
+                height: auto;
+                margin-top: 10px;
+            }
+
+            .divimage {
+                width: 48%;
+                max-width: none;
+                display: flex;
+                margin-bottom: 1rem;
+                margin-left: 0;
+            }
+        }
+
+        .visitor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-bg-color);
+            z-index: 1000;
+        }
+
+        .visitor-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            min-width: 300px;
+            border: 1px solid var(--card-border-color);
+        }
+    </style>
+    <script>
+        (function() {
+            function getThemeFromCookie() {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'theme') {
+                        return value;
+                    }
+                }
+                return 'light';
+            }
+            const theme = getThemeFromCookie();
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body class="body font-sans">
+    <header class="header p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-semibold">{{ share_owner.full_name }}'s Gift List</div>
+            <div class="text-sm text-gray-500">Shared via GiftManager</div>
+        </nav>
+    </header>
+    <main class="main container mx-auto p-8">
+        <section class="section shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-semibold mb-4 text-primary">Gift Ideas for {{ share_owner.full_name }}</h1>
+            <ul class="space-y-4">
+                {% for gift_idea in gift_ideas %}
+                <li class="actions-container p-4 shadow-md rounded-lg">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center idea-container" style="margin-bottom: 5px">
+                        <div class="min-w-0 mb-2 sm:mb-0">
+                            <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
+                            <p class="text-gray-600 description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
+                            {% if gift_idea.value %}
+                            <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
+                            {% endif %}
+                            <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                        </div>
+
+                        {% if imgenabled %}
+                        <div class="divimage">
+                            {% if gift_idea.image_path %}
+                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="image">
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
+                            {% if gift_idea.link %}
+                            {% set link = gift_idea.link %}
+                            {% if not link.startswith('http://') and not link.startswith('https://') %}
+                            {% set link = 'https://' + link %}
+                            {% endif %}
+                            <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
+                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5 helplogo">
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+    
+                    {% if gift_idea.bought_by %}
+                        {% if gift_idea.bought_by.startswith('visitor:') %}
+                            <p class="text-green-500">Purchased by: {{ gift_idea.bought_by[8:] }}</p>
+                            {% if share_link.allow_purchases %}
+                            <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" 
+                                    data-idea-id="{{ gift_idea.gift_idea_id }}"
+                                    style="display: none;">
+                                Cancel Purchase
+                            </button>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
+                        {% endif %}
+                    {% else %}
+                        <strong>Available idea</strong>
+                        {% if share_link.allow_purchases %}
+                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">I Purchased This</button>
+                        {% endif %}
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <div class="text-center mt-8 text-sm text-gray-500">
+            <p>Shared on {{ share_link.created_at[:10] }} • Expires on {{ share_link.expires_at[:10] }}</p>
+            <p class="mt-2">Powered by GiftManager</p>
+        </div>
+    </main>
+
+    <div id="visitorModal" class="visitor-modal">
+        <div class="visitor-modal-content">
+            <h3 class="text-lg font-semibold mb-4">Enter Your Name</h3>
+            <p class="text-sm text-gray-600 mb-4">Please enter your name to mark this item as purchased:</p>
+            <input type="text" id="visitorName" placeholder="Your name" 
+                   class="w-full px-3 py-2 border rounded mb-4 text-black">
+            <div class="flex space-x-2">
+                <button id="confirmPurchase" class="bg-green-500 text-white px-4 py-2 rounded flex-1">
+                    Confirm Purchase
+                </button>
+                <button id="cancelPurchase" class="bg-gray-500 text-white px-4 py-2 rounded flex-1">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentIdeaId = null;
+        const token = "{{ share_link.token }}";
+
+        // Visitor ID management
+        function getVisitorPurchases() {
+            try {
+                const purchases = localStorage.getItem(`visitor_purchases_${token}`);
+                return purchases ? JSON.parse(purchases) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveVisitorPurchase(ideaId, visitorId) {
+            try {
+                const purchases = getVisitorPurchases();
+                purchases[ideaId] = visitorId;
+                localStorage.setItem(`visitor_purchases_${token}`, JSON.stringify(purchases));
+            } catch (e) {
+                console.error('Error saving visitor purchase:', e);
+            }
+        }
+
+        function getVisitorIdForIdea(ideaId) {
+            const purchases = getVisitorPurchases();
+            return purchases[ideaId] || null;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show cancel buttons only for purchases made by this visitor
+            document.querySelectorAll('.mark-as-not-bought-button').forEach(button => {
+                const ideaId = button.getAttribute('data-idea-id');
+                const visitorId = getVisitorIdForIdea(ideaId);
+                
+                if (visitorId) {
+                    button.style.display = 'inline-block';
+                    button.setAttribute('data-visitor-id', visitorId);
+                }
+            });
+        });
+
+        // Mark as bought functionality
+        document.querySelectorAll('.mark-as-bought-button').forEach(button => {
+            button.addEventListener('click', () => {
+                currentIdeaId = button.getAttribute('data-idea-id');
+                document.getElementById('visitorModal').style.display = 'block';
+                document.getElementById('visitorName').focus();
+            });
+        });
+
+        // Cancel purchase functionality
+        document.querySelectorAll('.mark-as-not-bought-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const ideaId = button.getAttribute('data-idea-id');
+                const visitorId = button.getAttribute('data-visitor-id');
+                if (confirm('Are you sure you want to cancel this purchase?')) {
+                    markAsNotBought(ideaId, visitorId);
+                }
+            });
+        });
+
+        // Modal handlers
+        document.getElementById('confirmPurchase').addEventListener('click', () => {
+            const visitorName = document.getElementById('visitorName').value.trim();
+            if (!visitorName) {
+                alert('Please enter your name');
+                return;
+            }
+            markAsBought(currentIdeaId, visitorName);
+        });
+
+        document.getElementById('cancelPurchase').addEventListener('click', () => {
+            document.getElementById('visitorModal').style.display = 'none';
+            document.getElementById('visitorName').value = '';
+            currentIdeaId = null;
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('visitorModal').addEventListener('click', (e) => {
+            if (e.target.id === 'visitorModal') {
+                document.getElementById('visitorModal').style.display = 'none';
+                document.getElementById('visitorName').value = '';
+                currentIdeaId = null;
+            }
+        });
+
+        // API functions
+        function markAsBought(ideaId, visitorName) {
+            fetch(`/shared/${token}/mark_bought/${ideaId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ visitor_name: visitorName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    saveVisitorPurchase(ideaId, data.visitor_id);
+                    document.getElementById('visitorModal').style.display = 'none';
+                    document.getElementById('visitorName').value = '';
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+
+        function markAsNotBought(ideaId, visitorId) {
+            fetch(`/shared/${token}/mark_not_bought/${ideaId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ visitor_id: visitorId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const purchases = getVisitorPurchases();
+                    delete purchases[ideaId];
+                    localStorage.setItem(`visitor_purchases_${token}`, JSON.stringify(purchases));
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>    
+</body>
+</html>
