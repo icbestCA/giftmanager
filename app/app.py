@@ -36,9 +36,15 @@ babel = Babel(app, locale_selector=get_locale) # Initialize Flask-Babel
 def inject_languages():
     return {'supported_languages': SUPPORTED_LANGUAGES, 'current_locale': str(current_babel_locale())}
 
-mailjet_api_key = os.getenv("MAILJET_API_KEY")
-mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
-mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
+def get_mailjet_client():
+    """Return a Mailjet client, or None if the API keys are not configured.
+    Read at call time so keys saved from the email settings page apply without restart."""
+    api_key = os.getenv("MAILJET_API_KEY")
+    api_secret = os.getenv("MAILJET_API_SECRET")
+    if not api_key or not api_secret:
+        return None
+    return Client(auth=(api_key, api_secret), version='v3.1')
+
 ph = PasswordHasher()
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -750,8 +756,11 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
     for idea in gift_ideas_data:
         if idea.get('bought_by') == buyer_username:
             buyer_email = get_user_email_by_username(buyer_username)
-            
-            if buyer_email:
+            mailjet = get_mailjet_client()
+
+            if not mailjet:
+                print('Mailjet API keys not configured, email not sent')
+            elif buyer_email:
                 text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
 
                 # Send an email to the buyer using Mailjet
@@ -1437,7 +1446,7 @@ def edit_email_settings():
             # Update the variables in the .env file
             new_env_content = []
             for line in env_content:
-                key, _, value = line.partition('=')
+                key, _sep, value = line.partition('=')
                 key = key.strip()
                 if key == 'MAILJET_API_KEY' and mailjet_api_key:
                     new_env_content.append(f"MAILJET_API_KEY='{mailjet_api_key}'\n")
