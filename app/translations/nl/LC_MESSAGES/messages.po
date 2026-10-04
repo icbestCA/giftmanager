@@ -159,7 +159,7 @@ msgid "No gift ideas for this user."
 msgstr "Geen cadeau-ideeën voor deze gebruiker."
 
 #: app/app.py:1056
-msgid "You haven\'t added any gift ideas."
+msgid "You haven't added any gift ideas."
 msgstr "U hebt nog geen cadeau-ideeën toegevoegd."
 
 #: app/app.py:1114
@@ -191,7 +191,7 @@ msgid "Secret Santa assignments have been made!"
 msgstr "Secret Santa toewijzingen zijn gemaakt!"
 
 #: app/app.py:1303
-msgid "You don\'t have any Secret Santa assignments yet."
+msgid "You don't have any Secret Santa assignments yet."
 msgstr "U hebt nog geen Secret Santa toewijzingen."
 
 #: app/app.py:1313

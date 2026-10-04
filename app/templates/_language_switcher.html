@@ -1,0 +1,10 @@
+<!-- Language switcher: links to /set_language/<code>, current language highlighted -->
+<div class="language-switcher" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; font-size: 14px;">
+    {% for code, name in supported_languages.items() %}
+        {% if code == current_locale %}
+            <strong>{{ name }}</strong>
+        {% else %}
+            <a href="{{ url_for('set_language', lang_code=code) }}" style="color: inherit; opacity: 0.7;">{{ name }}</a>
+        {% endif %}
+    {% endfor %}
+</div>

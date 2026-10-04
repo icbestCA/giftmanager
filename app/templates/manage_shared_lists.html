@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -238,7 +238,7 @@
                                 Edit
                             </button>
                             <form method="POST" action="{{ url_for('delete_shared_list', list_username=list.username) }}" 
-                                  onsubmit="return confirm('Delete this list?')">
+                                  onsubmit='return confirm({{ _("Delete this list?")|tojson }})'>
                                 <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
                                     Delete
                                 </button>

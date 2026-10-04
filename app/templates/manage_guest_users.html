@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -204,12 +204,12 @@
             const password = document.querySelector('input[name="password"]').value;
             
             if (!displayName.trim()) {
-                alert('{{ _('Please enter a display name for the guest.') }}');
+                alert({{ _('Please enter a display name for the guest.')|tojson }});
                 return false;
             }
             
             if (!password) {
-                alert('{{ _('Please enter a password for the guest.') }}');
+                alert({{ _('Please enter a password for the guest.')|tojson }});
                 return false;
             }
             
@@ -218,13 +218,13 @@
             if (accessType === 'family') {
                 const familyCheckboxes = document.querySelectorAll('input[name="access_groups"]:checked');
                 if (familyCheckboxes.length === 0) {
-                    alert('{{ _('Please select at least one family for guest access.') }}');
+                    alert({{ _('Please select at least one family for guest access.')|tojson }});
                     return false;
                 }
             } else {
                 const peopleCheckboxes = document.querySelectorAll('input[name="access_users"]:checked');
                 if (peopleCheckboxes.length === 0) {
-                    alert('{{ _('Please select at least one person for guest access.') }}');
+                    alert({{ _('Please select at least one person for guest access.')|tojson }});
                     return false;
                 }
             }
@@ -439,7 +439,7 @@
                                         <td class="border px-4 py-2">
                                             <form method="POST" action="{{ url_for('delete_guest_user', username=guest.username) }}" 
                                                   style="display: inline;" 
-                                                  onsubmit="return confirm('{{ _('Are you sure you want to delete guest user %s?') % guest.full_name }}');">
+                                                  onsubmit='return confirm({{ _("Are you sure you want to delete guest user %(name)s?", name=guest.full_name).unescape()|tojson }});'>
                                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded text-sm">
                                                     {{ _('Delete') }}
                                                 </button>

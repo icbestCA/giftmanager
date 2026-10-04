@@ -16,6 +16,7 @@ instance/
 
 # Configuration files
 *.cfg
+!babel.cfg
 *.ini
 
 # Temporary files and directories

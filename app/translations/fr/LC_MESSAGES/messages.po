@@ -24,7 +24,7 @@ msgstr "Veuillez vous connecter d'abord."
 
 #: app/app.py:89
 msgid "This feature is not available for guest users."
-msgstr "Cette fonctionnalité n\'est pas disponible pour les utilisateurs invités."
+msgstr "Cette fonctionnalité n'est pas disponible pour les utilisateurs invités."
 
 #: app/app.py:111
 msgid "Admin access required."
@@ -40,15 +40,15 @@ msgstr "Email mis à jour avec succès."
 
 #: app/app.py:249
 msgid "Authorization failed: invalid state."
-msgstr "Échec d\'autorisation : état invalide."
+msgstr "Échec d'autorisation : état invalide."
 
 #: app/app.py:256
 msgid "OIDC authorization failed."
-msgstr "Échec de l\'autorisation OIDC."
+msgstr "Échec de l'autorisation OIDC."
 
 #: app/app.py:266
 msgid "Failed to parse user information."
-msgstr "Échec de l\'analyse des informations utilisateur."
+msgstr "Échec de l'analyse des informations utilisateur."
 
 #: app/app.py:298
 msgid "Login successful with OIDC!"
@@ -72,7 +72,7 @@ msgstr "Configuration du profil terminée !"
 
 #: app/app.py:422 app/app.py:440
 msgid "User does not exist"
-msgstr "L\'utilisateur n\'existe pas"
+msgstr "L'utilisateur n'existe pas"
 
 #: app/app.py:433
 msgid "Login successful!"
@@ -84,7 +84,7 @@ msgstr "Mot de passe incorrect"
 
 #: app/app.py:457
 msgid "Self-registration is not enabled. Please contact an administrator."
-msgstr "L\'auto-inscription n\'est pas activée. Veuillez contacter un administrateur."
+msgstr "L'auto-inscription n'est pas activée. Veuillez contacter un administrateur."
 
 #: app/app.py:476
 msgid "Invalid joining code. Please check with your family."
@@ -100,7 +100,7 @@ msgstr "Les mots de passe ne correspondent pas."
 
 #: app/app.py:495
 msgid "Username already exists. Please choose a different one."
-msgstr "Ce nom d\'utilisateur existe déjà. Veuillez en choisir un autre."
+msgstr "Ce nom d'utilisateur existe déjà. Veuillez en choisir un autre."
 
 #: app/app.py:500
 msgid "Email already registered. Please use a different email or contact support."
@@ -120,7 +120,7 @@ msgstr "IDÉES SUPPRIMÉES"
 
 #: app/app.py:713
 msgid "You are not authorized to delete this idea."
-msgstr "Vous n\'êtes pas autorisé à supprimer cette idée."
+msgstr "Vous n'êtes pas autorisé à supprimer cette idée."
 
 #: app/app.py:715 app/app.py:946 app/app.py:975 app/app.py:1189
 msgid "Idea not found"
@@ -132,7 +132,7 @@ msgstr "Gestionnaire de Cadeaux"
 
 #: app/app.py:748
 msgid "Buyer Name"
-msgstr "Nom de l\'acheteur"
+msgstr "Nom de l'acheteur"
 
 #: app/app.py:788
 msgid "User data not found"
@@ -159,12 +159,12 @@ msgid "No gift ideas for this user."
 msgstr "Aucune idée de cadeau pour cet utilisateur."
 
 #: app/app.py:1056
-msgid "You haven\'t added any gift ideas."
-msgstr "Vous n\'avez ajouté aucune idée de cadeau."
+msgid "You haven't added any gift ideas."
+msgstr "Vous n'avez ajouté aucune idée de cadeau."
 
 #: app/app.py:1114
 msgid "Username already exists!"
-msgstr "Ce nom d\'utilisateur existe déjà !"
+msgstr "Ce nom d'utilisateur existe déjà !"
 
 #: app/app.py:1135
 msgid "User added successfully!"
@@ -176,7 +176,7 @@ msgstr "Idée mise à jour avec succès !"
 
 #: app/app.py:1187
 msgid "You are not authorized to edit this idea."
-msgstr "Vous n\'êtes pas autorisé à modifier cette idée."
+msgstr "Vous n'êtes pas autorisé à modifier cette idée."
 
 #: app/app.py:1252
 msgid "Pool name is required!"
@@ -189,8 +189,8 @@ msgstr "Il faut au moins 2 participants pour le Secret Santa !"
 msgid "Secret Santa assignments have been made!"
 msgstr "Les attributions du Secret Santa ont été effectuées !"
 
-msgid "You don\'t have any Secret Santa assignments yet."
-msgstr "Vous n\'avez pas encore d\'attributions Secret Santa."
+msgid "You don't have any Secret Santa assignments yet."
+msgstr "Vous n'avez pas encore d'attributions Secret Santa."
 
 msgid "No specific instructions provided."
 msgstr "Aucune instruction spécifique fournie."
@@ -205,7 +205,7 @@ msgid "User updated successfully!"
 msgstr "Utilisateur mis à jour avec succès !"
 
 msgid "Email settings updated successfully."
-msgstr "Paramètres d\'email mis à jour avec succès."
+msgstr "Paramètres d'email mis à jour avec succès."
 
 msgid "Login message updated successfully!"
 msgstr "Message de connexion mis à jour avec succès !"
@@ -227,19 +227,19 @@ msgid ""
 "variables."
 msgstr ""
 "Compte administrateur créé avec succès. Veuillez configurer les variables "
-"d\'environnement."
+"d'environnement."
 
 msgid "You must access this page from the setupadmin route."
-msgstr "Vous devez accéder à cette page depuis l\'itinéraire setupadmin."
+msgstr "Vous devez accéder à cette page depuis l'itinéraire setupadmin."
 
 msgid "Environment variables saved successfully!"
-msgstr "Variables d\'environnement sauvegardées avec succès !"
+msgstr "Variables d'environnement sauvegardées avec succès !"
 
 msgid "OIDC settings saved successfully!"
 msgstr "Paramètres OIDC sauvegardés avec succès !"
 
 msgid "Environment file not found. Creating a new one."
-msgstr "Fichier d\'environnement non trouvé. Création d\'un nouveau fichier."
+msgstr "Fichier d'environnement non trouvé. Création d'un nouveau fichier."
 
 msgid "New group added successfully!"
 msgstr "Nouveau groupe ajouté avec succès !"
@@ -293,7 +293,7 @@ msgid "Repeat New Password"
 msgstr "Répéter le nouveau mot de passe"
 
 msgid "Change Email"
-msgstr "Changer l\'email"
+msgstr "Changer l'email"
 
 msgid "New Email"
 msgstr "Nouvel email"

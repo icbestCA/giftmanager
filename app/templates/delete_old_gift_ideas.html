@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -263,7 +263,7 @@
                     <h3 class="text-lg font-semibold mb-4">{{ _('Delete Old Gift Ideas') }}</h3>
                     <form method="POST" action="{{ url_for('delete_old_gift_ideas_page') }}">
                         <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
-                            {{ _('Delete Gift Ideas Older Than %s Days') % (current_days | default(30)) }}
+                            {{ _('Delete Gift Ideas Older Than %(days)s Days', days=current_days | default(30)) }}
                         </button>
                     </form>
                 </div>

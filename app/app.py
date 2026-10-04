@@ -13,29 +13,41 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from flask_babel import Babel, _, lazy_gettext as _l
+from flask_babel import Babel, _, lazy_gettext as _l, get_locale as current_babel_locale
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 
-def get_locale():
-    if 'lang' in session:
-        return session['lang']
-    return request.accept_languages.best_match(['fr', 'nl', 'sv', 'en'])
+SUPPORTED_LANGUAGES = {'en': 'English', 'fr': 'Français', 'nl': 'Nederlands', 'sv': 'Svenska'}
 
-babel = Babel(app, locale_selector=get_locale) # Initialize Flask-Babel
+def get_locale():
+    if session.get('lang') in SUPPORTED_LANGUAGES:
+        return session['lang']
+    return request.accept_languages.best_match(list(SUPPORTED_LANGUAGES))
+
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
 app.config['BABEL_DEFAULT_LOCALE'] = 'fr' # Set default locale to French
+babel = Babel(app, locale_selector=get_locale) # Initialize Flask-Babel
 
+@app.context_processor
+def inject_languages():
+    return {'supported_languages': SUPPORTED_LANGUAGES, 'current_locale': str(current_babel_locale())}
 
+mailjet_api_key = os.getenv("MAILJET_API_KEY")
+mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
+mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
+ph = PasswordHasher()
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 @app.route('/set_language/<lang_code>')
 def set_language(lang_code):
-    session['lang'] = lang_code
+    if lang_code in SUPPORTED_LANGUAGES:
+        session['lang'] = lang_code
     return redirect(request.referrer or url_for('index'))
 
 
@@ -1061,7 +1073,7 @@ def my_ideas():
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Check if there are no ideas and redirect to a different page
     if not my_gift_ideas:
-        flash(_('You haven\'t added any gift ideas.'), 'info')
+        flash(_("You haven't added any gift ideas."), 'info')
         return redirect(url_for('noidea'))
 
     return render_template('my_ideas.html', my_gift_ideas=my_gift_ideas, reordering=reordering, imgenabled=imgenabled)

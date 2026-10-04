@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -184,12 +184,12 @@
             const groupName = document.querySelector('input[name="new_group_name"]').value;
 
             if (!groupName) {
-                alert('{{ _('Please enter a new group name.') }}');
+                alert({{ _('Please enter a new group name.')|tojson }});
                 return false;
             }
 
             if (checkboxes.length === 0) {
-                alert('{{ _('Please select at least one user to assign the new group.') }}');
+                alert({{ _('Please select at least one user to assign the new group.')|tojson }});
                 return false;
             }
 

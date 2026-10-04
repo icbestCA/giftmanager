@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -257,6 +257,7 @@
         {% endif %}
         
         <p>{{ _('Contact the administrator to reset your password.') }}</p>
+        {% include '_language_switcher.html' %}
     </form>
 
     <!-- Guest Login Form (Initially Hidden) -->
