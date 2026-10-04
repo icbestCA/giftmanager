@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Email Settings</title>
+    <title>{{ _('Edit Email Settings') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -240,39 +240,39 @@
                         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Edit Email Settings</h2>
+                        <h2 class="text-xl font-semibold">{{ _('Edit Email Settings') }}</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">{{ _('To Dashboard') }}</a>
                 </div>
             </header>
 
             <main class="p-6">
                 <!-- Edit Email Settings Content -->
                 <div class="main p-6 rounded shadow section">
-                    <h3 class="text-lg font-semibold mb-4">Edit Email Settings</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ _('Edit Email Settings') }}</h3>
                     <form method="post" action="{{ url_for('edit_email_settings') }}">
                         <div class="mb-4">
-                            <label for="MAILJET_API_KEY" class="block sec-text font-medium">Mailjet API Key:</label>
+                            <label for="MAILJET_API_KEY" class="block sec-text font-medium">{{ _('Mailjet API Key:') }}</label>
                             <input 
                                 type="text" 
                                 id="MAILJET_API_KEY" 
                                 name="MAILJET_API_KEY" 
-                                placeholder="Leave blank to keep current"
+                                placeholder="{{ _('Leave blank to keep current') }}"
                                 class="border border-gray-300 rounded px-4 py-2 w-full inputer"
                             >
                         </div>
                         <div class="mb-4">
-                            <label for="MAILJET_API_SECRET" class="block sec-text font-medium">Mailjet API Secret:</label>
+                            <label for="MAILJET_API_SECRET" class="block sec-text font-medium">{{ _('Mailjet API Secret:') }}</label>
                             <input 
                                 type="text" 
                                 id="MAILJET_API_SECRET" 
                                 name="MAILJET_API_SECRET" 
-                                placeholder="Leave blank to keep current"
+                                placeholder="{{ _('Leave blank to keep current') }}"
                                 class="border border-gray-300 rounded px-4 py-2 w-full inputer"
                             >
                         </div>
                         <div class="mb-4">
-                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">System Email:</label>
+                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">{{ _('System Email:') }}</label>
                             <input 
                                 type="email" 
                                 id="SYSTEM_EMAIL" 
@@ -285,7 +285,7 @@
                             type="submit" 
                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
                         >
-                            Save Changes
+                            {{ _('Save Changes') }}
                         </button>
                     </form>
 

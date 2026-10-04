@@ -5,3 +5,4 @@ argon2-cffi
 authlib
 requests
 beautifulsoup4
+Flask-Babel

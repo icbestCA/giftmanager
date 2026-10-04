@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Guest Users</title>
+    <title>{{ _('Manage Guest Users') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -204,12 +204,12 @@
             const password = document.querySelector('input[name="password"]').value;
             
             if (!displayName.trim()) {
-                alert('Please enter a display name for the guest.');
+                alert('{{ _('Please enter a display name for the guest.') }}');
                 return false;
             }
             
             if (!password) {
-                alert('Please enter a password for the guest.');
+                alert('{{ _('Please enter a password for the guest.') }}');
                 return false;
             }
             
@@ -218,13 +218,13 @@
             if (accessType === 'family') {
                 const familyCheckboxes = document.querySelectorAll('input[name="access_groups"]:checked');
                 if (familyCheckboxes.length === 0) {
-                    alert('Please select at least one family for guest access.');
+                    alert('{{ _('Please select at least one family for guest access.') }}');
                     return false;
                 }
             } else {
                 const peopleCheckboxes = document.querySelectorAll('input[name="access_users"]:checked');
                 if (peopleCheckboxes.length === 0) {
-                    alert('Please select at least one person for guest access.');
+                    alert('{{ _('Please select at least one person for guest access.') }}');
                     return false;
                 }
             }
@@ -300,9 +300,9 @@
                         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Manage Guest Users</h2>
+                        <h2 class="text-xl font-semibold">{{ _('Manage Guest Users') }}</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">{{ _('To Dashboard') }}</a>
                 </div>
             </header>
 
@@ -319,47 +319,47 @@
                 {% endwith %}
 
                 <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto section">
-                    <h3 class="text-2xl font-semibold text-center mb-6">Manage Guest Users</h3>
+                    <h3 class="text-2xl font-semibold text-center mb-6">{{ _('Manage Guest Users') }}</h3>
 
                     <!-- Form for creating new guest user -->
                     <form method="POST" class="mb-8" onsubmit="return validateGuestForm()">
                         <div class="mb-6">
-                            <h4 class="text-xl font-semibold mb-4">Create New Guest User</h4>
+                            <h4 class="text-xl font-semibold mb-4">{{ _('Create New Guest User') }}</h4>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label for="display_name" class="block font-medium mb-2">Display Name:</label>
+                                    <label for="display_name" class="block font-medium mb-2">{{ _('Display Name:') }}</label>
                                     <input type="text" id="display_name" name="display_name" 
                                            class="border rounded py-2 px-3 w-full inputer" 
-                                           placeholder="e.g., Uncle John" required>
-                                    <small class="text-gray-500">This name will be shown when guest marks items as bought</small>
+                                           placeholder="{{ _('e.g., Uncle John') }}" required>
+                                    <small class="text-gray-500">{{ _('This name will be shown when guest marks items as bought') }}</small>
                                 </div>
                                 <div>
-                                    <label for="password" class="block font-medium mb-2">Password:</label>
+                                    <label for="password" class="block font-medium mb-2">{{ _('Password:') }}</label>
                                     <input type="password" id="password" name="password" 
                                            class="border rounded py-2 px-3 w-full inputer" required>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label class="block font-medium mb-2">Access Type:</label>
+                                <label class="block font-medium mb-2">{{ _('Access Type:') }}</label>
                                 <div class="flex space-x-4">
                                     <label class="inline-flex items-center">
                                         <input type="radio" name="access_type" id="access_family" 
                                                value="family" checked class="form-radio">
-                                        <span class="ml-2">Access by Family</span>
+                                        <span class="ml-2">{{ _('Access by Family') }}</span>
                                     </label>
                                     <label class="inline-flex items-center">
                                         <input type="radio" name="access_type" id="access_people" 
                                                value="people" class="form-radio">
-                                        <span class="ml-2">Access Specific People</span>
+                                        <span class="ml-2">{{ _('Access Specific People') }}</span>
                                     </label>
                                 </div>
                             </div>
 
                             <!-- Family Access Section -->
                             <div id="family-access" class="access-section mb-4">
-                                <label class="block font-medium mb-2">Select Families:</label>
+                                <label class="block font-medium mb-2">{{ _('Select Families:') }}</label>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 border rounded">
                                     {% for group in all_groups %}
                                         {% if not group.startswith('guest_') %}
@@ -375,7 +375,7 @@
 
                             <!-- People Access Section -->
                             <div id="people-access" class="access-section mb-4" style="display: none;">
-                                <label class="block font-medium mb-2">Select People:</label>
+                                <label class="block font-medium mb-2">{{ _('Select People:') }}</label>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded">
                                     {% for user in all_users %}
                                     {% if not user.get('guest') %}
@@ -390,24 +390,24 @@
                             </div>
 
                             <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-                                Create Guest User
+                                {{ _('Create Guest User') }}
                             </button>
                         </div>
                     </form>
 
                     <!-- Existing Guest Users -->
                     <div>
-                        <h4 class="text-xl font-semibold mb-4">Existing Guest Users</h4>
+                        <h4 class="text-xl font-semibold mb-4">{{ _('Existing Guest Users') }}</h4>
                         {% if guest_users %}
                         <div class="overflow-x-auto">
                             <table class="min-w-full table-auto border-collapse border border-gray-300">
                                 <thead>
                                     <tr>
-                                        <th class="border px-4 py-2 text-left">Username</th>
-                                        <th class="border px-4 py-2 text-left">Display Name</th>
-                                        <th class="border px-4 py-2 text-left">Access Type</th>
-                                        <th class="border px-4 py-2 text-left">Access Details</th>
-                                        <th class="border px-4 py-2 text-left">Actions</th>
+                                        <th class="border px-4 py-2 text-left">{{ _('Username') }}</th>
+                                        <th class="border px-4 py-2 text-left">{{ _('Display Name') }}</th>
+                                        <th class="border px-4 py-2 text-left">{{ _('Access Type') }}</th>
+                                        <th class="border px-4 py-2 text-left">{{ _('Access Details') }}</th>
+                                        <th class="border px-4 py-2 text-left">{{ _('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -417,19 +417,19 @@
                                         <td class="border px-4 py-2">{{ guest.full_name }}</td>
                                         <td class="border px-4 py-2">
                                             {% if guest.access_type == 'family' %}
-                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Family Access</span>
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{{ _('Family Access') }}</span>
                                             {% else %}
-                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">People Access</span>
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">{{ _('People Access') }}</span>
                                             {% endif %}
                                         </td>
                                         <td class="border px-4 py-2">
                                             {% if guest.access_type == 'family' %}
                                                 <div class="text-sm">
-                                                    <strong>Families:</strong> {{ guest.groups|join(', ') }}
+                                                    <strong>{{ _('Families:') }}</strong> {{ guest.groups|join(', ') }}
                                                 </div>
                                             {% else %}
                                                 <div class="text-sm">
-                                                    <strong>People:</strong> 
+                                                    <strong>{{ _('People:') }}</strong> 
                                                     {% for username in guest.access_users %}
                                                         {{ get_full_name(username) }}{% if not loop.last %}, {% endif %}
                                                     {% endfor %}
@@ -439,9 +439,9 @@
                                         <td class="border px-4 py-2">
                                             <form method="POST" action="{{ url_for('delete_guest_user', username=guest.username) }}" 
                                                   style="display: inline;" 
-                                                  onsubmit="return confirm('Are you sure you want to delete guest user {{ guest.full_name }}?');">
+                                                  onsubmit="return confirm('{{ _('Are you sure you want to delete guest user %s?') % guest.full_name }}');">
                                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded text-sm">
-                                                    Delete
+                                                    {{ _('Delete') }}
                                                 </button>
                                             </form>
                                         </td>
@@ -453,7 +453,7 @@
                         {% else %}
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-users fa-3x mb-4"></i>
-                            <p>No guest users configured yet.</p>
+                            <p>{{ _('No guest users configured yet.') }}</p>
                         </div>
                         {% endif %}
                     </div>

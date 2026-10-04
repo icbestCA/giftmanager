@@ -13,19 +13,30 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from flask_babel import Babel, _, lazy_gettext as _l
+
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
+
+def get_locale():
+    if 'lang' in session:
+        return session['lang']
+    return request.accept_languages.best_match(['fr', 'nl', 'sv', 'en'])
+
+babel = Babel(app, locale_selector=get_locale) # Initialize Flask-Babel
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
+app.config['BABEL_DEFAULT_LOCALE'] = 'fr' # Set default locale to French
 
-mailjet_api_key = os.getenv("MAILJET_API_KEY")
-mailjet_api_secret = os.getenv("MAILJET_API_SECRET")
-mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
-ph = PasswordHasher()
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+@app.route('/set_language/<lang_code>')
+def set_language(lang_code):
+    session['lang'] = lang_code
+    return redirect(request.referrer or url_for('index'))
 
 
 def read_env_variable(key, default=None):
@@ -76,14 +87,14 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash(_('Please log in first.'), 'warning')
             return redirect(url_for('login'))
         
         # Check if user is a guest and route doesn't allow guests
         if is_guest_user(session['username']):
             # Check if the route has @guest_allowed decorator
             if not getattr(f, '_guest_allowed', False):
-                flash('This feature is not available for guest users.', 'danger')
+                flash(_('This feature is not available for guest users.'), 'danger')
                 return redirect(url_for('dashboard'))
         
         return f(*args, **kwargs)
@@ -94,7 +105,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         # Check if the user is logged in
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash(_('Please log in first.'), 'warning')
             return redirect(url_for('login'))
 
         # Load users from the JSON file
@@ -105,7 +116,7 @@ def admin_required(f):
 
         # Check if the user exists and is an admin
         if not user or not user.get('admin'):
-            flash('Admin access required.', 'danger')
+            flash(_('Admin access required.'), 'danger')
             return redirect(url_for('dashboard'))
 
         # Continue to the original function if the user is an admin
@@ -124,7 +135,7 @@ def guest_allowed(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
-            flash('Please log in first.', 'warning')
+            flash(_('Please log in first.'), 'warning')
             return redirect(url_for('login'))
         
         # Check if user is a guest
@@ -169,13 +180,13 @@ def change_email():
             user['email'] = new_email
             break
     else:
-        flash('User not found.', 'danger')
+        flash(_('User not found.'), 'danger')
         return redirect(url_for('dashboard'))
 
     # Save the updated data back to the JSON file
     save_users(users)
 
-    flash('Email updated successfully.', 'success')
+    flash(_('Email updated successfully.'), 'success')
     return redirect(url_for('dashboard'))
 
 
@@ -243,14 +254,14 @@ def auth():
     state = request.args.get("state")
     saved_state = session.pop("state", None)
     if state != saved_state:
-        flash("Authorization failed: invalid state.", "danger")
+        flash(_("Authorization failed: invalid state."), "danger")
         return redirect(url_for("login"))
     
     try:
         # Retrieve the access token from OIDC provider
         token = oauth.keycloak.authorize_access_token()
     except Exception as e:
-        flash("OIDC authorization failed.", "danger")
+        flash(_("OIDC authorization failed."), "danger")
         return redirect(url_for("login"))
     
     # Pop nonce from session after use
@@ -260,7 +271,7 @@ def auth():
         # Parse ID token and retrieve user info
         user_info = oauth.keycloak.parse_id_token(token, nonce=nonce)
     except Exception as e:
-        flash("Failed to parse user information.", "danger")
+        flash(_("Failed to parse user information."), "danger")
         return redirect(url_for("login"))
     
     # Retrieve fields dynamically from the environment
@@ -292,7 +303,7 @@ def auth():
     if user_in_db:
         # Log in the user by setting the session
         session["username"] = user_in_db["username"]
-        flash("Login successful with OIDC!", "login_success")
+        flash(_("Login successful with OIDC!"), "login_success")
         return redirect(url_for("dashboard"))
     
     # Handle auto-registration if enabled
@@ -308,10 +319,10 @@ def auth():
         save_users(users)  # Save the updated users list
         session["username"] = new_user["username"]
         
-        flash("New profile created. Please complete your profile setup.", "info")
+        flash(_("New profile created. Please complete your profile setup."), "info")
         return redirect(url_for("setup_profile"))  # Redirect to profile setup page
 
-    flash("User not found and auto-registration is disabled.", "danger")
+    flash(_("User not found and auto-registration is disabled."), "danger")
     return redirect(url_for("login"))
     
 
@@ -328,12 +339,12 @@ def setup_profile():
     user = next((u for u in users if u["username"] == username), None)
     
     if not user:
-        flash("User not found.", "danger")
+        flash(_("User not found."), "danger")
         return redirect(url_for("login"))
 
     # Redirect if the avatar URL is already set
     if user.get("avatar"):
-        flash("Profile setup not required. Avatar already set.", "info")
+        flash(_("Profile setup not required. Avatar already set."), "info")
         return redirect(url_for("dashboard"))
     
     # Check if default login is enabled
@@ -354,7 +365,7 @@ def setup_profile():
         # Save the updated user list to `users.json`
         save_users(users)
         
-        flash("Profile setup complete!", "success")
+        flash(_("Profile setup complete!"), "success")
         return redirect(url_for("dashboard"))
 
     # Prefill data for the user (including OIDC data)
@@ -399,7 +410,7 @@ def login():
     # For GET requests, render the login page
     oidc_client_id = os.getenv("OIDC_CLIENT_ID")  # Get OIDC Client ID
     oidc_enabled = bool(oidc_client_id)  # Check if OIDC is enabled
-    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or "No account? Contact a family member to create an account."
+    login_message = read_env_variable("LOGIN_PAGE_MESSAGE") or _l("No account? Contact a family member to create an account.")
     # If default login is disabled, render an OIDC-only login page
     if not enable_default_login:
         return render_template("oidc_only.html", guests_exist=guests_exist_flag)
@@ -416,7 +427,7 @@ def login():
             for user in users:
                 if user['username'].lower() == input_username:
                     if user.get('shared_list', False):
-                        flash('User does not exist', 'login_error')
+                        flash(_('User does not exist'), 'login_error')
                         return render_template(
                             'login.html',
                             oidc_enabled=oidc_enabled,
@@ -427,14 +438,14 @@ def login():
                     # Verify the password hash
                     if verify_password(user['password'], password):
                         session['username'] = user['username']
-                        flash('Login successful!', 'login_success')
+                        flash(_('Login successful!'), 'login_success')
                         return redirect(url_for('dashboard'))
                     else:
-                        flash('Wrong password', 'login_error')
+                        flash(_('Wrong password'), 'login_error')
                         return render_template('login.html', oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag, enable_self_registration=enable_self_registration)
 
             # No matching username found
-            flash('User does not exist', 'login_error')
+            flash(_('User does not exist'), 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
             flash(f"Error reading users.json: {e}", 'login_error')
             
@@ -451,7 +462,7 @@ def register():
     """Self-registration page for new users"""
     # Check if self-registration is enabled
     if not read_env_variable('ENABLE_SELF_REGISTRATION', 'false').lower() == 'true':
-        flash('Self-registration is not enabled. Please contact an administrator.', 'danger')
+        flash(_('Self-registration is not enabled. Please contact an administrator.'), 'danger')
         return redirect(url_for('login'))
     
     # Get joining code for template
@@ -470,16 +481,16 @@ def register():
         
         # Validate joining code if one is set in environment
         if joining_code and submitted_joining_code != joining_code:
-            flash('Invalid joining code. Please check with your family.', 'danger')
+            flash(_('Invalid joining code. Please check with your family.'), 'danger')
             return render_template('register.html', joining_code=joining_code)
         
         # Validate required input
         if not username or not password or not full_name:
-            flash('Please fill in all required fields.', 'danger')
+            flash(_('Please fill in all required fields.'), 'danger')
             return render_template('register.html', joining_code=joining_code)
         
         if password != confirm_password:
-            flash('Passwords do not match.', 'danger')
+            flash(_('Passwords do not match.'), 'danger')
             return render_template('register.html', joining_code=joining_code)
         
         # No password complexity requirements
@@ -489,12 +500,12 @@ def register():
         
         # Check for duplicate username
         if any(user['username'].lower() == username for user in users):
-            flash('Username already exists. Please choose a different one.', 'danger')
+            flash(_('Username already exists. Please choose a different one.'), 'danger')
             return render_template('register.html', joining_code=joining_code)
         
         # Check for duplicate email only if email is provided
         if email and any(user.get('email', '').lower() == email.lower() for user in users):
-            flash('Email already registered. Please use a different email or contact support.', 'danger')
+            flash(_('Email already registered. Please use a different email or contact support.'), 'danger')
             return render_template('register.html', joining_code=joining_code)
         
         # Create new user
@@ -514,7 +525,7 @@ def register():
         users.append(new_user)
         save_users(users)
         
-        flash('Registration successful! You can now log in.', 'success')
+        flash(_('Registration successful! You can now log in.'), 'success')
         return redirect(url_for('login'))
     
     # GET request - show registration form
@@ -533,7 +544,7 @@ def add2():
     current_user_data = next((user for user in users if user["username"] == current_user), None)
 
     if not current_user_data:
-        flash("Current user not found.", "danger")
+        flash(_("Current user not found."), "danger")
         return redirect(url_for('dashboard'))
 
     # Get the current user's groups (default to empty list if not present)
@@ -610,7 +621,7 @@ def add_idea(selected_user_id):
     current_user_data = next((user for user in users if user["username"] == current_user), None)
 
     if not current_user_data:
-        flash("Current user not found.", "danger")
+        flash(_("Current user not found."), "danger")
         return redirect(url_for('dashboard'))
 
     # Get the current user's groups (default to empty list if not present)
@@ -697,7 +708,7 @@ def delete_idea(idea_id):
             # Check if the idea is bought
             if idea['bought_by']:
                 # Send an email to the buyer using Mailjet
-                send_email_to_buyer_via_mailjet(idea['bought_by'], f'{idea["gift_name"]}', 'IDEAS DELETED')
+                send_email_to_buyer_via_mailjet(idea['bought_by'], f'{idea["gift_name"]}', _('IDEAS DELETED'))
 
             # Delete the idea
             gift_ideas_data.remove(idea)
@@ -707,9 +718,9 @@ def delete_idea(idea_id):
 
             return '', 204  # Return a response with HTTP status code 204 (no content)
         else:
-            flash('You are not authorized to delete this idea.', 'danger')
+            flash(_('You are not authorized to delete this idea.'), 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash(_('Idea not found'), 'danger')
 
     return '', 403  # Return a response with HTTP status code 403 (forbidden)
 
@@ -737,12 +748,12 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
                         {
                             'From': {
                                 'Email': os.getenv("SYSTEM_EMAIL"),  # Your sender email address
-                                'Name': 'GiftManager',
+                                'Name': _('GiftManager'),
                             },
                             'To': [
                                 {
                                     'Email': buyer_email,  # Buyer's email
-                                    'Name': 'Buyer Name',
+                                    'Name': _('Buyer Name'),
                                 },
                             ],
                             'Subject': message_subject,
@@ -782,7 +793,7 @@ def dashboard():
     current_user = next((user for user in users if user['username'] == session['username']), None)
     
     if not current_user:
-        flash('User data not found', 'danger')
+        flash(_('User data not found'), 'danger')
         return redirect(url_for('login'))
 
     # Check if current user is a guest
@@ -885,17 +896,17 @@ def change_password():
     current_user = next((user for user in users if user['username'] == session['username']), None)
 
     if not current_user:
-        flash('User not found', 'danger')
+        flash(_('User not found'), 'danger')
         return redirect(url_for('dashboard'))
 
     # Verify the current password
     if not verify_password(current_user['password'], current_password):
-        flash('Current password is incorrect', 'danger')
+        flash(_('Current password is incorrect'), 'danger')
         return redirect(url_for('dashboard'))
 
     # Check if the new password and confirmation match
     if new_password != confirm_password:
-        flash('New password and confirmation do not match', 'danger')
+        flash(_('New password and confirmation do not match'), 'danger')
         return redirect(url_for('dashboard'))
 
     # Update the password in the user data
@@ -904,7 +915,7 @@ def change_password():
     # Save the updated user data back to the JSON file
     save_users(users)
 
-    flash('Password successfully changed', 'success')
+    flash(_('Password successfully changed'), 'success')
     return redirect(url_for('dashboard'))
 
 def find_idea_by_id(ideas, idea_id):
@@ -940,7 +951,7 @@ def mark_as_bought(idea_id):
             # If already bought, display a warning
             flash(f'"{idea["gift_name"]}" has already been bought by {idea["bought_by"]}.', 'warning')
     else:
-        flash('Idea not found', 'danger')
+        flash(_('Idea not found'), 'danger')
 
     # Redirect to the user's gift ideas page
     return redirect(url_for('user_gift_ideas', selected_user_id=session['username']))
@@ -969,7 +980,7 @@ def mark_as_not_bought(idea_id):
         else:
             flash(f'You did not buy "{idea["gift_name"]}", so you cannot mark it as not bought.', 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash(_('Idea not found'), 'danger')
 
     return '', 204  # Return a response with HTTP status code 204 (no content)
 
@@ -1019,7 +1030,7 @@ def user_gift_ideas(selected_user_id):
 
     # Check if there are no ideas and redirect to the NOIDEA page
     if not user_gift_ideas:
-        flash('No gift ideas for this user.', 'info')
+        flash(_('No gift ideas for this user.'), 'info')
         return redirect(url_for('noidea'))
     
     users = load_users()
@@ -1050,7 +1061,7 @@ def my_ideas():
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Check if there are no ideas and redirect to a different page
     if not my_gift_ideas:
-        flash('You haven\'t added any gift ideas.', 'info')
+        flash(_('You haven\'t added any gift ideas.'), 'info')
         return redirect(url_for('noidea'))
 
     return render_template('my_ideas.html', my_gift_ideas=my_gift_ideas, reordering=reordering, imgenabled=imgenabled)
@@ -1108,7 +1119,7 @@ def add_user():
 
         # Check for duplicate usernames
         if any(user['username'] == username for user in users):
-            flash('Username already exists!', 'error')
+            flash(_('Username already exists!'), 'error')
             return redirect(url_for('add_user'))
 
         # Create a new user object with default groups
@@ -1129,7 +1140,7 @@ def add_user():
         # Save the updated users list back to the JSON file
         save_users(users)  # Using save_users function to write the users to file
 
-        flash('User added successfully!', 'success')
+        flash(_('User added successfully!'), 'success')
         return redirect(url_for('admin_dashboard'))
 
     return render_template('add_user.html')
@@ -1174,16 +1185,16 @@ def edit_idea(idea_id):
                 # Save the updated gift ideas data back to the JSON file
                 save_gift_ideas(gift_ideas_data)
 
-                flash('Idea updated successfully!', 'success')
+                flash(_('Idea updated successfully!'), 'success')
                 return redirect(url_for('user_gift_ideas', selected_user_id=idea['user_id']))
             
             imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
             # Render the edit idea form with pre-filled data
             return render_template('edit_idea.html', idea=idea, imgenabled=imgenabled)
         else:
-            flash('You are not authorized to edit this idea.', 'danger')
+            flash(_('You are not authorized to edit this idea.'), 'danger')
     else:
-        flash('Idea not found', 'danger')
+        flash(_('Idea not found'), 'danger')
 
     return redirect(url_for('dashboard'))
 
@@ -1246,11 +1257,11 @@ def secret_santa():
             pool_name = request.form.get('pool_name')
 
             if not pool_name:
-                flash('Pool name is required!', 'error')
+                flash(_('Pool name is required!'), 'error')
                 return redirect(url_for('secret_santa'))
 
             if len(selected_participants) < 2:
-                flash('You need at least 2 participants for Secret Santa!', 'error')
+                flash(_('You need at least 2 participants for Secret Santa!'), 'error')
                 return redirect(url_for('secret_santa'))
 
             # Shuffle and assign participants
@@ -1276,7 +1287,7 @@ def secret_santa():
             with open(f'santa_inst_{pool_name}.txt', 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
-            flash('Secret Santa assignments have been made!', 'success')
+            flash(_('Secret Santa assignments have been made!'), 'success')
             return redirect(url_for('secret_santa_assignments'))
 
     return render_template('secret_santa.html', users=users, existing_pools=sorted(existing_pools))
@@ -1297,7 +1308,7 @@ def secret_santa_assignments():
             assigned_users = user['assigned_users']  # Dictionary of pool names and assigned users
 
     if not assigned_users:
-        flash("You don't have any Secret Santa assignments yet.", "error")
+        flash(_("You don't have any Secret Santa assignments yet."), "error")
         return redirect(url_for('secret_santa'))
 
     # Load instructions for each pool
@@ -1307,7 +1318,7 @@ def secret_santa_assignments():
             with open(f'santa_inst_{pool_name}.txt', 'r') as file:
                 pool_instructions[pool_name] = file.read()
         except FileNotFoundError:
-            pool_instructions[pool_name] = "No specific instructions provided."
+            pool_instructions[pool_name] = _("No specific instructions provided.")
 
     # Pass the 'assigned_users' and 'pool_instructions' to the template
     return render_template('secret_santa_assignment.html', assigned_users=assigned_users, pool_instructions=pool_instructions)
@@ -1341,7 +1352,7 @@ def manage_users():
                     if username in user_obj['list_members']:
                         user_obj['list_members'].remove(username)
             
-            flash('User deleted successfully!', 'success')
+            flash(_('User deleted successfully!'), 'success')
 
         # Handle toggle admin
         elif 'toggle_admin' in request.form:
@@ -1352,7 +1363,7 @@ def manage_users():
                     for u in all_users:
                         if u['username'] == username and not u.get('shared_list'):
                             u['admin'] = bool(int(request.form['toggle_admin']))
-                    flash('Admin status updated successfully!', 'success')
+                    flash(_('Admin status updated successfully!'), 'success')
                     break
 
         # Handle user details update
@@ -1373,7 +1384,7 @@ def manage_users():
                     for u in all_users:
                         if u['username'] == username and not u.get('shared_list'):
                             u.update(user)
-                    flash('User updated successfully!', 'success')
+                    flash(_('User updated successfully!'), 'success')
                     break
 
         # Save ALL users (including shared lists) back to the file
@@ -1432,7 +1443,7 @@ def edit_email_settings():
             # Reload the .env file to reflect changes
             load_dotenv(dotenv_path, override=True)
 
-            flash("Email settings updated successfully!", "success")
+            flash(_("Email settings updated successfully!"), "success")
         except Exception as e:
             flash(f"An error occurred: {e}", "danger")
         return redirect(url_for('edit_email_settings'))
@@ -1464,11 +1475,11 @@ def edit_login_message():
                         else:
                             file.write(line)
 
-                flash("Login message updated successfully!", "success")
+                flash(_("Login message updated successfully!"), "success")
             except Exception as e:
                 flash(f"Error updating login message: {e}", "danger")
         else:
-            flash("Message cannot be empty.", "danger")
+            flash(_("Message cannot be empty."), "danger")
 
         return redirect(url_for('edit_login_message'))
 
@@ -1561,9 +1572,9 @@ def change_delete_days():
                 return redirect(url_for('change_delete_days'))
 
             except ValueError:
-                flash("Invalid number of days entered. Please enter a valid number.", "danger")
+                flash(_("Invalid number of days entered. Please enter a valid number."), "danger")
         else:
-            flash("Please provide a value for the number of days.", "danger")
+            flash(_("Please provide a value for the number of days."), "danger")
 
     # Get the current value of the DELETE_OLD_GIFTS_DAYS from the .env file
     current_days = read_env_variable("DELETE_DAYS", dotenv_path) or 30
@@ -1576,7 +1587,7 @@ def setup():
     # Check if users.json already exists and contains users
     users_data = load_users()
     if users_data:  # If there are any users in the file
-        flash('Users are already configured. Setup page is unavailable.', 'info')
+        flash(_('Users are already configured. Setup page is unavailable.'), 'info')
         return redirect(url_for('login'))  # Redirect to the login page or another appropriate route
 
     if request.method == 'POST':
@@ -1608,7 +1619,7 @@ def setup():
         # Save the updated users list
         save_users(users_data)
 
-        flash('Admin account created successfully. Please configure the environment variables.', 'success')
+        flash(_('Admin account created successfully. Please configure the environment variables.'), 'success')
         return redirect(url_for('setupenv'))  # Redirect to the setupenv route
 
     return render_template('setupadmin.html')
@@ -1618,7 +1629,7 @@ def setup():
 def setupenv():
     referer = request.headers.get('Referer')
     if not referer or '/setupadmin' not in referer:
-        flash('You must access this page from the setupadmin route.', 'error')
+        flash(_('You must access this page from the setupadmin route.'), 'error')
         return redirect(url_for('login'))  # Redirect to login if not accessed correctly
 
     if request.method == 'POST':
@@ -1644,7 +1655,7 @@ def setupenv():
         for key, value in env_variables.items():
             set_key(".env", key, value)
 
-        flash('Environment variables saved successfully!', 'success')
+        flash(_('Environment variables saved successfully!'), 'success')
         return redirect(url_for('index'))
 
     # Render the setup environment page
@@ -1679,7 +1690,7 @@ def setup_oidc():
             for key, value in oidc_env_variables.items():
                 set_key(dotenv_path, key, value)
 
-            flash('OIDC settings saved successfully!', 'success')
+            flash(_('OIDC settings saved successfully!'), 'success')
             return redirect(url_for('setup_oidc'))  # Redirect to home page after saving
         except Exception as e:
             flash(f"Error saving OIDC settings: {e}", "danger")
@@ -1690,7 +1701,7 @@ def setup_oidc():
         # Load the .env file directly using the path
         load_dotenv(dotenv_path, override=True)
     except FileNotFoundError:
-        flash("Environment file not found. Creating a new one.", "warning")
+        flash(_("Environment file not found. Creating a new one."), "warning")
     
     current_values = {
         "OIDC_CLIENT_ID": os.getenv("OIDC_CLIENT_ID", ''),
@@ -1735,7 +1746,7 @@ def manage_groups():
             # Save updated user data after adding the group using the helper function
             save_users(users)
 
-            flash('New group added successfully!', 'success')
+            flash(_('New group added successfully!'), 'success')
             return redirect(url_for('manage_groups'))
 
     return render_template('manage_groups.html', users=users, groups=groups)
@@ -1762,7 +1773,7 @@ def update_group_assignments():
     # Save updated user data after assignments using the helper function
     save_users(users)
 
-    flash('Group assignments updated successfully!', 'success')
+    flash(_('Group assignments updated successfully!'), 'success')
     return redirect(url_for('manage_groups'))
 
 # Families 
@@ -1862,13 +1873,13 @@ def fetch_og_image(url):
 def get_og_image():
     url = request.args.get('url')
     if not url:
-        return jsonify({"error": "URL parameter is required"}), 400
+        return jsonify({"error": _("URL parameter is required")}), 400
 
     og_image_url = fetch_og_image(url)
     if og_image_url:
         return jsonify({"og_image_url": og_image_url})
     else:
-        return jsonify({"error": "No OG image found"}), 404    
+        return jsonify({"error": _("No OG image found")}), 404    
 
 @app.route('/manage_guest_users', methods=['GET', 'POST'])
 @admin_required
@@ -1910,7 +1921,7 @@ def manage_guest_users():
         
         users.append(new_guest)
         save_users(users)
-        flash('Guest user created successfully!', 'success')
+        flash(_('Guest user created successfully!'), 'success')
         return redirect(url_for('manage_guest_users'))
     
     # Get all available groups and users for the form
@@ -1961,7 +1972,7 @@ def delete_guest_user(username):
         
         flash(f'Guest user {username} deleted successfully! {deleted_count} purchased gift ideas deleted.', 'success')
     else:
-        flash('Guest user not found.', 'danger')
+        flash(_('Guest user not found.'), 'danger')
     
     return redirect(url_for('manage_guest_users'))
 
@@ -1976,10 +1987,10 @@ def guest_login():
     for user in users:
         if user.get('guest') and verify_password(user['password'], password):
             session['username'] = user['username']
-            flash('Guest login successful!', 'login_success')
+            flash(_('Guest login successful!'), 'login_success')
             return redirect(url_for('dashboard'))
     
-    flash('Invalid guest password', 'login_error')
+    flash(_('Invalid guest password'), 'login_error')
     return redirect(url_for('login'))
 
 def get_visible_groups(users):
@@ -2171,7 +2182,7 @@ def manage_sharing():
     current_user = next((user for user in users if user['username'] == session['username']), None)
     
     if not current_user:
-        flash('User not found', 'danger')
+        flash(_('User not found'), 'danger')
         return redirect(url_for('dashboard'))
     
     # Get the target entity (user or shared list) for which we're managing sharing

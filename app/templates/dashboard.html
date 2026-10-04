@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Dashboard</title>
+    <title>{{ _('Gift Dashboard') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <meta name="theme-color" content="#000000"/>
@@ -323,7 +323,7 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-content">
-                <h2 class="text-lg font-semibold mb-4 text-primary">Menu</h2>
+                <h2 class="text-lg font-semibold mb-4 text-primary">{{ _('Menu') }}</h2>
                 
                 <!-- Display Error Messages -->
                 {% if password_messages %}
@@ -336,30 +336,30 @@
 
                 <!-- User Info -->
                 <div class="dropdown-container">
-                    <h3 class="text-lg font-semibold text-primary mb-2">Info</h3>
-                    <p class="text-secondary">Name: {{ profile_info['full_name'] }}</p>
-                    <p class="text-secondary">Birthday: {{ profile_info['birthday'] }}</p>
+                    <h3 class="text-lg font-semibold text-primary mb-2">{{ _('Info') }}</h3>
+                    <p class="text-secondary">{{ _('Name') }}: {{ profile_info['full_name'] }}</p>
+                    <p class="text-secondary">{{ _('Birthday') }}: {{ profile_info['birthday'] }}</p>
                 </div>
 
                 {% if not profile_info.guest %}
                 <!-- Password Change Dropdown -->
                 <div class="dropdown-container">
                     <div class="dropdown-header" onclick="toggleDropdown('passwordDropdown', 'passwordChevron')">
-                        <span>Change Password</span>
+                        <span>{{ _('Change Password') }}</span>
                         <i class="fa-solid fa-chevron-down dropdown-chevron" id="passwordChevron"></i>
                     </div>
                     <div class="dropdown-content" id="passwordDropdown">
                         <form method="POST" action="/change_password">
-                            <label for="current_password">Current Password</label>
+                            <label for="current_password">{{ _('Current Password') }}</label>
                             <input type="password" name="current_password" class="inputer" required>
                             
-                            <label for="new_password">New Password</label>
+                            <label for="new_password">{{ _('New Password') }}</label>
                             <input type="password" name="new_password" class="inputer" required>
                             
-                            <label for="confirm_password">Repeat New Password</label>
+                            <label for="confirm_password">{{ _('Repeat New Password') }}</label>
                             <input type="password" name="confirm_password" class="inputer" required>
                             
-                            <button type="submit" class="rounded-blue-button mt-2">Change Password</button>
+                            <button type="submit" class="rounded-blue-button mt-2">{{ _('Change Password') }}</button>
                         </form>
                     </div>
                 </div>
@@ -367,15 +367,15 @@
                 <!-- Email Change Dropdown -->
                 <div class="dropdown-container">
                     <div class="dropdown-header" onclick="toggleDropdown('emailDropdown', 'emailChevron')">
-                        <span>Change Email</span>
+                        <span>{{ _('Change Email') }}</span>
                         <i class="fa-solid fa-chevron-down dropdown-chevron" id="emailChevron"></i>
                     </div>
                     <div class="dropdown-content" id="emailDropdown">
                         <form method="POST" action="/change_email">
-                            <label for="new_email">New Email</label>
+                            <label for="new_email">{{ _('New Email') }}</label>
                             <input type="email" name="new_email" class="inputer" required>
                             
-                            <button type="submit" class="rounded-blue-button mt-2">Change Email</button>
+                            <button type="submit" class="rounded-blue-button mt-2">{{ _('Change Email') }}</button>
                         </form>
                     </div>
                 </div>
@@ -385,20 +385,20 @@
             <!-- Fixed bottom section -->
             <div class="sidebar-bottom">
                 <a href="/logout" class="bottom-item">
-                    <span style="padding-right: 10px;">Logout</span>
+                    <span style="padding-right: 10px;">{{ _('Logout') }}</span>
                     <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout">
                     
                 </a>
-                <a href="/manage_shared_lists" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">Shared Lists</a>
+                <a href="/manage_shared_lists" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">{{ _('Shared Lists') }}</a>
                 {% if enable_link_sharing %}
-                <a href="/manage_sharing" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">Public links</a>
+                <a href="/manage_sharing" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">{{ _('Public links') }}</a>
                 {% endif %}
                 <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
-                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; Theme
+                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; {{ _('Theme') }}
                 </button>
                 
                 {% if profile_info['admin'] == true %}
-                    <a href="/admin" class="bottom-item" style="padding-top: 10px;">Admin Dashboard</a>
+                    <a href="/admin" class="bottom-item" style="padding-top: 10px;">{{ _('Admin Dashboard') }}</a>
                 {% endif %}
                 
                 <p class="text-secondary text-sm version mt-4">Giftmanager <br> {{app_version}}</p>
@@ -424,26 +424,26 @@
 
                     <div class="help flex justify-between items-center" onclick="location.href='{{ url_for('table_view') }}'">
                         <img class="helplogo" src="{{ url_for('static', filename='icons/table.svg') }}">
-                        <span style="padding-left: 5px;">Show as table</span>
+                        <span style="padding-left: 5px;">{{ _('Show as table') }}</span>
                     </div>
 
                     {% if assigned_users %}
                     <div class="help">
-                        <a href="{{ url_for('secret_santa_assignments') }}" title="View your Secret Santa assignment">
+                        <a href="{{ url_for('secret_santa_assignments') }}" title="{{ _('View your Secret Santa assignment') }}">
                             <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">
                         </a>
                     </div>
                     {% endif %}
 
                     <div class="user-card-button" onclick="location.href='{{ url_for('add2', selected_user_id=session['username']) }}'">
-                        <p class="text-center text-secondary">Add ideas</p>
+                        <p class="text-center text-secondary">{{ _('Add ideas') }}</p>
                     </div>
                 </nav>
             </header>
 
             <main class="main container mx-auto p-8">
                 <section class="section shadow-lg rounded-lg">
-                    <h1 class="text-2xl font-semibold mb-4 text-primary">Users</h1>
+                    <h1 class="text-2xl font-semibold mb-4 text-primary">{{ _('Users') }}</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {% for user in users %}
                         <div class="user-card-button" onclick="location.href='{{ url_for('user_gift_ideas', selected_user_id=user.username) }}'">

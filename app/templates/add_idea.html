@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Ideas</title>
+    <title>{{ _('New Ideas') }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -154,13 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('imagePath').value = ogImage; // Store the image URL in a hidden input
                     manualImageUrlContainer.style.display = 'none'; // Hide the manual image URL container
                 } else {
-                    imageContainer.innerHTML = '<p class="text-red-500">No OG image found. Enter an image URL below.</p>';
+                    imageContainer.innerHTML = '<p class="text-red-500">{{ _("No OG image found. Enter an image URL below.") }}</p>';
                     document.getElementById('imagePath').value = ''; // Clear the hidden input
                     manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
                 }
             } catch (error) {
                 console.error('Error:', error);
-                imageContainer.innerHTML = '<p class="text-red-500">Error fetching OG image. Enter an image URL below.</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Error fetching OG image. Enter an image URL below.") }}</p>';
                 document.getElementById('imagePath').value = ''; // Clear the hidden input
                 manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
             }
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('imagePath').value = manualImageUrl; // Store the manual image URL in the hidden input
             } else {
                 // Invalid URL, clear the preview
-                imageContainer.innerHTML = '<p class="text-red-500">Invalid image URL. Please enter a valid URL.</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Invalid image URL. Please enter a valid URL.") }}</p>';
                 document.getElementById('imagePath').value = ''; // Clear the hidden input
             }
         } else {
@@ -200,16 +200,16 @@ document.addEventListener('DOMContentLoaded', function() {
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
-                Back
+                {{ _('Back') }}
             </button>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <section class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">Add Ideas</h1>
+            <h1 class="text-2xl font-semibold mb-4">{{ _('Add Ideas') }}</h1>
             <form action="{{ url_for('add_idea', selected_user_id=default_user) }}" method="post">
                 <div class="mb-4">
-                    <label for="user" class="block sec-text font-bold">Add to:</label>
+                    <label for="user" class="block sec-text font-bold">{{ _('Add to:') }}</label>
                     <select name="user" id="user" class="border inputer rounded py-2 px-3 w-full" required>
                         {% for user in user_list %}
                         <option value="{{ user['username'] }}" {% if user['username'] == default_user %}selected{% endif %}>{{ user['full_name'] }}</option>
@@ -217,31 +217,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="name" class="block sec-text font-bold">Title:</label>
+                    <label for="name" class="block sec-text font-bold">{{ _('Title:') }}</label>
                     <input type="text" name="name" id="name" class="border inputer rounded py-2 px-3 w-full" required>
                 </div>
                 <div class="mb-4">
-                    <label for="description" class="block sec-text font-bold">Description (Optional):</label>
+                    <label for="description" class="block sec-text font-bold">{{ _('Description (Optional):') }}</label>
                     <textarea name="description" id="description" class="border inputer rounded py-2 px-3 w-full"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="link" class="block sec-text font-bold">Link (Optional):</label>
+                    <label for="link" class="block sec-text font-bold">{{ _('Link (Optional):') }}</label>
                     <input type="url" name="link" id="link" class="border inputer rounded py-2 px-3 w-full">
                 </div>
                 {% if imgenabled %}
                 <div id="imageContainer" style="width: 32%;"></div> <!-- Display the OG image here -->
                 <div id="manualImageUrlContainer" class="mb-4" style="display: none;">
-                    <label for="manualImageUrl" class="block sec-text font-bold">Enter Image URL (Optional):</label>
+                    <label for="manualImageUrl" class="block sec-text font-bold">{{ _('Enter Image URL (Optional):') }}</label>
                     <input type="url" name="manualImageUrl" id="manualImageUrl" class="border inputer rounded py-2 px-3 w-full">
                 </div>
                 {% endif %}
                 <input type="hidden" id="imagePath" name="imagePath"> <!-- Hidden input to store the image URL -->
                 <div class="mb-4">
-                    <label for="value" class="block sec-text font-bold">Estimated Value (Optional):</label>
-                    <input type="number" id="value" name="value" step="any" placeholder="Estimated Value"
+                    <label for="value" class="block sec-text font-bold">{{ _('Estimated Value (Optional):') }}</label>
+                    <input type="number" id="value" name="value" step="any" placeholder="{{ _('Estimated Value') }}"
                         class="border inputer rounded py-2 px-3 w-full">
                 </div>
-                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Submit</button>
+                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">{{ _('Submit') }}</button>
             </form>
         </section>
     </main>

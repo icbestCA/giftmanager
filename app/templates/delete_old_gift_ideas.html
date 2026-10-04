@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Gift Ideas</title>
+    <title>{{ _('Manage Gift Ideas') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -240,9 +240,9 @@
                         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Deletion Script</h2>
+                        <h2 class="text-xl font-semibold">{{ _('Deletion Script') }}</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">{{ _('To Dashboard') }}</a>
                 </div>
             </header>
 
@@ -260,23 +260,23 @@
 
                 <!-- Form to delete old gift ideas -->
                 <div class="section p-6 rounded shadow mb-6">
-                    <h3 class="text-lg font-semibold mb-4">Delete Old Gift Ideas</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ _('Delete Old Gift Ideas') }}</h3>
                     <form method="POST" action="{{ url_for('delete_old_gift_ideas_page') }}">
                         <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
-                            Delete Gift Ideas Older Than {{ current_days | default(30) }} Days
+                            {{ _('Delete Gift Ideas Older Than %s Days') % (current_days | default(30)) }}
                         </button>
                     </form>
                 </div>
 
                 <!-- Form to change the number of days for deletion -->
                 <div class="section p-6 rounded shadow">
-                    <h3 class="text-lg font-semibold mb-4">Change Days for Deleting Old Gift Ideas</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ _('Change Days for Deleting Old Gift Ideas') }}</h3>
                     <form method="POST" action="{{ url_for('change_delete_days') }}">
-                        <label for="days" class="block text-sm font-semibold sec-text">New Number of Days:</label>
+                        <label for="days" class="block text-sm font-semibold sec-text">{{ _('New Number of Days:') }}</label>
                         <input type="number" id="days" name="days" value="{{ current_days }}" min="1" required
                                class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 inputer">
                         <button type="submit" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition">
-                            Update Days
+                            {{ _('Update Days') }}
                         </button>
                     </form>
                 </div>

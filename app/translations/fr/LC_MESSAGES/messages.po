@@ -1,0 +1,326 @@
+# French translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-12-09 20:51+0100\n"
+"PO-Revision-Date: 2025-12-09 20:34+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/app.py:82 app/app.py:100 app/app.py:130
+msgid "Please log in first."
+msgstr "Veuillez vous connecter d'abord."
+
+#: app/app.py:89
+msgid "This feature is not available for guest users."
+msgstr "Cette fonctionnalité n\'est pas disponible pour les utilisateurs invités."
+
+#: app/app.py:111
+msgid "Admin access required."
+msgstr "Accès administrateur requis."
+
+#: app/app.py:175 app/app.py:334
+msgid "User not found."
+msgstr "Utilisateur non trouvé."
+
+#: app/app.py:181
+msgid "Email updated successfully."
+msgstr "Email mis à jour avec succès."
+
+#: app/app.py:249
+msgid "Authorization failed: invalid state."
+msgstr "Échec d\'autorisation : état invalide."
+
+#: app/app.py:256
+msgid "OIDC authorization failed."
+msgstr "Échec de l\'autorisation OIDC."
+
+#: app/app.py:266
+msgid "Failed to parse user information."
+msgstr "Échec de l\'analyse des informations utilisateur."
+
+#: app/app.py:298
+msgid "Login successful with OIDC!"
+msgstr "Connexion réussie avec OIDC !"
+
+#: app/app.py:314
+msgid "New profile created. Please complete your profile setup."
+msgstr "Nouveau profil créé. Veuillez compléter la configuration de votre profil."
+
+#: app/app.py:317
+msgid "User not found and auto-registration is disabled."
+msgstr "Utilisateur non trouvé et auto-inscription désactivée."
+
+#: app/app.py:339
+msgid "Profile setup not required. Avatar already set."
+msgstr "Configuration du profil non requise. Avatar déjà défini."
+
+#: app/app.py:360
+msgid "Profile setup complete!"
+msgstr "Configuration du profil terminée !"
+
+#: app/app.py:422 app/app.py:440
+msgid "User does not exist"
+msgstr "L\'utilisateur n\'existe pas"
+
+#: app/app.py:433
+msgid "Login successful!"
+msgstr "Connexion réussie !"
+
+#: app/app.py:436
+msgid "Wrong password"
+msgstr "Mot de passe incorrect"
+
+#: app/app.py:457
+msgid "Self-registration is not enabled. Please contact an administrator."
+msgstr "L\'auto-inscription n\'est pas activée. Veuillez contacter un administrateur."
+
+#: app/app.py:476
+msgid "Invalid joining code. Please check with your family."
+msgstr "Code de participation invalide. Veuillez vérifier auprès de votre famille."
+
+#: app/app.py:481
+msgid "Please fill in all required fields."
+msgstr "Veuillez remplir tous les champs obligatoires."
+
+#: app/app.py:485
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas."
+
+#: app/app.py:495
+msgid "Username already exists. Please choose a different one."
+msgstr "Ce nom d\'utilisateur existe déjà. Veuillez en choisir un autre."
+
+#: app/app.py:500
+msgid "Email already registered. Please use a different email or contact support."
+msgstr "Email déjà enregistré. Veuillez utiliser un email différent ou contacter le support."
+
+#: app/app.py:520
+msgid "Registration successful! You can now log in."
+msgstr "Inscription réussie ! Vous pouvez maintenant vous connecter."
+
+#: app/app.py:539 app/app.py:616
+msgid "Current user not found."
+msgstr "Utilisateur actuel non trouvé."
+
+#: app/app.py:703
+msgid "IDEAS DELETED"
+msgstr "IDÉES SUPPRIMÉES"
+
+#: app/app.py:713
+msgid "You are not authorized to delete this idea."
+msgstr "Vous n\'êtes pas autorisé à supprimer cette idée."
+
+#: app/app.py:715 app/app.py:946 app/app.py:975 app/app.py:1189
+msgid "Idea not found"
+msgstr "Idée non trouvée"
+
+#: app/app.py:743
+msgid "GiftManager"
+msgstr "Gestionnaire de Cadeaux"
+
+#: app/app.py:748
+msgid "Buyer Name"
+msgstr "Nom de l\'acheteur"
+
+#: app/app.py:788
+msgid "User data not found"
+msgstr "Données utilisateur non trouvées"
+
+#: app/app.py:891 app/app.py:2177
+msgid "User not found"
+msgstr "Utilisateur non trouvé"
+
+#: app/app.py:896
+msgid "Current password is incorrect"
+msgstr "Le mot de passe actuel est incorrect"
+
+#: app/app.py:901
+msgid "New password and confirmation do not match"
+msgstr "Le nouveau mot de passe et la confirmation ne correspondent pas"
+
+#: app/app.py:910
+msgid "Password successfully changed"
+msgstr "Mot de passe modifié avec succès"
+
+#: app/app.py:1025
+msgid "No gift ideas for this user."
+msgstr "Aucune idée de cadeau pour cet utilisateur."
+
+#: app/app.py:1056
+msgid "You haven\'t added any gift ideas."
+msgstr "Vous n\'avez ajouté aucune idée de cadeau."
+
+#: app/app.py:1114
+msgid "Username already exists!"
+msgstr "Ce nom d\'utilisateur existe déjà !"
+
+#: app/app.py:1135
+msgid "User added successfully!"
+msgstr "Utilisateur ajouté avec succès !"
+
+#: app/app.py:1180
+msgid "Idea updated successfully!"
+msgstr "Idée mise à jour avec succès !"
+
+#: app/app.py:1187
+msgid "You are not authorized to edit this idea."
+msgstr "Vous n\'êtes pas autorisé à modifier cette idée."
+
+#: app/app.py:1252
+msgid "Pool name is required!"
+msgstr "Le nom du groupe est requis !"
+
+#: app/app.py:1256
+msgid "You need at least 2 participants for Secret Santa!"
+msgstr "Il faut au moins 2 participants pour le Secret Santa !"
+
+msgid "Secret Santa assignments have been made!"
+msgstr "Les attributions du Secret Santa ont été effectuées !"
+
+msgid "You don\'t have any Secret Santa assignments yet."
+msgstr "Vous n\'avez pas encore d\'attributions Secret Santa."
+
+msgid "No specific instructions provided."
+msgstr "Aucune instruction spécifique fournie."
+
+msgid "User deleted successfully!"
+msgstr "Utilisateur supprimé avec succès !"
+
+msgid "Admin status updated successfully!"
+msgstr "Statut administrateur mis à jour avec succès !"
+
+msgid "User updated successfully!"
+msgstr "Utilisateur mis à jour avec succès !"
+
+msgid "Email settings updated successfully."
+msgstr "Paramètres d\'email mis à jour avec succès."
+
+msgid "Login message updated successfully!"
+msgstr "Message de connexion mis à jour avec succès !"
+
+msgid "Message cannot be empty."
+msgstr "Le message ne peut pas être vide."
+
+msgid "Invalid number of days entered. Please enter a valid number."
+msgstr "Nombre de jours invalide. Veuillez entrer un nombre valide."
+
+msgid "Please provide a value for the number of days."
+msgstr "Veuillez fournir une valeur pour le nombre de jours."
+
+msgid "Users are already configured. Setup page is unavailable."
+msgstr "Les utilisateurs sont déjà configurés. La page de configuration est indisponible."
+
+msgid ""
+"Admin account created successfully. Please configure the environment "
+"variables."
+msgstr ""
+"Compte administrateur créé avec succès. Veuillez configurer les variables "
+"d\'environnement."
+
+msgid "You must access this page from the setupadmin route."
+msgstr "Vous devez accéder à cette page depuis l\'itinéraire setupadmin."
+
+msgid "Environment variables saved successfully!"
+msgstr "Variables d\'environnement sauvegardées avec succès !"
+
+msgid "OIDC settings saved successfully!"
+msgstr "Paramètres OIDC sauvegardés avec succès !"
+
+msgid "Environment file not found. Creating a new one."
+msgstr "Fichier d\'environnement non trouvé. Création d\'un nouveau fichier."
+
+msgid "New group added successfully!"
+msgstr "Nouveau groupe ajouté avec succès !"
+
+msgid "Group assignments updated successfully!"
+msgstr "Attributions de groupe mises à jour avec succès !"
+
+msgid "URL parameter is required"
+msgstr "Le paramètre URL est requis"
+
+msgid "No OG image found"
+msgstr "Aucune image OG trouvée"
+
+msgid "Guest user created successfully!"
+msgstr "Utilisateur invité créé avec succès !"
+
+msgid "Guest user not found."
+msgstr "Utilisateur invité non trouvé."
+
+msgid "Guest login successful!"
+msgstr "Connexion invité réussie !"
+
+msgid "Invalid guest password"
+msgstr "Mot de passe invité invalide"
+
+msgid "Gift Dashboard"
+msgstr "Tableau de bord des cadeaux"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Birthday"
+msgstr "Date de naissance"
+
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+msgid "Current Password"
+msgstr "Mot de passe actuel"
+
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+msgid "Repeat New Password"
+msgstr "Répéter le nouveau mot de passe"
+
+msgid "Change Email"
+msgstr "Changer l\'email"
+
+msgid "New Email"
+msgstr "Nouvel email"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Shared Lists"
+msgstr "Listes partagées"
+
+msgid "Public links"
+msgstr "Liens publics"
+
+msgid "Theme"
+msgstr "Thème"
+
+msgid "Admin Dashboard"
+msgstr "Tableau de bord administrateur"
+
+msgid "Show as table"
+msgstr "Afficher en tableau"
+
+msgid "View your Secret Santa assignment"
+msgstr "Voir votre attribution Secret Santa"
+
+msgid "Add ideas"
+msgstr "Ajouter des idées"
+
+msgid "Users"
+msgstr "Utilisateurs"

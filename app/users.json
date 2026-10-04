@@ -1,2 +1,191 @@
 [
+  {
+    "username": "wagigi",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "wagigi",
+    "birthday": "1994-12-26",
+    "avatar": "icons/avatar1.png",
+    "admin": true
+  },
+  {
+    "username": "user2",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 2",
+    "birthday": "1988-09-02",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user3",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 3",
+    "birthday": "1993-07-25",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user4",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 4",
+    "birthday": "1998-04-12",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user5",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 5",
+    "birthday": "1983-11-29",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user6",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 6",
+    "birthday": "1991-06-18",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user7",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 7",
+    "birthday": "1980-03-05",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user8",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 8",
+    "birthday": "1995-10-22",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user9",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 9",
+    "birthday": "1987-01-14",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user10",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 10",
+    "birthday": "1999-08-31",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user11",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 11",
+    "birthday": "1982-05-19",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user12",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 12",
+    "birthday": "1994-02-04",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user13",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 13",
+    "birthday": "1986-09-21",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user14",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 14",
+    "birthday": "1997-04-08",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user15",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 15",
+    "birthday": "1981-11-25",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user16",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 16",
+    "birthday": "1990-06-13",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user17",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 17",
+    "birthday": "1984-03-01",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user18",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 18",
+    "birthday": "1996-10-18",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user19",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 19",
+    "birthday": "1988-01-10",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user20",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 20",
+    "birthday": "1992-08-27",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  },
+  {
+    "username": "user21",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$FEfFksMOuAXZHsvanFgB0w$xboYKVXRq8GbYMd23DP1ux2zOO/rJ1Yhs8KLp7cBfUo",
+    "email": "",
+    "full_name": "User 21",
+    "birthday": "1985-05-15",
+    "avatar": "icons/avatar1.png",
+    "admin": false
+  }
 ]

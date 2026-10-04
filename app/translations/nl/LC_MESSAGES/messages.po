@@ -1,0 +1,371 @@
+# Dutch translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-12-09 20:51+0100\n"
+"PO-Revision-Date: 2025-12-09 20:34+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: nl\n"
+"Language-Team: nl <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/app.py:82 app/app.py:100 app/app.py:130
+msgid "Please log in first."
+msgstr "Gelieve eerst in te loggen."
+
+#: app/app.py:89
+msgid "This feature is not available for guest users."
+msgstr "Deze functie is niet beschikbaar voor gastgebruikers."
+
+#: app/app.py:111
+msgid "Admin access required."
+msgstr "Admin toegang vereist."
+
+#: app/app.py:175 app/app.py:334
+msgid "User not found."
+msgstr "Gebruiker niet gevonden."
+
+#: app/app.py:181
+msgid "Email updated successfully."
+msgstr "E-mail succesvol bijgewerkt."
+
+#: app/app.py:249
+msgid "Authorization failed: invalid state."
+msgstr "Autorisatie mislukkt: ongeldige status."
+
+#: app/app.py:256
+msgid "OIDC authorization failed."
+msgstr "OIDC autorisatie mislukt."
+
+#: app/app.py:266
+msgid "Failed to parse user information."
+msgstr "Parsen van gebruikersinformatie mislukt."
+
+#: app/app.py:298
+msgid "Login successful with OIDC!"
+msgstr "Succesvol ingelogd met OIDC!"
+
+#: app/app.py:314
+msgid "New profile created. Please complete your profile setup."
+msgstr "Nieuw profiel aangemaakt. Gelieve uw profielinstellingen te voltooien."
+
+#: app/app.py:317
+msgid "User not found and auto-registration is disabled."
+msgstr "Gebruiker niet gevonden en automatische registratie is uitgeschakeld."
+
+#: app/app.py:339
+msgid "Profile setup not required. Avatar already set."
+msgstr "Profielinstelling niet vereist. Avatar is al ingesteld."
+
+#: app/app.py:360
+msgid "Profile setup complete!"
+msgstr "Profielinstelling voltooid!"
+
+#: app/app.py:422 app/app.py:440
+msgid "User does not exist"
+msgstr "Gebruiker bestaat niet"
+
+#: app/app.py:433
+msgid "Login successful!"
+msgstr "Succesvol ingelogd!"
+
+#: app/app.py:436
+msgid "Wrong password"
+msgstr "Verkeerd wachtwoord"
+
+#: app/app.py:457
+msgid "Self-registration is not enabled. Please contact an administrator."
+msgstr "Zelfregistratie is niet ingeschakeld. Neem contact op met een beheerder."
+
+#: app/app.py:476
+msgid "Invalid joining code. Please check with your family."
+msgstr "Ongeldige deelnamecode. Controleer met uw familie."
+
+#: app/app.py:481
+msgid "Please fill in all required fields."
+msgstr "Gelieve alle verplichte velden in te vullen."
+
+#: app/app.py:485
+msgid "Passwords do not match."
+msgstr "Wachtwoorden komen niet overeen."
+
+#: app/app.py:495
+msgid "Username already exists. Please choose a different one."
+msgstr "Gebruikersnaam bestaat al. Kies een andere."
+
+#: app/app.py:500
+msgid "Email already registered. Please use a different email or contact support."
+msgstr "E-mail al geregistreerd. Gebruik een andere e-mail of neem contact op met de ondersteuning."
+
+#: app/app.py:520
+msgid "Registration successful! You can now log in."
+msgstr "Registratie succesvol! U kunt nu inloggen."
+
+#: app/app.py:539 app/app.py:616
+msgid "Current user not found."
+msgstr "Huidige gebruiker niet gevonden."
+
+#: app/app.py:703
+msgid "IDEAS DELETED"
+msgstr "VERWIJDERDE IDEEËN"
+
+#: app/app.py:713
+msgid "You are not authorized to delete this idea."
+msgstr "U bent niet geautoriseerd om dit idee te verwijderen."
+
+#: app/app.py:715 app/app.py:946 app/app.py:975 app/app.py:1189
+msgid "Idea not found"
+msgstr "Idee niet gevonden"
+
+#: app/app.py:743
+msgid "GiftManager"
+msgstr "CadeauManager"
+
+#: app/app.py:748
+msgid "Buyer Name"
+msgstr "Naam koper"
+
+#: app/app.py:788
+msgid "User data not found"
+msgstr "Gebruikersgegevens niet gevonden"
+
+#: app/app.py:891 app/app.py:2177
+msgid "User not found"
+msgstr "Gebruiker niet gevonden"
+
+#: app/app.py:896
+msgid "Current password is incorrect"
+msgstr "Huidig wachtwoord is onjuist"
+
+#: app/app.py:901
+msgid "New password and confirmation do not match"
+msgstr "Nieuw wachtwoord en bevestiging komen niet overeen"
+
+#: app/app.py:910
+msgid "Password successfully changed"
+msgstr "Wachtwoord succesvol gewijzigd"
+
+#: app/app.py:1025
+msgid "No gift ideas for this user."
+msgstr "Geen cadeau-ideeën voor deze gebruiker."
+
+#: app/app.py:1056
+msgid "You haven\'t added any gift ideas."
+msgstr "U hebt nog geen cadeau-ideeën toegevoegd."
+
+#: app/app.py:1114
+msgid "Username already exists!"
+msgstr "Gebruikersnaam bestaat al!"
+
+#: app/app.py:1135
+msgid "User added successfully!"
+msgstr "Gebruiker succesvol toegevoegd!"
+
+#: app/app.py:1180
+msgid "Idea updated successfully!"
+msgstr "Idee succesvol bijgewerkt!"
+
+#: app/app.py:1187
+msgid "You are not authorized to edit this idea."
+msgstr "U bent niet geautoriseerd om dit idee te bewerken."
+
+#: app/app.py:1252
+msgid "Pool name is required!"
+msgstr "Poolnaam is vereist!"
+
+#: app/app.py:1256
+msgid "You need at least 2 participants for Secret Santa!"
+msgstr "U hebt minimaal 2 deelnemers nodig voor Secret Santa!"
+
+#: app/app.py:1282
+msgid "Secret Santa assignments have been made!"
+msgstr "Secret Santa toewijzingen zijn gemaakt!"
+
+#: app/app.py:1303
+msgid "You don\'t have any Secret Santa assignments yet."
+msgstr "U hebt nog geen Secret Santa toewijzingen."
+
+#: app/app.py:1313
+msgid "No specific instructions provided."
+msgstr "Geen specifieke instructies verstrekt."
+
+#: app/app.py:1347
+msgid "User deleted successfully!"
+msgstr "Gebruiker succesvol verwijderd!"
+
+#: app/app.py:1358
+msgid "Admin status updated successfully!"
+msgstr "Adminstatus succesvol bijgewerkt!"
+
+#: app/app.py:1379
+msgid "User updated successfully!"
+msgstr "Gebruiker succesvol bijgewerkt!"
+
+#: app/app.py:1438
+msgid "Email settings updated successfully."
+msgstr "E-mailinstellingen succesvol bijgewerkt."
+
+#: app/app.py:1470
+msgid "Login message updated successfully!"
+msgstr "Inlogbericht succesvol bijgewerkt!"
+
+#: app/app.py:1474
+msgid "Message cannot be empty."
+msgstr "Bericht mag niet leeg zijn."
+
+#: app/app.py:1567
+msgid "Invalid number of days entered. Please enter a valid number."
+msgstr "Ongeldig aantal dagen ingevoerd. Voer een geldig nummer in."
+
+#: app/app.py:1569
+msgid "Please provide a value for the number of days."
+msgstr "Geef een waarde op voor het aantal dagen."
+
+#: app/app.py:1582
+msgid "Users are already configured. Setup page is unavailable."
+msgstr "Gebruikers zijn al geconfigureerd. Setup pagina is niet beschikbaar."
+
+#: app/app.py:1614
+msgid ""
+"Admin account created successfully. Please configure the environment "
+"variables."
+msgstr ""
+"Admin-account succesvol aangemaakt. Gelieve de omgevingsvariabelen te "
+"configurer."
+
+#: app/app.py:1624
+msgid "You must access this page from the setupadmin route."
+msgstr "U moet deze pagina openen via de setupadmin route."
+
+#: app/app.py:1650
+msgid "Environment variables saved successfully!"
+msgstr "Omgevingsvariabelen succesvol opgeslagen!"
+
+#: app/app.py:1685
+msgid "OIDC settings saved successfully!"
+msgstr "OIDC-instellingen succesvol opgeslagen!"
+
+#: app/app.py:1696
+msgid "Environment file not found. Creating a new one."
+msgstr "Omgevingsbestand niet gevonden. Er wordt een nieuw bestand aangemaakt."
+
+#: app/app.py:1741
+msgid "New group added successfully!"
+msgstr "Nieuwe groep succesvol toegevoegd!"
+
+#: app/app.py:1768
+msgid "Group assignments updated successfully!"
+msgstr "Groepstoewijzingen succesvol bijgewerkt!"
+
+#: app/app.py:1868
+msgid "URL parameter is required"
+msgstr "URL-parameter is vereist"
+
+#: app/app.py:1874
+msgid "No OG image found"
+msgstr "Geen OG-afbeelding gevonden"
+
+#: app/app.py:1916
+msgid "Guest user created successfully!"
+msgstr "Gastgebruiker succesvol aangemaakt!"
+
+#: app/app.py:1967
+msgid "Guest user not found."
+msgstr "Gastgebruiker niet gevonden."
+
+#: app/app.py:1982
+msgid "Guest login successful!"
+msgstr "Gast login succesvol!"
+
+#: app/app.py:1985
+msgid "Invalid guest password"
+msgstr "Ongeldig gast wachtwoord"
+
+#: app/templates/dashboard.html:6
+msgid "Gift Dashboard"
+msgstr "Cadeau Dashboard"
+
+#: app/templates/dashboard.html:326
+msgid "Menu"
+msgstr "Menu"
+
+#: app/templates/dashboard.html:339
+msgid "Info"
+msgstr "Info"
+
+#: app/templates/dashboard.html:340
+msgid "Name"
+msgstr "Naam"
+
+#: app/templates/dashboard.html:341
+msgid "Birthday"
+msgstr "Verjaardag"
+
+#: app/templates/dashboard.html:348 app/templates/dashboard.html:362
+msgid "Change Password"
+msgstr "Wachtwoord wijzigen"
+
+#: app/templates/dashboard.html:353
+msgid "Current Password"
+msgstr "Huidig wachtwoord"
+
+#: app/templates/dashboard.html:356
+msgid "New Password"
+msgstr "Nieuw wachtwoord"
+
+#: app/templates/dashboard.html:359
+msgid "Repeat New Password"
+msgstr "Herhaal nieuw wachtwoord"
+
+#: app/templates/dashboard.html:370 app/templates/dashboard.html:378
+msgid "Change Email"
+msgstr "E-mail wijzigen"
+
+#: app/templates/dashboard.html:375
+msgid "New Email"
+msgstr "Nieuw e-mailadres"
+
+#: app/templates/dashboard.html:388
+msgid "Logout"
+msgstr "Uitloggen"
+
+#: app/templates/dashboard.html:392
+msgid "Shared Lists"
+msgstr "Gedeelde lijsten"
+
+#: app/templates/dashboard.html:394
+msgid "Public links"
+msgstr "Openbare links"
+
+#: app/templates/dashboard.html:397
+msgid "Theme"
+msgstr "Thema"
+
+#: app/templates/dashboard.html:401
+msgid "Admin Dashboard"
+msgstr "Admin Dashboard"
+
+#: app/templates/dashboard.html:427
+msgid "Show as table"
+msgstr "Toon als tabel"
+
+#: app/templates/dashboard.html:432
+msgid "View your Secret Santa assignment"
+msgstr "Bekijk uw Secret Santa toewijzing"
+
+#: app/templates/dashboard.html:439
+msgid "Add ideas"
+msgstr "Ideeën toevoegen"
+
+#: app/templates/dashboard.html:446
+msgid "Users"
+msgstr "Gebruikers"

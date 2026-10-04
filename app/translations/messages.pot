@@ -1,0 +1,369 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-12-09 20:51+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/app.py:82 app/app.py:100 app/app.py:130
+msgid "Please log in first."
+msgstr ""
+
+#: app/app.py:89
+msgid "This feature is not available for guest users."
+msgstr ""
+
+#: app/app.py:111
+msgid "Admin access required."
+msgstr ""
+
+#: app/app.py:175 app/app.py:334
+msgid "User not found."
+msgstr ""
+
+#: app/app.py:181
+msgid "Email updated successfully."
+msgstr ""
+
+#: app/app.py:249
+msgid "Authorization failed: invalid state."
+msgstr ""
+
+#: app/app.py:256
+msgid "OIDC authorization failed."
+msgstr ""
+
+#: app/app.py:266
+msgid "Failed to parse user information."
+msgstr ""
+
+#: app/app.py:298
+msgid "Login successful with OIDC!"
+msgstr ""
+
+#: app/app.py:314
+msgid "New profile created. Please complete your profile setup."
+msgstr ""
+
+#: app/app.py:317
+msgid "User not found and auto-registration is disabled."
+msgstr ""
+
+#: app/app.py:339
+msgid "Profile setup not required. Avatar already set."
+msgstr ""
+
+#: app/app.py:360
+msgid "Profile setup complete!"
+msgstr ""
+
+#: app/app.py:422 app/app.py:440
+msgid "User does not exist"
+msgstr ""
+
+#: app/app.py:433
+msgid "Login successful!"
+msgstr ""
+
+#: app/app.py:436
+msgid "Wrong password"
+msgstr ""
+
+#: app/app.py:457
+msgid "Self-registration is not enabled. Please contact an administrator."
+msgstr ""
+
+#: app/app.py:476
+msgid "Invalid joining code. Please check with your family."
+msgstr ""
+
+#: app/app.py:481
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: app/app.py:485
+msgid "Passwords do not match."
+msgstr ""
+
+#: app/app.py:495
+msgid "Username already exists. Please choose a different one."
+msgstr ""
+
+#: app/app.py:500
+msgid "Email already registered. Please use a different email or contact support."
+msgstr ""
+
+#: app/app.py:520
+msgid "Registration successful! You can now log in."
+msgstr ""
+
+#: app/app.py:539 app/app.py:616
+msgid "Current user not found."
+msgstr ""
+
+#: app/app.py:703
+msgid "IDEAS DELETED"
+msgstr ""
+
+#: app/app.py:713
+msgid "You are not authorized to delete this idea."
+msgstr ""
+
+#: app/app.py:715 app/app.py:946 app/app.py:975 app/app.py:1189
+msgid "Idea not found"
+msgstr ""
+
+#: app/app.py:743
+msgid "GiftManager"
+msgstr ""
+
+#: app/app.py:748
+msgid "Buyer Name"
+msgstr ""
+
+#: app/app.py:788
+msgid "User data not found"
+msgstr ""
+
+#: app/app.py:891 app/app.py:2177
+msgid "User not found"
+msgstr ""
+
+#: app/app.py:896
+msgid "Current password is incorrect"
+msgstr ""
+
+#: app/app.py:901
+msgid "New password and confirmation do not match"
+msgstr ""
+
+#: app/app.py:910
+msgid "Password successfully changed"
+msgstr ""
+
+#: app/app.py:1025
+msgid "No gift ideas for this user."
+msgstr ""
+
+#: app/app.py:1056
+msgid "You haven't added any gift ideas."
+msgstr ""
+
+#: app/app.py:1114
+msgid "Username already exists!"
+msgstr ""
+
+#: app/app.py:1135
+msgid "User added successfully!"
+msgstr ""
+
+#: app/app.py:1180
+msgid "Idea updated successfully!"
+msgstr ""
+
+#: app/app.py:1187
+msgid "You are not authorized to edit this idea."
+msgstr ""
+
+#: app/app.py:1252
+msgid "Pool name is required!"
+msgstr ""
+
+#: app/app.py:1256
+msgid "You need at least 2 participants for Secret Santa!"
+msgstr ""
+
+#: app/app.py:1282
+msgid "Secret Santa assignments have been made!"
+msgstr ""
+
+#: app/app.py:1303
+msgid "You don't have any Secret Santa assignments yet."
+msgstr ""
+
+#: app/app.py:1313
+msgid "No specific instructions provided."
+msgstr ""
+
+#: app/app.py:1347
+msgid "User deleted successfully!"
+msgstr ""
+
+#: app/app.py:1358
+msgid "Admin status updated successfully!"
+msgstr ""
+
+#: app/app.py:1379
+msgid "User updated successfully!"
+msgstr ""
+
+#: app/app.py:1438
+msgid "Email settings updated successfully!"
+msgstr ""
+
+#: app/app.py:1470
+msgid "Login message updated successfully!"
+msgstr ""
+
+#: app/app.py:1474
+msgid "Message cannot be empty."
+msgstr ""
+
+#: app/app.py:1567
+msgid "Invalid number of days entered. Please enter a valid number."
+msgstr ""
+
+#: app/app.py:1569
+msgid "Please provide a value for the number of days."
+msgstr ""
+
+#: app/app.py:1582
+msgid "Users are already configured. Setup page is unavailable."
+msgstr ""
+
+#: app/app.py:1614
+msgid ""
+"Admin account created successfully. Please configure the environment "
+"variables."
+msgstr ""
+
+#: app/app.py:1624
+msgid "You must access this page from the setupadmin route."
+msgstr ""
+
+#: app/app.py:1650
+msgid "Environment variables saved successfully!"
+msgstr ""
+
+#: app/app.py:1685
+msgid "OIDC settings saved successfully!"
+msgstr ""
+
+#: app/app.py:1696
+msgid "Environment file not found. Creating a new one."
+msgstr ""
+
+#: app/app.py:1741
+msgid "New group added successfully!"
+msgstr ""
+
+#: app/app.py:1768
+msgid "Group assignments updated successfully!"
+msgstr ""
+
+#: app/app.py:1868
+msgid "URL parameter is required"
+msgstr ""
+
+#: app/app.py:1874
+msgid "No OG image found"
+msgstr ""
+
+#: app/app.py:1916
+msgid "Guest user created successfully!"
+msgstr ""
+
+#: app/app.py:1967
+msgid "Guest user not found."
+msgstr ""
+
+#: app/app.py:1982
+msgid "Guest login successful!"
+msgstr ""
+
+#: app/app.py:1985
+msgid "Invalid guest password"
+msgstr ""
+
+#: app/templates/dashboard.html:6
+msgid "Gift Dashboard"
+msgstr ""
+
+#: app/templates/dashboard.html:326
+msgid "Menu"
+msgstr ""
+
+#: app/templates/dashboard.html:339
+msgid "Info"
+msgstr ""
+
+#: app/templates/dashboard.html:340
+msgid "Name"
+msgstr ""
+
+#: app/templates/dashboard.html:341
+msgid "Birthday"
+msgstr ""
+
+#: app/templates/dashboard.html:348 app/templates/dashboard.html:362
+msgid "Change Password"
+msgstr ""
+
+#: app/templates/dashboard.html:353
+msgid "Current Password"
+msgstr ""
+
+#: app/templates/dashboard.html:356
+msgid "New Password"
+msgstr ""
+
+#: app/templates/dashboard.html:359
+msgid "Repeat New Password"
+msgstr ""
+
+#: app/templates/dashboard.html:370 app/templates/dashboard.html:378
+msgid "Change Email"
+msgstr ""
+
+#: app/templates/dashboard.html:375
+msgid "New Email"
+msgstr ""
+
+#: app/templates/dashboard.html:388
+msgid "Logout"
+msgstr ""
+
+#: app/templates/dashboard.html:392
+msgid "Shared Lists"
+msgstr ""
+
+#: app/templates/dashboard.html:394
+msgid "Public links"
+msgstr ""
+
+#: app/templates/dashboard.html:397
+msgid "Theme"
+msgstr ""
+
+#: app/templates/dashboard.html:401
+msgid "Admin Dashboard"
+msgstr ""
+
+#: app/templates/dashboard.html:427
+msgid "Show as table"
+msgstr ""
+
+#: app/templates/dashboard.html:432
+msgid "View your Secret Santa assignment"
+msgstr ""
+
+#: app/templates/dashboard.html:439
+msgid "Add ideas"
+msgstr ""
+
+#: app/templates/dashboard.html:446
+msgid "Users"
+msgstr ""
+
