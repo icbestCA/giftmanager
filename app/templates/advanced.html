@@ -226,46 +226,46 @@
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
                 <a href="/admin" class="text-2xl font-semibold">
-                    Admin Dashboard
+                    {{ _('Admin Dashboard') }}
                 </a>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-6">
                 <!-- Group 1 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Management</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">{{ _('Management') }}</h2>
                     <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-users"></i> Users
+                        <i class="fas fa-users"></i> {{ _('Users') }}
                     </a>
                     <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-gift"></i> Secret Santa
+                        <i class="fas fa-gift"></i> {{ _('Secret Santa') }}
                     </a>
                     <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-plus"></i> Add User
+                        <i class="fas fa-user-plus"></i> {{ _('Add User') }}
                     </a>
                     <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-people-group"></i> Families
+                        <i class="fas fa-people-group"></i> {{ _('Families') }}
                     </a>
                     <a href="{{ url_for('manage_guest_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-clock"></i> Guest Users
+                        <i class="fas fa-user-clock"></i> {{ _('Guest Users') }}
                     </a>
                 </div>
                 <!-- Group 2 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">{{ _('Configuration & Maintenance') }}</h2>
                     <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-trash"></i> Deletion Script
+                        <i class="fas fa-trash"></i> {{ _('Deletion Script') }}
                     </a>
                     <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-envelope"></i> Email Settings
+                        <i class="fas fa-envelope"></i> {{ _('Email Settings') }}
                     </a>
                     <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Login Settings
+                        <i class="fas fa-user-cog"></i> {{ _('Login Settings') }}
                     </a>
                     <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-shield-halved"></i> OIDC Settings
+                        <i class="fas fa-shield-halved"></i> {{ _('OIDC Settings') }}
                     </a>
                     <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Advanced
+                        <i class="fas fa-user-cog"></i> {{ _('Advanced') }}
                     </a>
                 </div>
             </nav>
@@ -276,12 +276,12 @@
             <header class="header shadow p-4">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-4">
-                        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                        <button class="menu-toggle" id="menuToggle" aria-label="{{ _('Toggle menu') }}">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h2 class="text-xl font-semibold">{{ _('Advanced Settings') }}</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">{{ _('To Dashboard') }}</a>
                 </div>
             </header>
 

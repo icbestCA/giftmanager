@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ideas List</title>
+    <title>{{ _('Ideas List') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -172,13 +172,13 @@
 <body class="body font-sans">
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
-            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
+            <button id="backButton" class="text-2xl px-4 py-2">{{ _('Back') }}</button>
+            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">{{ _('Add Ideas') }}</a>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <section class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4 text-primary">Ideas list for {{ user_namels }}</h1>
+            <h1 class="text-2xl font-semibold mb-4 text-primary">{{ _('Ideas list for %(name)s', name=user_namels) }}</h1>
             <ul class="space-y-4">
                 {% for gift_idea in user_gift_ideas %}
                 <li class="actions-container p-4 shadow-md rounded-lg">
@@ -187,16 +187,16 @@
                             <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
                             <p class="text-gray-600 description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                             {% if gift_idea.value %}
-                            <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
+                            <p class="text-gray-600 sec-text">{{ _('Estimated Value:') }} {{ format_currency(gift_idea.value) }}</p>
                             {% endif %}
-                            <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                            <p class="text-gray-600 sec-text">{{ _('Added By:') }} {{ get_full_name(gift_idea.added_by) }}</p>
                         </div>
 
                         {% if imgenabled %}
                         <div class="divimage">
                             <!-- Display image if available -->
                             {% if gift_idea.image_path %}
-                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="image">
+                                <img src="{{ gift_idea.image_path }}" alt="{{ _('OG Image') }}" class="image">
                             {% endif %}
                         </div>
                         {% endif %}
@@ -204,10 +204,10 @@
                         <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
                             {% if gift_idea.added_by == session['username'] or is_shared_list_member %}
                             <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="{{ _('Delete Icon') }}" class="h-5 w-5 helplogo">
                             </button>
                             <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="{{ _('Edit Icon') }}" class="h-5 w-5 helplogo">
                             </a>
                             {% endif %}
                             {% if gift_idea.link %}
@@ -216,20 +216,20 @@
                             {% set link = 'https://' + link %}
                             {% endif %}
                             <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
-                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="{{ _('Open Link Icon') }}" class="h-5 w-5 helplogo">
                             </a>
                             {% endif %}
                         </div>
                     </div>
     
                     {% if gift_idea.bought_by %}
-                    <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
+                    <p class="text-green-500">{{ _('Purchased by:') }} {{ get_full_name(gift_idea.bought_by) }}</p>
                     {% if gift_idea.bought_by == session['username'] %}
-                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">{{ _('Cancel the purchase') }}</button>
                     {% endif %}
                     {% else %}
-                    <strong>Available idea</strong>
-                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Purchase completed</button>
+                    <strong>{{ _('Available idea') }}</strong>
+                    <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">{{ _('Purchase completed') }}</button>
                     {% endif %}
                 </li>
                 {% endfor %}
@@ -284,7 +284,7 @@
                 if (response.ok) {
                     // Hide the button and update the text
                     button.style.display = 'none';
-                    button.parentNode.querySelector('.text-green-500').textContent = `Bought by: ${currentUser}`;
+                    button.parentNode.querySelector('.text-green-500').textContent = {{ _('Purchased by:')|tojson }} + ' ' + currentUser;
                 }
             })
             .catch(error => {

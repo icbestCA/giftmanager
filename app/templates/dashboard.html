@@ -386,7 +386,7 @@
             <div class="sidebar-bottom">
                 <a href="/logout" class="bottom-item">
                     <span style="padding-right: 10px;">{{ _('Logout') }}</span>
-                    <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="Logout">
+                    <img src="{{ url_for('static', filename='icons/log-out.svg') }}" class="helplogo" alt="{{ _('Logout') }}">
                     
                 </a>
                 <a href="/manage_shared_lists" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">{{ _('Shared Lists') }}</a>
@@ -394,7 +394,7 @@
                 <a href="/manage_sharing" class="bottom-item" style="padding-top: 10px; padding-bottom: 10px;">{{ _('Public links') }}</a>
                 {% endif %}
                 <button class="theme-toggle w-full mt-2" onclick="toggleDarkMode()">
-                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp; {{ _('Theme') }}
+                    <i class="fa-solid fa-circle-half-stroke"></i>&nbsp;{{ _('Theme') }}
                 </button>
                 {% include '_language_switcher.html' %}
                 
@@ -431,7 +431,7 @@
                     {% if assigned_users %}
                     <div class="help">
                         <a href="{{ url_for('secret_santa_assignments') }}" title="{{ _('View your Secret Santa assignment') }}">
-                            <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="Secret Santa Icon" class="helplogo">
+                            <img src="{{ url_for('static', filename='icons/secret-santa.svg') }}" alt="{{ _('Secret Santa Icon') }}" class="helplogo">
                         </a>
                     </div>
                     {% endif %}

@@ -1,0 +1,12 @@
+# Only app/ is copied into the image; keep local data and secrets out of it
+app/.env
+app/users.json
+app/ideas.json
+app/data/
+app/santa_inst_*.txt
+app/last_execution_time.txt
+**/__pycache__/
+**/*.pyc
+venv/
+.git/
+.idea/

@@ -154,13 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('imagePath').value = ogImage; // Store the image URL in a hidden input
                     manualImageUrlContainer.style.display = 'none'; // Hide the manual image URL container
                 } else {
-                    imageContainer.innerHTML = '<p class="text-red-500">{{ _("No OG image found. Enter an image URL below.") }}</p>';
+                    imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("No OG image found. Enter an image URL below.")|tojson }} + '</p>';
                     document.getElementById('imagePath').value = ''; // Clear the hidden input
                     manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
                 }
             } catch (error) {
                 console.error('Error:', error);
-                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Error fetching OG image. Enter an image URL below.") }}</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("Error fetching OG image. Enter an image URL below.")|tojson }} + '</p>';
                 document.getElementById('imagePath').value = ''; // Clear the hidden input
                 manualImageUrlContainer.style.display = 'block'; // Show the manual image URL container
             }
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('imagePath').value = manualImageUrl; // Store the manual image URL in the hidden input
             } else {
                 // Invalid URL, clear the preview
-                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Invalid image URL. Please enter a valid URL.") }}</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("Invalid image URL. Please enter a valid URL.")|tojson }} + '</p>';
                 document.getElementById('imagePath').value = ''; // Clear the hidden input
             }
         } else {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Ideas</title>
+    <title>{{ _('My Ideas') }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -187,17 +187,17 @@
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
-                Back
+                {{ _('Back') }}
             </button>
-            <a href="{{ url_for('add_idea', selected_user_id=session['username']) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add ideas</a>
+            <a href="{{ url_for('add_idea', selected_user_id=session['username']) }}" class="bg-blue-500 text-white px-4 py-2 rounded">{{ _('Add ideas') }}</a>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <section class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4">My List of Ideas</h1>
+            <h1 class="text-2xl font-semibold mb-4">{{ _('My List of Ideas') }}</h1>
             {% if reordering %}
-                <button id="toggleReorder" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Reorder</button>
-                <button id="saveReorder" class="bg-green-500 text-white px-4 py-2 rounded mb-4 hidden">Save Order</button>
+                <button id="toggleReorder" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">{{ _('Reorder') }}</button>
+                <button id="saveReorder" class="bg-green-500 text-white px-4 py-2 rounded mb-4 hidden">{{ _('Save Order') }}</button>
             {% endif %}
             <ul id="ideasList" class="space-y-4">
                 {% for gift_idea in my_gift_ideas %}
@@ -209,16 +209,16 @@
                         <h2 class="text-lg font-semibold">{{ gift_idea.gift_name }}</h2>
                         <p class="sec-text description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                         {% if gift_idea.value %}
-                        <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
+                        <p class="text-gray-600 sec-text">{{ _('Estimated Value:') }} {{ format_currency(gift_idea.value) }}</p>
                         {% endif %}
-                        <p class="sec-text">Added By: {{ gift_idea.added_by }}</p>
+                        <p class="sec-text">{{ _('Added By:') }} {{ gift_idea.added_by }}</p>
                     </div>
 
                     {% if imgenabled %}
                         <div class="divimage">
                             <!-- Display image if available -->
                             {% if gift_idea.image_path %}
-                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="w-16 h-16 object-cover rounded-lg shadow-sm image">
+                                <img src="{{ gift_idea.image_path }}" alt="{{ _('OG Image') }}" class="w-16 h-16 object-cover rounded-lg shadow-sm image">
                             {% endif %}
                         </div>
                     {% endif %}
@@ -226,10 +226,10 @@
                     <div class="idea-actions flex items-center space-x-2 mt-4 sm:mt-0 sm:ml-4">
                         {% if gift_idea.added_by == session['username'] %}
                         <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                            <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5">
+                            <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="{{ _('Delete Icon') }}" class="h-5 w-5">
                         </button>
                         <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                            <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5">
+                            <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="{{ _('Edit Icon') }}" class="h-5 w-5">
                         </a>
                         {% endif %}
                         {% if gift_idea.link %}
@@ -238,7 +238,7 @@
                         {% set link = 'https://' + link %}
                         {% endif %}
                         <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
-                            <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5">
+                            <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="{{ _('Open Link Icon') }}" class="h-5 w-5">
                         </a>
                         {% endif %}
                     </div>

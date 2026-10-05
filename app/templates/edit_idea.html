@@ -170,12 +170,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
                     imagePathInput.value = ogImage; // Store the image URL in the hidden input
                 } else {
-                    imageContainer.innerHTML = '<p class="text-red-500">{{ _("No OG image found. Enter an image URL below.") }}</p>';
+                    imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("No OG image found. Enter an image URL below.")|tojson }} + '</p>';
                     imagePathInput.value = ''; // Clear the hidden input
                 }
             } catch (error) {
                 console.error('Error:', error);
-                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Error fetching OG image. Enter an image URL below.") }}</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("Error fetching OG image. Enter an image URL below.")|tojson }} + '</p>';
                 imagePathInput.value = ''; // Clear the hidden input
             }
         } else {
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 imagePathInput.value = manualImageUrl; // Store the manual image URL in the hidden input
             } else {
                 // Invalid URL, clear the preview
-                imageContainer.innerHTML = '<p class="text-red-500">{{ _("Invalid image URL. Please enter a valid URL.") }}</p>';
+                imageContainer.innerHTML = '<p class="text-red-500">' + {{ _("Invalid image URL. Please enter a valid URL.")|tojson }} + '</p>';
                 imagePathInput.value = ''; // Clear the hidden input
             }
         } else {
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
         {% if imgenabled %}
         <div id="imageContainer">
             {% if idea.image_path %}
-            <img src="{{ idea.image_path }}" alt="OG Image" class="w-full rounded shadow-lg mt-4"> <!-- Prepopulate the image if already set -->
+            <img src="{{ idea.image_path }}" alt="{{ _('OG Image') }}" class="w-full rounded shadow-lg mt-4"> <!-- Prepopulate the image if already set -->
             {% endif %}
         </div> 
         <div id="manualImageUrlContainer" class="mb-4">

@@ -9,13 +9,16 @@ from authlib.integrations.flask_client import OAuth
 import json, secrets
 import os
 import random
+from pathlib import Path
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from dotenv import load_dotenv, set_key, dotenv_values
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from flask_babel import Babel, _, lazy_gettext as _l, get_locale as current_babel_locale
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env') # Load the .env file from the specified path
+# Directory holding .env, users.json, ideas.json and Secret Santa files (set to /app/data in Docker)
+DATA_DIR = os.getenv("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
+dotenv_path = os.path.join(DATA_DIR, '.env') # Load the .env file from the data directory
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
@@ -30,6 +33,9 @@ def get_locale():
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Set SameSite attribute to Strict
 app.config['BABEL_DEFAULT_LOCALE'] = 'fr' # Set default locale to French
+app.config['DATA'] = DATA_DIR
+app.config['IDEAS_FILE'] = Path(DATA_DIR, 'ideas.json')
+app.config['USERS_FILE'] = Path(DATA_DIR, 'users.json')
 babel = Babel(app, locale_selector=get_locale) # Initialize Flask-Babel
 
 @app.context_processor
@@ -46,6 +52,52 @@ def get_mailjet_client():
     return Client(auth=(api_key, api_secret), version='v3.1')
 
 ph = PasswordHasher()
+
+def prepopulate_file(filename, data):
+    """Create a data file with default content on first start (e.g. an empty Docker volume)."""
+    if Path(filename).exists():
+        return
+    Path(filename).parent.mkdir(exist_ok=True, parents=True)
+    with open(filename, 'w') as file:
+        file.write(data)
+
+prepopulate_file(app.config['IDEAS_FILE'], """
+        [
+            {
+                "user_id": "demo",
+                "gift_idea_id": 1,
+                "gift_name": "Default",
+                "description": "dont delete",
+                "link": "icbest.ca",
+                "added_by": "demo",
+                "bought_by": ""
+            }
+        ]""")
+
+prepopulate_file(app.config['USERS_FILE'], """
+        [
+        ]""")
+
+prepopulate_file(dotenv_path, """
+MAILJET_API_KEY=''
+MAILJET_API_SECRET=''
+SECRET_KEY='changethis'
+SYSTEM_EMAIL=''
+DELETE_DAYS='30'
+OIDC_CLIENT_ID=''
+OIDC_CLIENT_SECRET=''
+OIDC_SERVER_METADATA_URL=''
+OIDC_LOGOUT_URL=''
+PRIMARY_OIDC_FIELD='email'
+SECONDARY_OIDC_FIELD='preferred_username'
+PRIMARY_DB_FIELD='email'
+SECONDARY_DB_FIELD='username'
+ENABLE_AUTO_REGISTRATION='false'
+LOGIN_PAGE_MESSAGE='No account? Contact a family member to create an account!'
+ENABLE_DEFAULT_LOGIN='true'
+REORDERING='true'
+IMGENABLED='false'
+""")
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -84,19 +136,19 @@ def read_env_variable(key, default=None):
 
 
 def load_gift_ideas():
-    with open('ideas.json', 'r') as file:
+    with open(app.config['IDEAS_FILE'], 'r') as file:
         return json.load(file)
 
 def save_gift_ideas(gift_ideas):
-    with open('ideas.json', 'w') as file:
+    with open(app.config['IDEAS_FILE'], 'w') as file:
         json.dump(gift_ideas, file, indent=4)
 
 def load_users():
-    with open('users.json', 'r') as file:
+    with open(app.config['USERS_FILE'], 'r') as file:
         return json.load(file)
 
 def save_users(users):
-    with open('users.json', 'w') as file:
+    with open(app.config['USERS_FILE'], 'w') as file:
         json.dump(users, file, indent=4)
 
 
@@ -398,6 +450,9 @@ def setup_profile():
 
 @app.route('/')
 def index():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return redirect(url_for('need_restart'))
+
     # Redirect logged-in users to the dashboard
     if 'username' in session:
         return redirect(url_for('dashboard'))
@@ -411,7 +466,7 @@ def index():
             return redirect(url_for('setup'))
     except (json.JSONDecodeError, FileNotFoundError) as e:
         # Handle errors and redirect to setup if user file is missing or corrupted
-        flash(f"Error reading users.json: {e}", 'danger')
+        flash(_("Error reading users.json: %(error)s", error=e), 'danger')
         return redirect(url_for('setup'))
 
     # Redirect to login if no session exists and setup is complete
@@ -465,7 +520,7 @@ def login():
             # No matching username found
             flash(_('User does not exist'), 'login_error')
         except (json.JSONDecodeError, FileNotFoundError) as e:
-            flash(f"Error reading users.json: {e}", 'login_error')
+            flash(_("Error reading users.json: %(error)s", error=e), 'login_error')
             
     
     return render_template("login.html", oidc_enabled=oidc_enabled, login_message=login_message, guests_exist=guests_exist_flag, enable_self_registration=enable_self_registration)
@@ -627,6 +682,14 @@ def add2():
     return render_template('add2.html', user_list=user_list, imgenabled=imgenabled)
 
 
+@app.route('/need_restart', methods=['GET'])
+def need_restart():
+    if os.getenv("SECRET_KEY") in [None, '']:
+        return render_template('restartneeded.html')
+    else:
+        return redirect(url_for('setup'))
+
+
 @app.route('/add_idea/<path:selected_user_id>', methods=['GET', 'POST'])
 @login_required
 def add_idea(selected_user_id):
@@ -697,7 +760,7 @@ def add_idea(selected_user_id):
         save_gift_ideas(gift_ideas_data)
 
         # Flash success message and redirect
-        flash(f'Idea "{name}" added for user {user} by {added_by}!', 'success')
+        flash(_('Idea "%(name)s" added for user %(user)s by %(added_by)s!', name=name, user=user, added_by=added_by), 'success')
         return redirect(url_for('user_gift_ideas', selected_user_id=user))
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     # Render the "Add Idea" page with the user list, gift ideas, and the selected user as default
@@ -761,7 +824,7 @@ def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
             if not mailjet:
                 print('Mailjet API keys not configured, email not sent')
             elif buyer_email:
-                text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
+                text_part = _("This idea, '%(name)s', has been deleted but you already BOUGHT IT.", name=idea_name)
 
                 # Send an email to the buyer using Mailjet
                 data = {
@@ -964,13 +1027,13 @@ def mark_as_bought(idea_id):
             # Mark the idea as bought by the current user
             idea['bought_by'] = session['username']
             idea['date_bought'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Record the current date and time
-            flash(f'Marked "{idea["gift_name"]}" as bought!', 'success')
+            flash(_('Marked "%(name)s" as bought!', name=idea["gift_name"]), 'success')
 
             # Save the updated gift ideas back to the JSON file
             save_gift_ideas(gift_ideas_data)  # Save the updated list
         else:
             # If already bought, display a warning
-            flash(f'"{idea["gift_name"]}" has already been bought by {idea["bought_by"]}.', 'warning')
+            flash(_('"%(name)s" has already been bought by %(buyer)s.', name=idea["gift_name"], buyer=idea["bought_by"]), 'warning')
     else:
         flash(_('Idea not found'), 'danger')
 
@@ -994,12 +1057,12 @@ def mark_as_not_bought(idea_id):
             # Mark the idea as not bought by setting 'bought_by' to None (or '' if preferred)
             idea['bought_by'] = None  # Using None is semantically clearer than ''
             idea.pop('date_bought', None)  # Remove the date_bought field if it exists
-            flash(f'Marked "{idea["gift_name"]}" as not bought.', 'success')
+            flash(_('Marked "%(name)s" as not bought.', name=idea["gift_name"]), 'success')
 
             # Save the updated gift ideas back to the JSON file
             save_gift_ideas(gift_ideas_data)  # Save the updated list
         else:
-            flash(f'You did not buy "{idea["gift_name"]}", so you cannot mark it as not bought.', 'danger')
+            flash(_('You did not buy "%(name)s", so you cannot mark it as not bought.', name=idea["gift_name"]), 'danger')
     else:
         flash(_('Idea not found'), 'danger')
 
@@ -1257,17 +1320,17 @@ def secret_santa():
                     del user['assigned_users'][pool_name_to_delete]
 
             if not pool_exists:
-                flash(f'Pool "{pool_name_to_delete}" does not exist.', 'error')
+                flash(_('Pool "%(name)s" does not exist.', name=pool_name_to_delete), 'error')
             else:
                 # Remove the corresponding instructions file if it exists
                 try:
-                    os.remove(f'santa_inst_{pool_name_to_delete}.txt')
+                    os.remove(Path(app.config['DATA'], f'santa_inst_{pool_name_to_delete}.txt'))
                 except FileNotFoundError:
                     pass  # Ignore if the file does not exist
 
                 # Save the updated users list
                 save_users(users)
-                flash(f'Pool "{pool_name_to_delete}" has been deleted!', 'success')
+                flash(_('Pool "%(name)s" has been deleted!', name=pool_name_to_delete), 'success')
 
             return redirect(url_for('dashboard'))  # Redirect to dashboard after deletion
 
@@ -1305,7 +1368,7 @@ def secret_santa():
             save_users(users)
 
             # Save the instructions to a text file specific to the pool
-            with open(f'santa_inst_{pool_name}.txt', 'w') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'w') as file:
                 file.write(secret_santa_instructions or '')  # Ensure it writes a string, even if empty
 
             flash(_('Secret Santa assignments have been made!'), 'success')
@@ -1336,7 +1399,7 @@ def secret_santa_assignments():
     pool_instructions = {}
     for pool_name in assigned_users.keys():
         try:
-            with open(f'santa_inst_{pool_name}.txt', 'r') as file:
+            with open(Path(app.config['DATA'], f'santa_inst_{pool_name}.txt'), 'r') as file:
                 pool_instructions[pool_name] = file.read()
         except FileNotFoundError:
             pool_instructions[pool_name] = _("No specific instructions provided.")
@@ -1466,7 +1529,7 @@ def edit_email_settings():
 
             flash(_("Email settings updated successfully!"), "success")
         except Exception as e:
-            flash(f"An error occurred: {e}", "danger")
+            flash(_("An error occurred: %(error)s", error=e), "danger")
         return redirect(url_for('edit_email_settings'))
 
     # Reload the .env file before fetching current settings
@@ -1498,7 +1561,7 @@ def edit_login_message():
 
                 flash(_("Login message updated successfully!"), "success")
             except Exception as e:
-                flash(f"Error updating login message: {e}", "danger")
+                flash(_("Error updating login message: %(error)s", error=e), "danger")
         else:
             flash(_("Message cannot be empty."), "danger")
 
@@ -1542,7 +1605,7 @@ def delete_old_gift_ideas():
 
         # Record the last execution time
         last_execution_time = datetime.now().isoformat()
-        with open('last_execution_time.txt', 'w') as time_file:
+        with open(Path(app.config['DATA'], 'last_execution_time.txt'), 'w') as time_file:
             time_file.write(last_execution_time)
 
         # Return the number of removed ideas
@@ -1562,13 +1625,13 @@ def delete_old_gift_ideas_page():
             deleted_count = delete_old_gift_ideas()
 
             # Flash success message with the number of deleted rows
-            flash(f"{deleted_count} gift ideas older than the threshold have been successfully deleted.", "success")
+            flash(_("%(count)s gift ideas older than the threshold have been successfully deleted.", count=deleted_count), "success")
 
             # Render the result to the template
             return render_template('delete_old_gift_ideas.html', deleted_count=deleted_count)
 
         except Exception as e:
-            flash(f"Error deleting old gift ideas: {e}", "danger")
+            flash(_("Error deleting old gift ideas: %(error)s", error=e), "danger")
             return render_template('delete_old_gift_ideas.html', deleted_count=0, error_message=str(e))
 
     # GET request: Just display the page
@@ -1587,9 +1650,9 @@ def change_delete_days():
                 new_days = int(new_days)
 
                 # Update the .env file with the new value
-                set_key(".env", "DELETE_DAYS", str(new_days))  # Update the DELETE_DAYS value
+                set_key(dotenv_path, "DELETE_DAYS", str(new_days))  # Update the DELETE_DAYS value
 
-                flash(f"The number of days to delete old gift ideas has been updated to {new_days}.", "success")
+                flash(_("The number of days to delete old gift ideas has been updated to %(days)s.", days=new_days), "success")
                 return redirect(url_for('change_delete_days'))
 
             except ValueError:
@@ -1674,7 +1737,7 @@ def setupenv():
 
         # Save each variable to .env file
         for key, value in env_variables.items():
-            set_key(".env", key, value)
+            set_key(dotenv_path, key, value)
 
         flash(_('Environment variables saved successfully!'), 'success')
         return redirect(url_for('index'))
@@ -1703,7 +1766,7 @@ def setup_oidc():
         # Check for missing fields
         missing_fields = [key for key, value in oidc_env_variables.items() if not value]
         if missing_fields:
-            flash(f"Missing required fields: {', '.join(missing_fields)}", 'danger')
+            flash(_("Missing required fields: %(fields)s", fields=', '.join(missing_fields)), 'danger')
             return render_template('setup_oidc.html', current_values=oidc_env_variables)
 
         try:
@@ -1714,7 +1777,7 @@ def setup_oidc():
             flash(_('OIDC settings saved successfully!'), 'success')
             return redirect(url_for('setup_oidc'))  # Redirect to home page after saving
         except Exception as e:
-            flash(f"Error saving OIDC settings: {e}", "danger")
+            flash(_("Error saving OIDC settings: %(error)s", error=e), "danger")
             return render_template('setup_oidc.html', current_values=oidc_env_variables)
 
     # For GET requests, load the current values of OIDC-related environment variables
@@ -1825,7 +1888,7 @@ def setup_advanced():
 @admin_required
 def update_reordering():
     reordering = request.form.get('reordering', 'true').strip()
-    set_key(".env", "REORDERING", reordering)
+    set_key(dotenv_path, "REORDERING", reordering)
     return redirect(url_for('setup_advanced'))
 
 # Route to update IMGENABLED (POST request)
@@ -1833,7 +1896,7 @@ def update_reordering():
 @admin_required
 def update_images():
     images = request.form.get('images', 'true').strip()
-    set_key(".env", "IMGENABLED", images)
+    set_key(dotenv_path, "IMGENABLED", images)
     return redirect(url_for('setup_advanced'))
 
 @app.route('/rundl')
@@ -1843,13 +1906,13 @@ def run_script():
         removed_count = delete_old_gift_ideas()
 
         # Prepare the output message
-        script_output = f"Successfully removed {removed_count} gift ideas."
+        script_output = _("Successfully removed %(count)s gift ideas.", count=removed_count)
 
         # Return the output to the user
         return render_template('script_output.html', script_output=script_output)
 
     except Exception as e:
-        error_message = f"Error occurred while running delete_old_gift_ideas: {e}\n\n"
+        error_message = _("Error occurred while running delete_old_gift_ideas: %(error)s", error=e) + "\n\n"
         return render_template('script_output.html', script_output=error_message)
     
 
@@ -1991,7 +2054,7 @@ def delete_guest_user(username):
         save_users(users)
         save_gift_ideas(updated_gift_ideas)
         
-        flash(f'Guest user {username} deleted successfully! {deleted_count} purchased gift ideas deleted.', 'success')
+        flash(_('Guest user %(username)s deleted successfully! %(count)s purchased gift ideas deleted.', username=username, count=deleted_count), 'success')
     else:
         flash(_('Guest user not found.'), 'danger')
     
@@ -2030,10 +2093,10 @@ def update_currency_settings():
     symbol = request.form.get('currency_symbol', '$')
     position = request.form.get('currency_position', 'before')
     
-    set_key(".env", "CURRENCY_SYMBOL", symbol)
-    set_key(".env", "CURRENCY_POSITION", position)
+    set_key(dotenv_path, "CURRENCY_SYMBOL", symbol)
+    set_key(dotenv_path, "CURRENCY_POSITION", position)
     
-    flash('Currency settings updated! Please restart to see changes', 'success')
+    flash(_('Currency settings updated! Please restart to see changes'), 'success')
     return redirect(url_for('setup_advanced'))
 
 @app.route('/update_self_registration_settings', methods=['POST'])
@@ -2043,10 +2106,10 @@ def update_self_registration_settings():
     enable_self_registration = request.form.get('enable_self_registration', 'false')
     joining_code = request.form.get('joining_code', '')
     
-    set_key(".env", "ENABLE_SELF_REGISTRATION", enable_self_registration)
-    set_key(".env", "JOINING_CODE", joining_code)
+    set_key(dotenv_path, "ENABLE_SELF_REGISTRATION", enable_self_registration)
+    set_key(dotenv_path, "JOINING_CODE", joining_code)
     
-    flash('Self-registration settings updated successfully!', 'success')
+    flash(_('Self-registration settings updated successfully!'), 'success')
     return redirect(url_for('setup_advanced'))
 
 @app.route('/manage_shared_lists', methods=['GET', 'POST'])
@@ -2089,7 +2152,7 @@ def manage_shared_lists():
         
         users.append(shared_list_user)
         save_users(users)
-        flash(f'Shared list "{list_name}" created successfully!', 'success')
+        flash(_('Shared list "%(name)s" created successfully!', name=list_name), 'success')
         return redirect(url_for('manage_shared_lists'))
     
     # Get available users for creating new lists
@@ -2126,12 +2189,12 @@ def delete_shared_list(list_username):
     shared_list = next((user for user in users if user['username'] == list_username), None)
     
     if not shared_list:
-        flash('Shared list not found.', 'danger')
+        flash(_('Shared list not found.'), 'danger')
         return redirect(url_for('manage_shared_lists'))
     
     # Check if current user is the owner
     if shared_list.get('list_owner') != session['username']:
-        flash('Only the list owner can delete this shared list.', 'danger')
+        flash(_('Only the list owner can delete this shared list.'), 'danger')
         return redirect(url_for('manage_shared_lists'))
     
     # Remove shared list user
@@ -2142,7 +2205,7 @@ def delete_shared_list(list_username):
     updated_gift_ideas = [idea for idea in gift_ideas if idea['user_id'] != list_username]
     save_gift_ideas(updated_gift_ideas)
     
-    flash(f'Shared list "{shared_list["full_name"]}" deleted successfully!', 'success')
+    flash(_('Shared list "%(name)s" deleted successfully!', name=shared_list["full_name"]), 'success')
     return redirect(url_for('manage_shared_lists'))
 
 @app.route('/edit_shared_list_members/<path:list_username>', methods=['POST'])
@@ -2154,12 +2217,12 @@ def edit_shared_list_members(list_username):
     shared_list = next((user for user in users if user['username'] == list_username), None)
     
     if not shared_list:
-        flash('Shared list not found.', 'danger')
+        flash(_('Shared list not found.'), 'danger')
         return redirect(url_for('manage_shared_lists'))
     
     # Check if current user is the owner
     if shared_list.get('list_owner') != session['username']:
-        flash('Only the list owner can edit members.', 'danger')
+        flash(_('Only the list owner can edit members.'), 'danger')
         return redirect(url_for('manage_shared_lists'))
     
     # Get selected members and always include the owner
@@ -2171,7 +2234,7 @@ def edit_shared_list_members(list_username):
     shared_list['list_members'] = new_members
     save_users(users)
     
-    flash(f'Members updated for "{shared_list["full_name"]}"!', 'success')
+    flash(_('Members updated for "%(name)s"!', name=shared_list["full_name"]), 'success')
     return redirect(url_for('manage_shared_lists'))
 
 
@@ -2181,9 +2244,9 @@ def update_link_sharing():
     """Update global link sharing setting"""
     enable_link_sharing = request.form.get('enable_link_sharing', 'false').lower() == 'true'
     
-    set_key(".env", "ENABLE_LINK_SHARING", str(enable_link_sharing).lower())
+    set_key(dotenv_path, "ENABLE_LINK_SHARING", str(enable_link_sharing).lower())
     
-    flash('Link sharing settings updated!', 'success')
+    flash(_('Link sharing settings updated!'), 'success')
     return redirect(url_for('setup_advanced'))
 
 
@@ -2195,7 +2258,7 @@ def generate_share_token():
 def manage_sharing():
 
     if not read_env_variable('ENABLE_LINK_SHARING', 'true').lower() == 'true':
-        flash('Link sharing feature is currently disabled by administrator.', 'danger')
+        flash(_('Link sharing feature is currently disabled by administrator.'), 'danger')
         return redirect(url_for('dashboard'))
 
 
@@ -2211,19 +2274,19 @@ def manage_sharing():
     target_entity = next((user for user in users if user['username'] == target_username), None)
     
     if not target_entity:
-        flash('Target not found', 'danger')
+        flash(_('Target not found'), 'danger')
         return redirect(url_for('dashboard'))
     
     # Check permissions
     if target_entity.get('shared_list'):
         # For shared lists, check if current user is a member
         if session['username'] not in target_entity.get('list_members', []):
-            flash('You are not a member of this shared list', 'danger')
+            flash(_('You are not a member of this shared list'), 'danger')
             return redirect(url_for('dashboard'))
     else:
         # For individual users, only the user themselves can manage sharing
         if target_username != session['username']:
-            flash('You can only manage your own sharing settings', 'danger')
+            flash(_('You can only manage your own sharing settings'), 'danger')
             return redirect(url_for('dashboard'))
     
     # Initialize sharing structure if it doesn't exist
@@ -2250,7 +2313,7 @@ def manage_sharing():
             
             target_entity['sharing']['public_links'].append(new_link)
             save_users(users)
-            flash('New share link created!', 'success')
+            flash(_('New share link created!'), 'success')
         
         # Toggle link status
         elif 'toggle_link' in request.form:
@@ -2259,8 +2322,7 @@ def manage_sharing():
                 if link['token'] == token:
                     link['is_active'] = not link['is_active']
                     save_users(users)
-                    status = "activated" if link['is_active'] else "deactivated"
-                    flash(f'Share link {status}!', 'success')
+                    flash(_('Share link activated!') if link['is_active'] else _('Share link deactivated!'), 'success')
                     break
         
         # Extend expiration date
@@ -2274,7 +2336,7 @@ def manage_sharing():
                     new_expiry = current_expiry + timedelta(days=additional_days)
                     link['expires_at'] = new_expiry.strftime('%Y-%m-%d %H:%M:%S')
                     save_users(users)
-                    flash(f'Share link extended by {additional_days} days! New expiry: {new_expiry.strftime("%Y-%m-%d")}', 'success')
+                    flash(_('Share link extended by %(days)s days! New expiry: %(expiry)s', days=additional_days, expiry=new_expiry.strftime("%Y-%m-%d")), 'success')
                     break
         
         # Delete link
@@ -2285,7 +2347,7 @@ def manage_sharing():
                 if link['token'] != token
             ]
             save_users(users)
-            flash('Share link deleted!', 'success')
+            flash(_('Share link deleted!'), 'success')
     
     # Get all shared lists where current user is a member (for navigation)
     user_shared_lists = [
@@ -2379,20 +2441,20 @@ def mark_shared_bought(token, idea_id):
                     break
     
     if not share_owner or not active_link:
-        return jsonify({'error': 'Share link not found or expired'}), 404
+        return jsonify({'error': _('Share link not found or expired')}), 404
     
     if not active_link.get('allow_purchases', False):
-        return jsonify({'error': 'Purchases not allowed for this share link'}), 403
+        return jsonify({'error': _('Purchases not allowed for this share link')}), 403
     
     # Find the gift idea
     idea = find_idea_by_id(gift_ideas_data, idea_id)
     if not idea or idea['user_id'] != share_owner['username']:
-        return jsonify({'error': 'Gift idea not found'}), 404
+        return jsonify({'error': _('Gift idea not found')}), 404
     
     # Get visitor name from request
     visitor_name = request.json.get('visitor_name', '').strip()
     if not visitor_name:
-        return jsonify({'error': 'Visitor name is required'}), 400
+        return jsonify({'error': _('Visitor name is required')}), 400
     
     # Generate unique visitor ID
     visitor_id = secrets.token_urlsafe(16)
@@ -2422,7 +2484,7 @@ def mark_shared_bought(token, idea_id):
             'visitor_id': visitor_id
         })
     else:
-        return jsonify({'error': 'Item already purchased'}), 400
+        return jsonify({'error': _('Item already purchased')}), 400
 
 @app.route('/shared/<token>/mark_not_bought/<int:idea_id>', methods=['POST'])
 def mark_shared_not_bought(token, idea_id):
@@ -2445,17 +2507,17 @@ def mark_shared_not_bought(token, idea_id):
                     break
     
     if not share_owner or not active_link:
-        return jsonify({'error': 'Share link not found or expired'}), 404
+        return jsonify({'error': _('Share link not found or expired')}), 404
     
     # Find the gift idea
     idea = find_idea_by_id(gift_ideas_data, idea_id)
     if not idea or idea['user_id'] != share_owner['username']:
-        return jsonify({'error': 'Gift idea not found'}), 404
+        return jsonify({'error': _('Gift idea not found')}), 404
     
     # Get visitor ID from request
     visitor_id = request.json.get('visitor_id')
     if not visitor_id:
-        return jsonify({'error': 'Visitor ID required'}), 400
+        return jsonify({'error': _('Visitor ID required')}), 400
     
     # Check if this visitor made the purchase
     if idea.get('bought_by', '').startswith('visitor:') and idea.get('visitor_id') == visitor_id:
@@ -2475,7 +2537,7 @@ def mark_shared_not_bought(token, idea_id):
         
         return jsonify({'success': True, 'message': 'Purchase cancelled'})
     else:
-        return jsonify({'error': 'You can only cancel your own purchases'}), 403
+        return jsonify({'error': _('You can only cancel your own purchases')}), 403
     
 def generate_share_url(token):
     """Generate share URL with proper scheme (HTTPS if available)"""

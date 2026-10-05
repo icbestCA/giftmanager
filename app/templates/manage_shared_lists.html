@@ -131,7 +131,7 @@
 <body class="font-sans">
     <header class="bg-white shadow p-4 header">
         <div class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
+            <button id="backButton" class="text-2xl px-4 py-2">{{ _('Back') }}</button>
             <h1 class="text-xl font-semibold">{{ _('Shared Lists') }}</h1>
         </div>
     </header>
@@ -212,7 +212,7 @@
                             <div class="flex items-center mb-2">
                                 <!-- Display actual avatar image instead of placeholder -->
                                 <img src="{{ url_for('static', filename=list.avatar if list.avatar else 'icons/avatar1.png') }}" 
-                                     alt="List Avatar" 
+                                     alt="{{ _('List Avatar') }}" 
                                      class="w-8 h-8 rounded-full object-cover mr-3"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3" style="display: none;">
@@ -235,17 +235,17 @@
                             {% if list.list_owner == session['username'] %}
                             <button onclick="toggleEditMembers('{{ list.username }}')" 
                                     class="bg-yellow-500 text-white px-3 py-2 rounded text-sm hover:bg-yellow-600">
-                                Edit
+                                {{ _('Edit') }}
                             </button>
                             <form method="POST" action="{{ url_for('delete_shared_list', list_username=list.username) }}" 
                                   onsubmit='return confirm({{ _("Delete this list?")|tojson }})'>
                                 <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
-                                    Delete
+                                    {{ _('Delete') }}
                                 </button>
                             </form>
                             {% else %}
                             <span class="bg-gray-500 text-white px-3 py-2 rounded text-sm">
-                                Member
+                                {{ _('Member') }}
                             </span>
                             {% endif %}
                         </div>
@@ -254,7 +254,7 @@
                     <!-- Edit Members Form -->
                     {% if list.list_owner == session['username'] %}
                     <div id="edit-members-{{ list.username }}" class="edit-members-form">
-                        <h4 class="font-semibold mb-3">Edit Members</h4>
+                        <h4 class="font-semibold mb-3">{{ _('Edit Members') }}</h4>
                         <form method="POST" action="{{ url_for('edit_shared_list_members', list_username=list.username) }}">
                             <div class="mb-4">
                                 <div class="border rounded p-4 max-h-48 overflow-y-auto">
@@ -269,11 +269,11 @@
                             </div>
                             <div class="flex space-x-2">
                                 <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600">
-                                    Save
+                                    {{ _('Save') }}
                                 </button>
                                 <button type="button" onclick="toggleEditMembers('{{ list.username }}')" 
                                         class="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">
-                                    Cancel
+                                    {{ _('Cancel') }}
                                 </button>
                             </div>
                         </form>
@@ -283,13 +283,13 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-gray-500 text-center py-4">No shared lists yet.</p>
+            <p class="text-gray-500 text-center py-4">{{ _('No shared lists yet.') }}</p>
             {% endif %}
         </div>
 
         <div class="mt-8 text-center">
             <a href="{{ url_for('dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                Back to Dashboard
+                {{ _('Back to Dashboard') }}
             </a>
         </div>
     </main>

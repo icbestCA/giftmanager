@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OIDC Login Only</title>
+    <title>{{ _('OIDC Login Only') }}</title>
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
     <style>
@@ -118,7 +118,7 @@
 </head>
 <body>
     <div class="form-container">
-        <h1>OIDC Login Only</h1>
+        <h1>{{ _('OIDC Login Only') }}</h1>
 
         <!-- Displaying flashed messages for the login route only -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -134,26 +134,26 @@
         {% endwith %}
 
         <a href="{{ url_for('login_oidc') }}" class="login-button">
-            Login with OIDC
+            {{ _('Login with OIDC') }}
         </a>
 
         {% if guests_exist %}
-        <div class="separator">or</div>
+        <div class="separator">{{ _('or') }}</div>
         
         <button type="button" class="login-button guest-button" onclick="showGuestLogin()">
-            I have a guest password
+            {{ _('I have a guest password') }}
         </button>
 
         <!-- Guest login form (initially hidden) -->
         <form method="POST" action="/guest_login" id="guest-login" style="display: none;">
             <div style="margin: 15px 0;">
-                <input type="password" name="password" placeholder="Enter guest password" 
+                <input type="password" name="password" placeholder="{{ _('Enter guest password') }}" 
                        style="width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 16px;" required>
             </div>
-            <button type="submit" class="login-button guest-button">Login as Guest</button>
+            <button type="submit" class="login-button guest-button">{{ _('Login as Guest') }}</button>
             <button type="button" class="login-button" onclick="showOidcLogin()" 
                     style="background-color: #6c757d; margin-top: 5px;">
-                Back to OIDC Login
+                {{ _('Back to OIDC Login') }}
             </button>
         </form>
         {% endif %}

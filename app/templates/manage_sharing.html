@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share List</title>
+    <title>{{ _('Share List') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
@@ -106,12 +106,12 @@
 <body class="font-sans">
     <header class="bg-white shadow p-4 header">
         <div class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
+            <button id="backButton" class="text-2xl px-4 py-2">{{ _('Back') }}</button>
             <h1 class="text-xl font-semibold">
                 {% if target_entity.get('shared_list') %}
-                    Share: {{ target_entity.full_name }}
+                    {{ _('Share: %(name)s', name=target_entity.full_name) }}
                 {% else %}
-                    Share My List
+                    {{ _('Share My List') }}
                 {% endif %}
             </h1>
         </div>
@@ -124,7 +124,7 @@
             <div class="flex space-x-4 border-b">
                 <a href="{{ url_for('manage_sharing') }}" 
                    class="nav-tab {% if current_target == session['username'] %}active{% endif %}">
-                    My Personal List
+                    {{ _('My Personal List') }}
                 </a>
                 {% for shared_list in user_shared_lists %}
                 <a href="{{ url_for('manage_sharing', for=shared_list.username) }}" 
@@ -151,40 +151,40 @@
         <div class="card p-6 rounded-lg shadow-lg mb-8">
             <h2 class="text-2xl font-semibold mb-4">
                 {% if target_entity.get('shared_list') %}
-                    Create Share Link for {{ target_entity.full_name }}
+                    {{ _('Create Share Link for %(name)s', name=target_entity.full_name) }}
                 {% else %}
-                    Create New Share Link
+                    {{ _('Create New Share Link') }}
                 {% endif %}
             </h2>
             
             <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                        <label for="link_name" class="block font-medium mb-2">Link Name:</label>
+                        <label for="link_name" class="block font-medium mb-2">{{ _('Link Name:') }}</label>
                         <input type="text" id="link_name" name="link_name" 
                                class="w-full px-3 py-2 border rounded inputer" 
-                               value="{% if target_entity.get('shared_list') %}{{ target_entity.full_name }} List{% else %}My Gift List{% endif %}" 
-                               placeholder="Give this link a name" required>
+                               value="{% if target_entity.get('shared_list') %}{{ _('%(name)s List', name=target_entity.full_name) }}{% else %}{{ _('My Gift List') }}{% endif %}" 
+                               placeholder="{{ _('Give this link a name') }}" required>
                     </div>
                     <div>
-                        <label for="days_valid" class="block font-medium mb-2">Valid for:</label>
+                        <label for="days_valid" class="block font-medium mb-2">{{ _('Valid for:') }}</label>
                         <select class="w-full px-3 py-2 border rounded inputer" id="days_valid" name="days_valid">
-                            <option value="7">7 days</option>
-                            <option value="30" selected>30 days</option>
-                            <option value="90">90 days</option>
-                            <option value="365">1 year</option>
+                            <option value="7">{{ _('7 days') }}</option>
+                            <option value="30" selected>{{ _('30 days') }}</option>
+                            <option value="90">{{ _('90 days') }}</option>
+                            <option value="365">{{ _('1 year') }}</option>
                         </select>
                     </div>
                     <div class="mb-4">
                         <label class="flex items-center">
                             <input type="checkbox" name="allow_purchases" value="true" class="mr-2">
-                            <span class="font-medium">Allow visitors to mark items as purchased</span>
+                            <span class="font-medium">{{ _('Allow visitors to mark items as purchased') }}</span>
                         </label>
-                        <p class="text-sm text-gray-500 ml-6">Visitors can enter their name when marking items as bought</p>
+                        <p class="text-sm text-gray-500 ml-6">{{ _('Visitors can enter their name when marking items as bought') }}</p>
                     </div>
                     <div class="flex items-end">
                         <button type="submit" name="create_link" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                            Create Share Link
+                            {{ _('Create Share Link') }}
                         </button>
                     </div>
                 </div>
@@ -195,9 +195,9 @@
         <div class="card p-4 sm:p-6 rounded-lg shadow-lg mb-8">
             <h2 class="text-xl sm:text-2xl font-semibold mb-4">
                 {% if target_entity.get('shared_list') %}
-                    {{ target_entity.full_name }} Share Links
+                    {{ _('%(name)s Share Links', name=target_entity.full_name) }}
                 {% else %}
-                    My Share Links
+                    {{ _('My Share Links') }}
                 {% endif %}
             </h2>
             
@@ -216,13 +216,13 @@
                                             {% if is_expired %}bg-red-100 text-red-800
                                             {% elif link.is_active %}bg-green-100 text-green-800
                                             {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                            {% if is_expired %}Expired
-                                            {% elif link.is_active %}Active
-                                            {% else %}Inactive{% endif %}
+                                            {% if is_expired %}{{ _('Expired') }}
+                                            {% elif link.is_active %}{{ _('Active') }}
+                                            {% else %}{{ _('Inactive') }}{% endif %}
                                         </span>
                                         {% if link.created_by and target_entity.get('shared_list') %}
                                         <span class="text-xs sm:text-sm text-gray-500">
-                                            by {{ get_full_name(link.created_by) }}
+                                            {{ _('by %(name)s', name=get_full_name(link.created_by)) }}
                                         </span>
                                         {% endif %}
                                     </div>
@@ -236,15 +236,15 @@
                                     <input type="hidden" name="token" value="{{ link.token }}">
                                     <button type="submit" name="toggle_link" 
                                             class="w-full {% if link.is_active %}bg-yellow-500 hover:bg-yellow-600{% else %}bg-green-500 hover:bg-green-600{% endif %} text-white px-3 py-2 rounded text-sm">
-                                        {{ 'Deactivate' if link.is_active else 'Activate' }}
+                                        {{ _('Deactivate') if link.is_active else _('Activate') }}
                                     </button>
                                 </form>
                                 {% endif %}
                                 <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}" class="w-full sm:w-auto"
-                                    onsubmit="return confirm('Are you sure you want to delete this share link?');">
+                                    onsubmit='return confirm({{ _("Are you sure you want to delete this share link?")|tojson }});'>
                                     <input type="hidden" name="token" value="{{ link.token }}">
                                     <button type="submit" name="delete_link" class="w-full bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
-                                        Delete
+                                        {{ _('Delete') }}
                                     </button>
                                 </form>
                             </div>
@@ -252,7 +252,7 @@
                         
                         <!-- Share URL -->
                         <div class="mb-3">
-                            <label class="block text-sm font-medium mb-1">Share URL:</label>
+                            <label class="block text-sm font-medium mb-1">{{ _('Share URL:') }}</label>
                             <input type="text" class="w-full px-3 py-2 border rounded inputer share-url-input text-xs sm:text-sm" 
                                 value="{{ generate_share_url(link.token) }}" 
                                 readonly onclick="this.select()">
@@ -261,14 +261,14 @@
                         <!-- Dates - Stack on mobile -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm mb-3">
                             <div class="flex justify-between sm:block">
-                                <span class="font-medium sm:font-normal">Created:</span>
+                                <span class="font-medium sm:font-normal">{{ _('Created:') }}</span>
                                 <span>{{ link.created_at[:10] }}</span>
                             </div>
                             <div class="flex justify-between sm:block">
-                                <span class="font-medium sm:font-normal">Expires:</span>
+                                <span class="font-medium sm:font-normal">{{ _('Expires:') }}</span>
                                 <span class="{% if is_expired %}text-red-600 font-semibold{% endif %}">
                                     {{ link.expires_at[:10] }}
-                                    {% if is_expired %} (Expired){% endif %}
+                                    {% if is_expired %} ({{ _('Expired') }}){% endif %}
                                 </span>
                             </div>
                         </div>
@@ -276,32 +276,32 @@
                         <!-- Extend Expiration Button -->
                         <button type="button" onclick="toggleExtendForm('{{ link.token }}')" 
                                 class="text-blue-600 hover:text-blue-800 text-sm font-medium w-full sm:w-auto text-center sm:text-left">
-                            ↻ Extend Expiration
+                            {{ _('↻ Extend Expiration') }}
                         </button>
 
                         <!-- Extend Expiration Form -->
                         <div id="extend-form-{{ link.token }}" class="extend-form mt-3">
-                            <h4 class="font-semibold mb-3 text-sm sm:text-base">Extend Expiration</h4>
+                            <h4 class="font-semibold mb-3 text-sm sm:text-base">{{ _('Extend Expiration') }}</h4>
                             <form method="POST" action="{{ url_for('manage_sharing', for=current_target) }}" 
                                 class="flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
                                 <input type="hidden" name="token" value="{{ link.token }}">
                                 <div class="flex-1">
-                                    <label class="block text-sm font-medium mb-1">Add days:</label>
+                                    <label class="block text-sm font-medium mb-1">{{ _('Add days:') }}</label>
                                     <select name="additional_days" class="w-full px-3 py-2 border rounded inputer text-sm">
-                                        <option value="7">7 days</option>
-                                        <option value="30" selected>30 days</option>
-                                        <option value="90">90 days</option>
-                                        <option value="365">1 year</option>
+                                        <option value="7">{{ _('7 days') }}</option>
+                                        <option value="30" selected>{{ _('30 days') }}</option>
+                                        <option value="90">{{ _('90 days') }}</option>
+                                        <option value="365">{{ _('1 year') }}</option>
                                     </select>
                                 </div>
                                 <div class="flex gap-2 mt-2 sm:mt-0">
                                     <button type="submit" name="extend_link" 
                                             class="flex-1 bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">
-                                        Extend
+                                        {{ _('Extend') }}
                                     </button>
                                     <button type="button" onclick="toggleExtendForm('{{ link.token }}')" 
                                             class="flex-1 bg-gray-500 text-white px-3 py-2 rounded text-sm hover:bg-gray-600">
-                                        Cancel
+                                        {{ _('Cancel') }}
                                     </button>
                                 </div>
                             </form>
@@ -310,13 +310,13 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-gray-500 text-center py-4">No share links created yet.</p>
+                <p class="text-gray-500 text-center py-4">{{ _('No share links created yet.') }}</p>
             {% endif %}
         </div>
 
         <div class="mt-8 text-center">
             <a href="{{ url_for('dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                Back to Dashboard
+                {{ _('Back to Dashboard') }}
             </a>
         </div>
     </main>

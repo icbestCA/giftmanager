@@ -6,3 +6,4 @@ authlib
 requests
 beautifulsoup4
 Flask-Babel
+gunicorn

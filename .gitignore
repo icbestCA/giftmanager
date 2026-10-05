@@ -48,3 +48,6 @@ Thumbs.db
 .coverage
 *.cover
 *.py,cover
+
+# Docker data volume (docker-compose.yml)
+data/

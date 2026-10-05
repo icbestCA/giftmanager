@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ share_owner.full_name }}'s Gift List</title>
+    <title>{{ _("%(name)s's Gift List", name=share_owner.full_name) }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -190,13 +190,13 @@
 <body class="body font-sans">
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
-            <div class="text-xl font-semibold">{{ share_owner.full_name }}'s Gift List</div>
-            <div class="text-sm text-gray-500">Shared via GiftManager</div>
+            <div class="text-xl font-semibold">{{ _("%(name)s's Gift List", name=share_owner.full_name) }}</div>
+            <div class="text-sm text-gray-500">{{ _('Shared via GiftManager') }}</div>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <section class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4 text-primary">Gift Ideas for {{ share_owner.full_name }}</h1>
+            <h1 class="text-2xl font-semibold mb-4 text-primary">{{ _('Gift Ideas for %(name)s', name=share_owner.full_name) }}</h1>
             <ul class="space-y-4">
                 {% for gift_idea in gift_ideas %}
                 <li class="actions-container p-4 shadow-md rounded-lg">
@@ -205,15 +205,15 @@
                             <h2 class="text-lg font-semibold break-words">{{ gift_idea.gift_name }}</h2>
                             <p class="text-gray-600 description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                             {% if gift_idea.value %}
-                            <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
+                            <p class="text-gray-600 sec-text">{{ _('Estimated Value:') }} {{ format_currency(gift_idea.value) }}</p>
                             {% endif %}
-                            <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                            <p class="text-gray-600 sec-text">{{ _('Added By:') }} {{ get_full_name(gift_idea.added_by) }}</p>
                         </div>
 
                         {% if imgenabled %}
                         <div class="divimage">
                             {% if gift_idea.image_path %}
-                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="image">
+                                <img src="{{ gift_idea.image_path }}" alt="{{ _('OG Image') }}" class="image">
                             {% endif %}
                         </div>
                         {% endif %}
@@ -225,7 +225,7 @@
                             {% set link = 'https://' + link %}
                             {% endif %}
                             <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
-                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="{{ _('Open Link Icon') }}" class="h-5 w-5 helplogo">
                             </a>
                             {% endif %}
                         </div>
@@ -233,21 +233,21 @@
     
                     {% if gift_idea.bought_by %}
                         {% if gift_idea.bought_by.startswith('visitor:') %}
-                            <p class="text-green-500">Purchased by: {{ gift_idea.bought_by[8:] }}</p>
+                            <p class="text-green-500">{{ _('Purchased by:') }} {{ gift_idea.bought_by[8:] }}</p>
                             {% if share_link.allow_purchases %}
                             <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" 
                                     data-idea-id="{{ gift_idea.gift_idea_id }}"
                                     style="display: none;">
-                                Cancel Purchase
+                                {{ _('Cancel Purchase') }}
                             </button>
                             {% endif %}
                         {% else %}
-                            <p class="text-green-500">Purchased by: {{ get_full_name(gift_idea.bought_by) }}</p>
+                            <p class="text-green-500">{{ _('Purchased by:') }} {{ get_full_name(gift_idea.bought_by) }}</p>
                         {% endif %}
                     {% else %}
-                        <strong>Available idea</strong>
+                        <strong>{{ _('Available idea') }}</strong>
                         {% if share_link.allow_purchases %}
-                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">I Purchased This</button>
+                        <button class="bg-green-500 text-white px-3 py-1 rounded mark-as-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">{{ _('I Purchased This') }}</button>
                         {% endif %}
                     {% endif %}
                 </li>
@@ -256,23 +256,23 @@
         </section>
 
         <div class="text-center mt-8 text-sm text-gray-500">
-            <p>Shared on {{ share_link.created_at[:10] }} • Expires on {{ share_link.expires_at[:10] }}</p>
-            <p class="mt-2">Powered by GiftManager</p>
+            <p>{{ _('Shared on %(created)s • Expires on %(expires)s', created=share_link.created_at[:10], expires=share_link.expires_at[:10]) }}</p>
+            <p class="mt-2">{{ _('Powered by GiftManager') }}</p>
         </div>
     </main>
 
     <div id="visitorModal" class="visitor-modal">
         <div class="visitor-modal-content">
-            <h3 class="text-lg font-semibold mb-4">Enter Your Name</h3>
-            <p class="text-sm text-gray-600 mb-4">Please enter your name to mark this item as purchased:</p>
-            <input type="text" id="visitorName" placeholder="Your name" 
+            <h3 class="text-lg font-semibold mb-4">{{ _('Enter Your Name') }}</h3>
+            <p class="text-sm text-gray-600 mb-4">{{ _('Please enter your name to mark this item as purchased:') }}</p>
+            <input type="text" id="visitorName" placeholder="{{ _('Your name') }}" 
                    class="w-full px-3 py-2 border rounded mb-4 text-black">
             <div class="flex space-x-2">
                 <button id="confirmPurchase" class="bg-green-500 text-white px-4 py-2 rounded flex-1">
-                    Confirm Purchase
+                    {{ _('Confirm Purchase') }}
                 </button>
                 <button id="cancelPurchase" class="bg-gray-500 text-white px-4 py-2 rounded flex-1">
-                    Cancel
+                    {{ _('Cancel') }}
                 </button>
             </div>
         </div>
@@ -335,7 +335,7 @@
             button.addEventListener('click', () => {
                 const ideaId = button.getAttribute('data-idea-id');
                 const visitorId = button.getAttribute('data-visitor-id');
-                if (confirm('Are you sure you want to cancel this purchase?')) {
+                if (confirm({{ _('Are you sure you want to cancel this purchase?')|tojson }})) {
                     markAsNotBought(ideaId, visitorId);
                 }
             });
@@ -345,7 +345,7 @@
         document.getElementById('confirmPurchase').addEventListener('click', () => {
             const visitorName = document.getElementById('visitorName').value.trim();
             if (!visitorName) {
-                alert('Please enter your name');
+                alert({{ _('Please enter your name')|tojson }});
                 return;
             }
             markAsBought(currentIdeaId, visitorName);
@@ -383,12 +383,12 @@
                     document.getElementById('visitorName').value = '';
                     location.reload();
                 } else {
-                    alert('Error: ' + data.error);
+                    alert({{ _('Error:')|tojson }} + ' ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred');
+                alert({{ _('An error occurred')|tojson }});
             });
         }
 
@@ -408,12 +408,12 @@
                     localStorage.setItem(`visitor_purchases_${token}`, JSON.stringify(purchases));
                     location.reload();
                 } else {
-                    alert('Error: ' + data.error);
+                    alert({{ _('Error:')|tojson }} + ' ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred');
+                alert({{ _('An error occurred')|tojson }});
             });
         }
 

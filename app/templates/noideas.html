@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>No gift ideas?</title>
+    <title>{{ _('No gift ideas?') }}</title>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
@@ -155,15 +155,15 @@
     <header class="text-gray-900 p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
-                Back
+                {{ _('Back') }}
             </button>
         </nav>
     </header>
     <main>
-        <h1>This person lacks imagination, help them!</h1>
-        <img class="mec" src="{{ url_for('static', filename='icons/nope.jpg') }}" alt="No gift ideas image">
+        <h1>{{ _('This person lacks imagination, help them!') }}</h1>
+        <img class="mec" src="{{ url_for('static', filename='icons/nope.jpg') }}" alt="{{ _('No gift ideas image') }}">
         <div class="user-card-button" onclick="location.href='{{ url_for('add2') }}'">
-            <p class="button-text">Add ideas</p>
+            <p class="button-text">{{ _('Add ideas') }}</p>
         </div>
     </main>
 

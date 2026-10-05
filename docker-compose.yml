@@ -1,6 +1,6 @@
-version: '3.8'
 services:
   giftmanager:
+    build: .
     image: icbest/giftmanager:latest
     container_name: giftmanager
     ports:

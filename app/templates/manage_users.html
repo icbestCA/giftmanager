@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users</title>
+    <title>{{ _('Manage Users') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="icon" href="/favicon.ico" type="image/png">
@@ -178,46 +178,46 @@
         <div class="bg-gray-800 text-white w-64 flex flex-col sidebar" id="sidebar">
             <div class="px-6 py-4">
                 <a href="/admin" class="text-2xl font-semibold">
-                    Admin Dashboard
+                    {{ _('Admin Dashboard') }}
                 </a>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-6">
                 <!-- Group 1 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Management</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">{{ _('Management') }}</h2>
                     <a href="{{ url_for('manage_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-users"></i> Users
+                        <i class="fas fa-users"></i> {{ _('Users') }}
                     </a>
                     <a href="{{ url_for('secret_santa') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-gift"></i> Secret Santa
+                        <i class="fas fa-gift"></i> {{ _('Secret Santa') }}
                     </a>
                     <a href="{{ url_for('add_user') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-plus"></i> Add User
+                        <i class="fas fa-user-plus"></i> {{ _('Add User') }}
                     </a>
                     <a href="{{ url_for('manage_groups') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-people-group"></i> Families
+                        <i class="fas fa-people-group"></i> {{ _('Families') }}
                     </a>
                     <a href="{{ url_for('manage_guest_users') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-clock"></i> Guest Users
+                        <i class="fas fa-user-clock"></i> {{ _('Guest Users') }}
                     </a>
                 </div>
                 <!-- Group 2 -->
                 <div>
-                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">Configuration & Maintenance</h2>
+                    <h2 class="text-sm font-semibold uppercase text-gray-400 mb-2">{{ _('Configuration & Maintenance') }}</h2>
                     <a href="{{ url_for('delete_old_gift_ideas_page') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-trash"></i> Deletion Script
+                        <i class="fas fa-trash"></i> {{ _('Deletion Script') }}
                     </a>
                     <a href="{{ url_for('edit_email_settings') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-envelope"></i> Email Settings
+                        <i class="fas fa-envelope"></i> {{ _('Email Settings') }}
                     </a>
                     <a href="{{ url_for('edit_login_message') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Login Settings
+                        <i class="fas fa-user-cog"></i> {{ _('Login Settings') }}
                     </a>
                     <a href="{{ url_for('setup_oidc') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-shield-halved"></i> OIDC Settings
+                        <i class="fas fa-shield-halved"></i> {{ _('OIDC Settings') }}
                     </a>
                     <a href="{{ url_for('setup_advanced') }}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-user-cog"></i> Advanced
+                        <i class="fas fa-user-cog"></i> {{ _('Advanced') }}
                     </a>
                 </div>
             </nav>
@@ -228,19 +228,19 @@
             <header class="header shadow p-4">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-4">
-                        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                        <button class="menu-toggle" id="menuToggle" aria-label="{{ _('Toggle menu') }}">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Manage Users</h2>
+                        <h2 class="text-xl font-semibold">{{ _('Manage Users') }}</h2>
                     </div>
-                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">{{ _('To Dashboard') }}</a>
                 </div>
             </header>
 
             <main class="p-6">
                 <!-- Manage Users Content -->
                 <div class="container mx-auto">
-                    <h1 class="text-2xl font-semibold mb-6">Manage Users</h1>
+                    <h1 class="text-2xl font-semibold mb-6">{{ _('Manage Users') }}</h1>
 
                     {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -257,12 +257,12 @@
                     <table class="table-auto w-full shadow rounded-lg table-fixed section">
                         <thead class="section">
                             <tr>
-                                <th class="px-4 py-2 w-1/6">Username</th>
-                                <th class="px-4 py-2 w-1/6">Name</th>
+                                <th class="px-4 py-2 w-1/6">{{ _('Username') }}</th>
+                                <th class="px-4 py-2 w-1/6">{{ _('Name') }}</th>
                                 <th class="px-4 py-2 w-1/6">Email</th>
-                                <th class="px-4 py-2 w-1/6">Avatar</th>
-                                <th class="px-4 py-2 w-1/6">Admin</th>
-                                <th class="px-4 py-2 w-1/6">Actions</th>
+                                <th class="px-4 py-2 w-1/6">{{ _('Avatar') }}</th>
+                                <th class="px-4 py-2 w-1/6">{{ _('Admin') }}</th>
+                                <th class="px-4 py-2 w-1/6">{{ _('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody style="background-color: var(--section-bg-color);">
@@ -276,22 +276,22 @@
                                             <div class="flex justify-center items-center">{{ user[1] }}</div>
                                             <div class="flex justify-center items-center">{{ user[2] }}</div>
                                             <div class="flex justify-center items-center">
-                                                <img src="{{ url_for('static', filename=user[3]) }}" alt="Avatar" class="w-8 h-8 rounded-full mx-auto">
+                                                <img src="{{ url_for('static', filename=user[3]) }}" alt="{{ _('Avatar') }}" class="w-8 h-8 rounded-full mx-auto">
                                             </div>
                                             <div class="flex justify-center items-center">
                                                 <form action="{{ url_for('manage_users') }}" method="POST" class="inline-block">
                                                     <input type="hidden" name="username" value="{{ user[0] }}">
                                                     <input type="hidden" name="toggle_admin" value="{{ '1' if user[4] == 0 else '0' }}">
                                                     <button type="submit" class="px-3 py-1 rounded {{ 'bg-green-500 text-white' if user[4] == 0 else 'bg-gray-500 text-white' }}" {% if user[0] == session['username'] %} disabled {% endif %}>
-                                                        {{ 'Make Admin' if user[4] == 0 else 'Revoke Admin' }}
+                                                        {{ _('Make Admin') if user[4] == 0 else _('Revoke Admin') }}
                                                     </button>
                                                 </form>
                                             </div>
                                             <div class="flex justify-center items-center">
                                                 <form action="{{ url_for('manage_users') }}" method="POST" class="inline-block">
                                                     <input type="hidden" name="username" value="{{ user[0] }}">
-                                                    <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</button>
-                                                    <button type="submit" name="delete_user" class="bg-red-500 text-white px-3 py-1 rounded" onclick="return confirm('Are you sure you want to delete this user?')" {% if user[0] == session['username'] %} disabled {% endif %}>Delete</button>
+                                                    <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-blue-500 text-white px-3 py-1 rounded">{{ _('Edit') }}</button>
+                                                    <button type="submit" name="delete_user" class="bg-red-500 text-white px-3 py-1 rounded" onclick='return confirm({{ _("Are you sure you want to delete this user?")|tojson }})' {% if user[0] == session['username'] %} disabled {% endif %}>{{ _('Delete') }}</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -300,20 +300,20 @@
                                         <div id="edit-form-{{ user[0] }}" class="hidden mt-4">
                                             <form action="{{ url_for('manage_users') }}" method="POST" class="flex flex-wrap space-x-4">
                                                 <input type="hidden" name="username" value="{{ user[0] }}" class="inputer">
-                                                <input type="text" name="name" placeholder="Full Name" value="{{ user[1] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
+                                                <input type="text" name="name" placeholder="{{ _('Full Name') }}" value="{{ user[1] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
                                                 <input type="email" name="email" placeholder="Email" value="{{ user[2] }}" class="border rounded px-3 py-1 w-1/4 inputer" style="margin-bottom: 10px;">
-                                                <input type="password" name="password" placeholder="New Password" class="border rounded px-3 py-1 w-1/4 inputer">
+                                                <input type="password" name="password" placeholder="{{ _('New Password') }}" class="border rounded px-3 py-1 w-1/4 inputer">
                                                 <select name="avatar" class="border rounded px-3 py-1 w-1/4 inputer">
-                                                    <option value="{{ user[3] }}" selected>Current Avatar</option>
-                                                    <option value="icons/avatar1.png">Avatar 1</option>
-                                                    <option value="icons/avatar2.png">Avatar 2</option>
-                                                    <option value="icons/avatar3.png">Avatar 3</option>
-                                                    <option value="icons/avatar4.png">Avatar 4</option>
-                                                    <option value="icons/avatar5.png">Avatar 5</option>
-                                                    <option value="icons/avatar6.png">Avatar 6</option>
+                                                    <option value="{{ user[3] }}" selected>{{ _('Current Avatar') }}</option>
+                                                    <option value="icons/avatar1.png">{{ _('Avatar 1') }}</option>
+                                                    <option value="icons/avatar2.png">{{ _('Avatar 2') }}</option>
+                                                    <option value="icons/avatar3.png">{{ _('Avatar 3') }}</option>
+                                                    <option value="icons/avatar4.png">{{ _('Avatar 4') }}</option>
+                                                    <option value="icons/avatar5.png">{{ _('Avatar 5') }}</option>
+                                                    <option value="icons/avatar6.png">{{ _('Avatar 6') }}</option>
                                                 </select>
-                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded">Save Changes</button>
-                                                <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-gray-300 text-black px-3 py-1 rounded">Cancel</button>
+                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded">{{ _('Save Changes') }}</button>
+                                                <button type="button" onclick="toggleEdit('{{ user[0] }}')" class="bg-gray-300 text-black px-3 py-1 rounded">{{ _('Cancel') }}</button>
                                             </form>
                                         </div>
                                     </div>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-09 20:51+0100\n"
+"POT-Creation-Date: 2026-10-05 22:29+0200\n"
 "PO-Revision-Date: 2025-12-09 20:34+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: nl\n"
@@ -16,225 +16,303 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
-#: app/app.py:82 app/app.py:100 app/app.py:130
+#: app/app.py:160 app/app.py:178 app/app.py:208
 msgid "Please log in first."
 msgstr "Gelieve eerst in te loggen."
 
-#: app/app.py:89
+#: app/app.py:167
 msgid "This feature is not available for guest users."
 msgstr "Deze functie is niet beschikbaar voor gastgebruikers."
 
-#: app/app.py:111
+#: app/app.py:189
 msgid "Admin access required."
 msgstr "Admin toegang vereist."
 
-#: app/app.py:175 app/app.py:334
+#: app/app.py:253 app/app.py:412
 msgid "User not found."
 msgstr "Gebruiker niet gevonden."
 
-#: app/app.py:181
+#: app/app.py:259
 msgid "Email updated successfully."
 msgstr "E-mail succesvol bijgewerkt."
 
-#: app/app.py:249
+#: app/app.py:327
 msgid "Authorization failed: invalid state."
 msgstr "Autorisatie mislukkt: ongeldige status."
 
-#: app/app.py:256
+#: app/app.py:334
 msgid "OIDC authorization failed."
 msgstr "OIDC autorisatie mislukt."
 
-#: app/app.py:266
+#: app/app.py:344
 msgid "Failed to parse user information."
 msgstr "Parsen van gebruikersinformatie mislukt."
 
-#: app/app.py:298
+#: app/app.py:376
 msgid "Login successful with OIDC!"
 msgstr "Succesvol ingelogd met OIDC!"
 
-#: app/app.py:314
+#: app/app.py:392
 msgid "New profile created. Please complete your profile setup."
 msgstr "Nieuw profiel aangemaakt. Gelieve uw profielinstellingen te voltooien."
 
-#: app/app.py:317
+#: app/app.py:395
 msgid "User not found and auto-registration is disabled."
 msgstr "Gebruiker niet gevonden en automatische registratie is uitgeschakeld."
 
-#: app/app.py:339
+#: app/app.py:417
 msgid "Profile setup not required. Avatar already set."
 msgstr "Profielinstelling niet vereist. Avatar is al ingesteld."
 
-#: app/app.py:360
+#: app/app.py:438
 msgid "Profile setup complete!"
 msgstr "Profielinstelling voltooid!"
 
-#: app/app.py:422 app/app.py:440
+#: app/app.py:469 app/app.py:523
+#, python-format
+msgid "Error reading users.json: %(error)s"
+msgstr "Fout bij het lezen van users.json: %(error)s"
+
+#: app/app.py:503 app/app.py:521
 msgid "User does not exist"
 msgstr "Gebruiker bestaat niet"
 
-#: app/app.py:433
+#: app/app.py:514
 msgid "Login successful!"
 msgstr "Succesvol ingelogd!"
 
-#: app/app.py:436
+#: app/app.py:517
 msgid "Wrong password"
 msgstr "Verkeerd wachtwoord"
 
-#: app/app.py:457
+#: app/app.py:538
 msgid "Self-registration is not enabled. Please contact an administrator."
 msgstr "Zelfregistratie is niet ingeschakeld. Neem contact op met een beheerder."
 
-#: app/app.py:476
+#: app/app.py:557
 msgid "Invalid joining code. Please check with your family."
 msgstr "Ongeldige deelnamecode. Controleer met uw familie."
 
-#: app/app.py:481
+#: app/app.py:562
 msgid "Please fill in all required fields."
 msgstr "Gelieve alle verplichte velden in te vullen."
 
-#: app/app.py:485
+#: app/app.py:566
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-#: app/app.py:495
+#: app/app.py:576
 msgid "Username already exists. Please choose a different one."
 msgstr "Gebruikersnaam bestaat al. Kies een andere."
 
-#: app/app.py:500
+#: app/app.py:581
 msgid "Email already registered. Please use a different email or contact support."
-msgstr "E-mail al geregistreerd. Gebruik een andere e-mail of neem contact op met de ondersteuning."
+msgstr ""
+"E-mail al geregistreerd. Gebruik een andere e-mail of neem contact op met"
+" de ondersteuning."
 
-#: app/app.py:520
+#: app/app.py:601
 msgid "Registration successful! You can now log in."
 msgstr "Registratie succesvol! U kunt nu inloggen."
 
-#: app/app.py:539 app/app.py:616
+#: app/app.py:620 app/app.py:705
 msgid "Current user not found."
 msgstr "Huidige gebruiker niet gevonden."
 
-#: app/app.py:703
+#: app/app.py:763
+#, python-format
+msgid "Idea \"%(name)s\" added for user %(user)s by %(added_by)s!"
+msgstr "Idee \"%(name)s\" toegevoegd voor %(user)s door %(added_by)s!"
+
+#: app/app.py:792
 msgid "IDEAS DELETED"
 msgstr "VERWIJDERDE IDEEËN"
 
-#: app/app.py:713
+#: app/app.py:802
 msgid "You are not authorized to delete this idea."
 msgstr "U bent niet geautoriseerd om dit idee te verwijderen."
 
-#: app/app.py:715 app/app.py:946 app/app.py:975 app/app.py:1189
+#: app/app.py:804 app/app.py:1038 app/app.py:1067 app/app.py:1281
 msgid "Idea not found"
 msgstr "Idee niet gevonden"
 
-#: app/app.py:743
+#: app/app.py:827
+#, python-format
+msgid "This idea, '%(name)s', has been deleted but you already BOUGHT IT."
+msgstr "Het idee '%(name)s' is verwijderd, maar u hebt het al GEKOCHT."
+
+#: app/app.py:835
 msgid "GiftManager"
 msgstr "CadeauManager"
 
-#: app/app.py:748
+#: app/app.py:840
 msgid "Buyer Name"
 msgstr "Naam koper"
 
-#: app/app.py:788
+#: app/app.py:880
 msgid "User data not found"
 msgstr "Gebruikersgegevens niet gevonden"
 
-#: app/app.py:891 app/app.py:2177
+#: app/app.py:983 app/app.py:2269
 msgid "User not found"
 msgstr "Gebruiker niet gevonden"
 
-#: app/app.py:896
+#: app/app.py:988
 msgid "Current password is incorrect"
 msgstr "Huidig wachtwoord is onjuist"
 
-#: app/app.py:901
+#: app/app.py:993
 msgid "New password and confirmation do not match"
 msgstr "Nieuw wachtwoord en bevestiging komen niet overeen"
 
-#: app/app.py:910
+#: app/app.py:1002
 msgid "Password successfully changed"
 msgstr "Wachtwoord succesvol gewijzigd"
 
-#: app/app.py:1025
+#: app/app.py:1030
+#, python-format
+msgid "Marked \"%(name)s\" as bought!"
+msgstr "\"%(name)s\" gemarkeerd als gekocht!"
+
+#: app/app.py:1036
+#, python-format
+msgid "\"%(name)s\" has already been bought by %(buyer)s."
+msgstr "\"%(name)s\" is al gekocht door %(buyer)s."
+
+#: app/app.py:1060
+#, python-format
+msgid "Marked \"%(name)s\" as not bought."
+msgstr "\"%(name)s\" gemarkeerd als niet gekocht."
+
+#: app/app.py:1065
+#, python-format
+msgid "You did not buy \"%(name)s\", so you cannot mark it as not bought."
+msgstr ""
+"U hebt \"%(name)s\" niet gekocht, dus u kunt het niet als niet gekocht "
+"markeren."
+
+#: app/app.py:1117
 msgid "No gift ideas for this user."
 msgstr "Geen cadeau-ideeën voor deze gebruiker."
 
-#: app/app.py:1056
+#: app/app.py:1148
 msgid "You haven't added any gift ideas."
 msgstr "U hebt nog geen cadeau-ideeën toegevoegd."
 
-#: app/app.py:1114
+#: app/app.py:1206
 msgid "Username already exists!"
 msgstr "Gebruikersnaam bestaat al!"
 
-#: app/app.py:1135
+#: app/app.py:1227
 msgid "User added successfully!"
 msgstr "Gebruiker succesvol toegevoegd!"
 
-#: app/app.py:1180
+#: app/app.py:1272
 msgid "Idea updated successfully!"
 msgstr "Idee succesvol bijgewerkt!"
 
-#: app/app.py:1187
+#: app/app.py:1279
 msgid "You are not authorized to edit this idea."
 msgstr "U bent niet geautoriseerd om dit idee te bewerken."
 
-#: app/app.py:1252
+#: app/app.py:1323
+#, python-format
+msgid "Pool \"%(name)s\" does not exist."
+msgstr "Pool \"%(name)s\" bestaat niet."
+
+#: app/app.py:1333
+#, python-format
+msgid "Pool \"%(name)s\" has been deleted!"
+msgstr "Pool \"%(name)s\" is verwijderd!"
+
+#: app/app.py:1344
 msgid "Pool name is required!"
 msgstr "Poolnaam is vereist!"
 
-#: app/app.py:1256
+#: app/app.py:1348
 msgid "You need at least 2 participants for Secret Santa!"
 msgstr "U hebt minimaal 2 deelnemers nodig voor Secret Santa!"
 
-#: app/app.py:1282
+#: app/app.py:1374
 msgid "Secret Santa assignments have been made!"
 msgstr "Secret Santa toewijzingen zijn gemaakt!"
 
-#: app/app.py:1303
+#: app/app.py:1395
 msgid "You don't have any Secret Santa assignments yet."
 msgstr "U hebt nog geen Secret Santa toewijzingen."
 
-#: app/app.py:1313
+#: app/app.py:1405
 msgid "No specific instructions provided."
 msgstr "Geen specifieke instructies verstrekt."
 
-#: app/app.py:1347
+#: app/app.py:1439
 msgid "User deleted successfully!"
 msgstr "Gebruiker succesvol verwijderd!"
 
-#: app/app.py:1358
+#: app/app.py:1450
 msgid "Admin status updated successfully!"
 msgstr "Adminstatus succesvol bijgewerkt!"
 
-#: app/app.py:1379
+#: app/app.py:1471
 msgid "User updated successfully!"
 msgstr "Gebruiker succesvol bijgewerkt!"
 
-#: app/app.py:1438
-msgid "Email settings updated successfully."
-msgstr "E-mailinstellingen succesvol bijgewerkt."
+#: app/app.py:1530
+msgid "Email settings updated successfully!"
+msgstr "E-mailinstellingen succesvol bijgewerkt!"
 
-#: app/app.py:1470
+#: app/app.py:1532
+#, python-format
+msgid "An error occurred: %(error)s"
+msgstr "Er is een fout opgetreden: %(error)s"
+
+#: app/app.py:1562
 msgid "Login message updated successfully!"
 msgstr "Inlogbericht succesvol bijgewerkt!"
 
-#: app/app.py:1474
+#: app/app.py:1564
+#, python-format
+msgid "Error updating login message: %(error)s"
+msgstr "Fout bij het bijwerken van het inlogbericht: %(error)s"
+
+#: app/app.py:1566
 msgid "Message cannot be empty."
 msgstr "Bericht mag niet leeg zijn."
 
-#: app/app.py:1567
+#: app/app.py:1628
+#, python-format
+msgid ""
+"%(count)s gift ideas older than the threshold have been successfully "
+"deleted."
+msgstr "%(count)s cadeau-ideeën ouder dan de drempel zijn verwijderd."
+
+#: app/app.py:1634
+#, python-format
+msgid "Error deleting old gift ideas: %(error)s"
+msgstr "Fout bij het verwijderen van oude cadeau-ideeën: %(error)s"
+
+#: app/app.py:1655
+#, python-format
+msgid "The number of days to delete old gift ideas has been updated to %(days)s."
+msgstr ""
+"Het aantal dagen voor het verwijderen van oude cadeau-ideeën is "
+"bijgewerkt naar %(days)s."
+
+#: app/app.py:1659
 msgid "Invalid number of days entered. Please enter a valid number."
 msgstr "Ongeldig aantal dagen ingevoerd. Voer een geldig nummer in."
 
-#: app/app.py:1569
+#: app/app.py:1661
 msgid "Please provide a value for the number of days."
 msgstr "Geef een waarde op voor het aantal dagen."
 
-#: app/app.py:1582
+#: app/app.py:1674
 msgid "Users are already configured. Setup page is unavailable."
 msgstr "Gebruikers zijn al geconfigureerd. Setup pagina is niet beschikbaar."
 
-#: app/app.py:1614
+#: app/app.py:1706
 msgid ""
 "Admin account created successfully. Please configure the environment "
 "variables."
@@ -242,53 +320,664 @@ msgstr ""
 "Admin-account succesvol aangemaakt. Gelieve de omgevingsvariabelen te "
 "configurer."
 
-#: app/app.py:1624
+#: app/app.py:1716
 msgid "You must access this page from the setupadmin route."
 msgstr "U moet deze pagina openen via de setupadmin route."
 
-#: app/app.py:1650
+#: app/app.py:1742
 msgid "Environment variables saved successfully!"
 msgstr "Omgevingsvariabelen succesvol opgeslagen!"
 
-#: app/app.py:1685
+#: app/app.py:1769
+#, python-format
+msgid "Missing required fields: %(fields)s"
+msgstr "Ontbrekende verplichte velden: %(fields)s"
+
+#: app/app.py:1777
 msgid "OIDC settings saved successfully!"
 msgstr "OIDC-instellingen succesvol opgeslagen!"
 
-#: app/app.py:1696
+#: app/app.py:1780
+#, python-format
+msgid "Error saving OIDC settings: %(error)s"
+msgstr "Fout bij het opslaan van de OIDC-instellingen: %(error)s"
+
+#: app/app.py:1788
 msgid "Environment file not found. Creating a new one."
 msgstr "Omgevingsbestand niet gevonden. Er wordt een nieuw bestand aangemaakt."
 
-#: app/app.py:1741
+#: app/app.py:1833
 msgid "New group added successfully!"
 msgstr "Nieuwe groep succesvol toegevoegd!"
 
-#: app/app.py:1768
+#: app/app.py:1860
 msgid "Group assignments updated successfully!"
 msgstr "Groepstoewijzingen succesvol bijgewerkt!"
 
-#: app/app.py:1868
+#: app/app.py:1909
+#, python-format
+msgid "Successfully removed %(count)s gift ideas."
+msgstr "%(count)s cadeau-ideeën succesvol verwijderd."
+
+#: app/app.py:1915
+#, python-format
+msgid "Error occurred while running delete_old_gift_ideas: %(error)s"
+msgstr "Fout bij het uitvoeren van delete_old_gift_ideas: %(error)s"
+
+#: app/app.py:1960
 msgid "URL parameter is required"
 msgstr "URL-parameter is vereist"
 
-#: app/app.py:1874
+#: app/app.py:1966
 msgid "No OG image found"
 msgstr "Geen OG-afbeelding gevonden"
 
-#: app/app.py:1916
+#: app/app.py:2008
 msgid "Guest user created successfully!"
 msgstr "Gastgebruiker succesvol aangemaakt!"
 
-#: app/app.py:1967
+#: app/app.py:2057
+#, python-format
+msgid ""
+"Guest user %(username)s deleted successfully! %(count)s purchased gift "
+"ideas deleted."
+msgstr ""
+"Gastgebruiker %(username)s succesvol verwijderd! %(count)s gekochte "
+"cadeau-ideeën verwijderd."
+
+#: app/app.py:2059
 msgid "Guest user not found."
 msgstr "Gastgebruiker niet gevonden."
 
-#: app/app.py:1982
+#: app/app.py:2074
 msgid "Guest login successful!"
 msgstr "Gast login succesvol!"
 
-#: app/app.py:1985
+#: app/app.py:2077
 msgid "Invalid guest password"
 msgstr "Ongeldig gast wachtwoord"
+
+#: app/app.py:2099
+msgid "Currency settings updated! Please restart to see changes"
+msgstr "Valuta-instellingen bijgewerkt! Herstart om de wijzigingen te zien"
+
+#: app/app.py:2112
+msgid "Self-registration settings updated successfully!"
+msgstr "Instellingen voor zelfregistratie succesvol bijgewerkt!"
+
+#: app/app.py:2155
+#, python-format
+msgid "Shared list \"%(name)s\" created successfully!"
+msgstr "Gedeelde lijst \"%(name)s\" succesvol aangemaakt!"
+
+#: app/app.py:2192 app/app.py:2220
+msgid "Shared list not found."
+msgstr "Gedeelde lijst niet gevonden."
+
+#: app/app.py:2197
+msgid "Only the list owner can delete this shared list."
+msgstr "Alleen de eigenaar van de lijst kan deze gedeelde lijst verwijderen."
+
+#: app/app.py:2208
+#, python-format
+msgid "Shared list \"%(name)s\" deleted successfully!"
+msgstr "Gedeelde lijst \"%(name)s\" succesvol verwijderd!"
+
+#: app/app.py:2225
+msgid "Only the list owner can edit members."
+msgstr "Alleen de eigenaar van de lijst kan leden bewerken."
+
+#: app/app.py:2237
+#, python-format
+msgid "Members updated for \"%(name)s\"!"
+msgstr "Leden bijgewerkt voor \"%(name)s\"!"
+
+#: app/app.py:2249
+msgid "Link sharing settings updated!"
+msgstr "Instellingen voor delen via link bijgewerkt!"
+
+#: app/app.py:2261
+msgid "Link sharing feature is currently disabled by administrator."
+msgstr "Delen via link is momenteel uitgeschakeld door de beheerder."
+
+#: app/app.py:2277
+msgid "Target not found"
+msgstr "Doel niet gevonden"
+
+#: app/app.py:2284
+msgid "You are not a member of this shared list"
+msgstr "U bent geen lid van deze gedeelde lijst"
+
+#: app/app.py:2289
+msgid "You can only manage your own sharing settings"
+msgstr "U kunt alleen uw eigen deelinstellingen beheren"
+
+#: app/app.py:2316
+msgid "New share link created!"
+msgstr "Nieuwe deellink aangemaakt!"
+
+#: app/app.py:2325
+msgid "Share link activated!"
+msgstr "Deellink geactiveerd!"
+
+#: app/app.py:2325
+msgid "Share link deactivated!"
+msgstr "Deellink gedeactiveerd!"
+
+#: app/app.py:2339
+#, python-format
+msgid "Share link extended by %(days)s days! New expiry: %(expiry)s"
+msgstr "Deellink verlengd met %(days)s dagen! Nieuwe vervaldatum: %(expiry)s"
+
+#: app/app.py:2350
+msgid "Share link deleted!"
+msgstr "Deellink verwijderd!"
+
+#: app/app.py:2444 app/app.py:2510
+msgid "Share link not found or expired"
+msgstr "Deellink niet gevonden of verlopen"
+
+#: app/app.py:2447
+msgid "Purchases not allowed for this share link"
+msgstr "Aankopen zijn niet toegestaan voor deze deellink"
+
+#: app/app.py:2452 app/app.py:2515
+msgid "Gift idea not found"
+msgstr "Cadeau-idee niet gevonden"
+
+#: app/app.py:2457
+msgid "Visitor name is required"
+msgstr "Naam van de bezoeker is vereist"
+
+#: app/app.py:2487
+msgid "Item already purchased"
+msgstr "Artikel al gekocht"
+
+#: app/app.py:2520
+msgid "Visitor ID required"
+msgstr "Bezoekers-ID vereist"
+
+#: app/app.py:2540
+msgid "You can only cancel your own purchases"
+msgstr "U kunt alleen uw eigen aankopen annuleren"
+
+#: app/templates/add2.html:6 app/templates/add_idea.html:6
+msgid "New Ideas"
+msgstr "Nieuwe ideeën"
+
+#: app/templates/add2.html:157 app/templates/add_idea.html:157
+#: app/templates/edit_idea.html:173
+msgid "No OG image found. Enter an image URL below."
+msgstr "Geen OG-afbeelding gevonden. Voer hieronder een afbeeldings-URL in."
+
+#: app/templates/add2.html:163 app/templates/add_idea.html:163
+#: app/templates/edit_idea.html:178
+msgid "Error fetching OG image. Enter an image URL below."
+msgstr ""
+"Fout bij het ophalen van de OG-afbeelding. Voer hieronder een "
+"afbeeldings-URL in."
+
+#: app/templates/add2.html:187 app/templates/add_idea.html:187
+#: app/templates/edit_idea.html:200
+msgid "Invalid image URL. Please enter a valid URL."
+msgstr "Ongeldige afbeeldings-URL. Voer een geldige URL in."
+
+#: app/templates/add2.html:203 app/templates/add_idea.html:203
+#: app/templates/add_user.html:120 app/templates/bought_items.html:121
+#: app/templates/manage_shared_lists.html:134
+#: app/templates/manage_sharing.html:109 app/templates/my_ideas.html:190
+#: app/templates/noideas.html:158 app/templates/register.html:120
+#: app/templates/user_gift_ideas.html:175
+msgid "Back"
+msgstr "Terug"
+
+#: app/templates/add2.html:209 app/templates/add_idea.html:209
+#: app/templates/user_gift_ideas.html:176
+msgid "Add Ideas"
+msgstr "Ideeën toevoegen"
+
+#: app/templates/add2.html:212 app/templates/add_idea.html:212
+msgid "Add to:"
+msgstr "Toevoegen aan:"
+
+#: app/templates/add2.html:214
+msgid "-- Choose here --"
+msgstr "-- Kies hier --"
+
+#: app/templates/add2.html:221 app/templates/add_idea.html:220
+msgid "Title:"
+msgstr "Titel:"
+
+#: app/templates/add2.html:225 app/templates/add_idea.html:224
+#: app/templates/edit_idea.html:218
+msgid "Description (Optional):"
+msgstr "Beschrijving (optioneel):"
+
+#: app/templates/add2.html:229 app/templates/add_idea.html:228
+#: app/templates/edit_idea.html:224
+msgid "Link (Optional):"
+msgstr "Link (optioneel):"
+
+#: app/templates/add2.html:235 app/templates/add_idea.html:234
+#: app/templates/edit_idea.html:237
+msgid "Enter Image URL (Optional):"
+msgstr "Afbeeldings-URL (optioneel):"
+
+#: app/templates/add2.html:241 app/templates/add_idea.html:240
+#: app/templates/edit_idea.html:246
+msgid "Estimated Value (Optional):"
+msgstr "Geschatte waarde (optioneel):"
+
+#: app/templates/add2.html:242 app/templates/add_idea.html:241
+msgid "Estimated Value"
+msgstr "Geschatte waarde"
+
+#: app/templates/add2.html:245 app/templates/add_idea.html:244
+msgid "Submit"
+msgstr "Verzenden"
+
+#: app/templates/add_user.html:6 app/templates/add_user.html:126
+msgid "New User"
+msgstr "Nieuwe gebruiker"
+
+#: app/templates/add_user.html:129 app/templates/register.html:140
+#: app/templates/setupadmin.html:17
+msgid "Username for login:"
+msgstr "Gebruikersnaam om in te loggen:"
+
+#: app/templates/add_user.html:133 app/templates/manage_guest_users.html:338
+#: app/templates/register.html:148 app/templates/setup_profile.html:34
+#: app/templates/setupadmin.html:21
+msgid "Password:"
+msgstr "Wachtwoord:"
+
+#: app/templates/add_user.html:137 app/templates/register.html:144
+msgid "Complete name:"
+msgstr "Volledige naam:"
+
+#: app/templates/add_user.html:141 app/templates/setup_profile.html:43
+#: app/templates/setupadmin.html:33
+msgid "Birthday:"
+msgstr "Verjaardag:"
+
+#: app/templates/add_user.html:145 app/templates/setup_profile.html:29
+#: app/templates/setupadmin.html:25
+msgid "Email:"
+msgstr "E-mail:"
+
+#: app/templates/add_user.html:149 app/templates/register.html:173
+#: app/templates/setup_profile.html:48 app/templates/setupadmin.html:37
+msgid "Avatar:"
+msgstr "Avatar:"
+
+#: app/templates/add_user.html:151 app/templates/add_user.html:158
+#: app/templates/manage_users.html:308 app/templates/register.html:175
+#: app/templates/register.html:187 app/templates/setup_profile.html:50
+#: app/templates/setup_profile.html:57 app/templates/setupadmin.html:39
+#: app/templates/setupadmin.html:46
+msgid "Avatar 1"
+msgstr "Avatar 1"
+
+#: app/templates/add_user.html:152 app/templates/add_user.html:160
+#: app/templates/manage_users.html:309 app/templates/register.html:176
+#: app/templates/register.html:191 app/templates/setup_profile.html:51
+#: app/templates/setup_profile.html:59 app/templates/setupadmin.html:40
+#: app/templates/setupadmin.html:48
+msgid "Avatar 2"
+msgstr "Avatar 2"
+
+#: app/templates/add_user.html:153 app/templates/add_user.html:162
+#: app/templates/manage_users.html:310 app/templates/register.html:177
+#: app/templates/register.html:195 app/templates/setup_profile.html:52
+#: app/templates/setup_profile.html:61 app/templates/setupadmin.html:41
+#: app/templates/setupadmin.html:50
+msgid "Avatar 3"
+msgstr "Avatar 3"
+
+#: app/templates/add_user.html:154 app/templates/add_user.html:164
+#: app/templates/manage_users.html:311 app/templates/register.html:178
+#: app/templates/register.html:199 app/templates/setup_profile.html:53
+#: app/templates/setup_profile.html:63 app/templates/setupadmin.html:42
+#: app/templates/setupadmin.html:52
+msgid "Avatar 4"
+msgstr "Avatar 4"
+
+#: app/templates/add_user.html:155 app/templates/add_user.html:166
+#: app/templates/manage_users.html:312 app/templates/register.html:179
+#: app/templates/register.html:203 app/templates/setup_profile.html:54
+#: app/templates/setup_profile.html:65 app/templates/setupadmin.html:43
+#: app/templates/setupadmin.html:54
+msgid "Avatar 5"
+msgstr "Avatar 5"
+
+#: app/templates/add_user.html:156 app/templates/add_user.html:168
+#: app/templates/manage_users.html:313 app/templates/register.html:180
+#: app/templates/register.html:207 app/templates/setup_profile.html:55
+#: app/templates/setup_profile.html:67 app/templates/setupadmin.html:44
+#: app/templates/setupadmin.html:56
+msgid "Avatar 6"
+msgstr "Avatar 6"
+
+#: app/templates/add_user.html:171
+msgid "Add"
+msgstr "Toevoegen"
+
+#: app/templates/admin_dashboard.html:6 app/templates/admin_dashboard.html:183
+#: app/templates/advanced.html:229 app/templates/dashboard.html:402
+#: app/templates/delete_old_gift_ideas.html:190
+#: app/templates/edit_email_settings.html:190
+#: app/templates/edit_login_message.html:190
+#: app/templates/manage_groups.html:209
+#: app/templates/manage_guest_users.html:250
+#: app/templates/manage_users.html:181 app/templates/setup_oidc.html:190
+msgid "Admin Dashboard"
+msgstr "Admin Dashboard"
+
+#: app/templates/admin_dashboard.html:189 app/templates/advanced.html:235
+#: app/templates/delete_old_gift_ideas.html:196
+#: app/templates/edit_email_settings.html:196
+#: app/templates/edit_login_message.html:196
+#: app/templates/manage_groups.html:215
+#: app/templates/manage_guest_users.html:256
+#: app/templates/manage_users.html:187 app/templates/setup_oidc.html:196
+msgid "Management"
+msgstr "Beheer"
+
+#: app/templates/admin_dashboard.html:191 app/templates/advanced.html:237
+#: app/templates/dashboard.html:447
+#: app/templates/delete_old_gift_ideas.html:198
+#: app/templates/edit_email_settings.html:198
+#: app/templates/edit_login_message.html:198
+#: app/templates/manage_groups.html:217
+#: app/templates/manage_guest_users.html:258
+#: app/templates/manage_users.html:189 app/templates/setup_oidc.html:198
+msgid "Users"
+msgstr "Gebruikers"
+
+#: app/templates/admin_dashboard.html:194 app/templates/advanced.html:240
+#: app/templates/delete_old_gift_ideas.html:201
+#: app/templates/edit_email_settings.html:201
+#: app/templates/edit_login_message.html:201
+#: app/templates/manage_groups.html:220
+#: app/templates/manage_guest_users.html:261
+#: app/templates/manage_users.html:192 app/templates/secret_santa.html:6
+#: app/templates/setup_oidc.html:201
+msgid "Secret Santa"
+msgstr "Secret Santa"
+
+#: app/templates/admin_dashboard.html:197 app/templates/advanced.html:243
+#: app/templates/delete_old_gift_ideas.html:204
+#: app/templates/edit_email_settings.html:204
+#: app/templates/edit_login_message.html:204
+#: app/templates/manage_groups.html:223
+#: app/templates/manage_guest_users.html:264
+#: app/templates/manage_users.html:195 app/templates/setup_oidc.html:204
+msgid "Add User"
+msgstr "Gebruiker toevoegen"
+
+#: app/templates/admin_dashboard.html:200 app/templates/advanced.html:246
+#: app/templates/delete_old_gift_ideas.html:207
+#: app/templates/edit_email_settings.html:207
+#: app/templates/edit_login_message.html:207
+#: app/templates/manage_groups.html:226
+#: app/templates/manage_guest_users.html:267
+#: app/templates/manage_users.html:198 app/templates/setup_oidc.html:207
+msgid "Families"
+msgstr "Families"
+
+#: app/templates/admin_dashboard.html:203 app/templates/advanced.html:249
+#: app/templates/delete_old_gift_ideas.html:210
+#: app/templates/edit_email_settings.html:210
+#: app/templates/edit_login_message.html:210
+#: app/templates/manage_groups.html:229
+#: app/templates/manage_guest_users.html:270
+#: app/templates/manage_users.html:201 app/templates/setup_oidc.html:210
+msgid "Guest Users"
+msgstr "Gastgebruikers"
+
+#: app/templates/admin_dashboard.html:208 app/templates/advanced.html:254
+#: app/templates/delete_old_gift_ideas.html:215
+#: app/templates/edit_email_settings.html:215
+#: app/templates/edit_login_message.html:215
+#: app/templates/manage_groups.html:234
+#: app/templates/manage_guest_users.html:275
+#: app/templates/manage_users.html:206 app/templates/setup_oidc.html:215
+msgid "Configuration & Maintenance"
+msgstr "Configuratie en onderhoud"
+
+#: app/templates/admin_dashboard.html:210 app/templates/advanced.html:256
+#: app/templates/delete_old_gift_ideas.html:217
+#: app/templates/delete_old_gift_ideas.html:243
+#: app/templates/edit_email_settings.html:217
+#: app/templates/edit_login_message.html:217
+#: app/templates/manage_groups.html:236
+#: app/templates/manage_guest_users.html:277
+#: app/templates/manage_users.html:208 app/templates/setup_oidc.html:217
+msgid "Deletion Script"
+msgstr "Verwijderscript"
+
+#: app/templates/admin_dashboard.html:213 app/templates/advanced.html:259
+#: app/templates/delete_old_gift_ideas.html:220
+#: app/templates/edit_email_settings.html:220
+#: app/templates/edit_login_message.html:220
+#: app/templates/manage_groups.html:239
+#: app/templates/manage_guest_users.html:280
+#: app/templates/manage_users.html:211 app/templates/setup_oidc.html:220
+msgid "Email Settings"
+msgstr "E-mailinstellingen"
+
+#: app/templates/admin_dashboard.html:216 app/templates/advanced.html:262
+#: app/templates/delete_old_gift_ideas.html:223
+#: app/templates/edit_email_settings.html:223
+#: app/templates/edit_login_message.html:223
+#: app/templates/manage_groups.html:242
+#: app/templates/manage_guest_users.html:283
+#: app/templates/manage_users.html:214 app/templates/setup_oidc.html:223
+msgid "Login Settings"
+msgstr "Inloginstellingen"
+
+#: app/templates/admin_dashboard.html:219 app/templates/advanced.html:265
+#: app/templates/delete_old_gift_ideas.html:226
+#: app/templates/edit_email_settings.html:226
+#: app/templates/edit_login_message.html:226
+#: app/templates/manage_groups.html:245
+#: app/templates/manage_guest_users.html:286
+#: app/templates/manage_users.html:217 app/templates/setup_oidc.html:226
+msgid "OIDC Settings"
+msgstr "OIDC-instellingen"
+
+#: app/templates/admin_dashboard.html:222 app/templates/advanced.html:268
+#: app/templates/delete_old_gift_ideas.html:229
+#: app/templates/edit_email_settings.html:229
+#: app/templates/edit_login_message.html:229
+#: app/templates/manage_groups.html:248
+#: app/templates/manage_guest_users.html:289
+#: app/templates/manage_users.html:220 app/templates/setup_oidc.html:229
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+#: app/templates/admin_dashboard.html:234 app/templates/advanced.html:279
+#: app/templates/delete_old_gift_ideas.html:240
+#: app/templates/edit_email_settings.html:240
+#: app/templates/edit_login_message.html:241
+#: app/templates/manage_groups.html:259
+#: app/templates/manage_guest_users.html:300
+#: app/templates/manage_users.html:231 app/templates/setup_oidc.html:240
+msgid "Toggle menu"
+msgstr "Menu tonen/verbergen"
+
+#: app/templates/admin_dashboard.html:237
+msgid "Welcome!"
+msgstr "Welkom!"
+
+#: app/templates/admin_dashboard.html:240 app/templates/advanced.html:284
+#: app/templates/delete_old_gift_ideas.html:245
+#: app/templates/edit_email_settings.html:245
+#: app/templates/edit_login_message.html:246
+#: app/templates/manage_groups.html:264
+#: app/templates/manage_guest_users.html:305
+#: app/templates/manage_users.html:236 app/templates/setup_oidc.html:245
+msgid "To Dashboard"
+msgstr "Naar dashboard"
+
+#: app/templates/admin_dashboard.html:248
+msgid "Dashboard Overview"
+msgstr "Dashboardoverzicht"
+
+#: app/templates/admin_dashboard.html:249
+msgid ""
+"This is the admin dashboard where you can manage users, configure "
+"settings, and more."
+msgstr ""
+"Dit is het admin-dashboard waar u gebruikers kunt beheren, instellingen "
+"kunt configureren en meer."
+
+#: app/templates/advanced.html:6 app/templates/advanced.html:282
+msgid "Advanced Settings"
+msgstr "Geavanceerde instellingen"
+
+#: app/templates/advanced.html:305
+msgid "Enable reordering button on the myideas page."
+msgstr "Herschikknop inschakelen op de pagina Mijn ideeën."
+
+#: app/templates/advanced.html:306
+msgid "Reordering button"
+msgstr "Herschikknop"
+
+#: app/templates/advanced.html:308 app/templates/advanced.html:327
+#: app/templates/setup_oidc.html:344 app/templates/setup_oidc.html:355
+#: app/templates/setupenv.html:80
+msgid "True"
+msgstr "Ja"
+
+#: app/templates/advanced.html:309 app/templates/advanced.html:328
+#: app/templates/setup_oidc.html:345 app/templates/setup_oidc.html:356
+#: app/templates/setupenv.html:81
+msgid "False"
+msgstr "Nee"
+
+#: app/templates/advanced.html:315 app/templates/advanced.html:334
+#: app/templates/manage_shared_lists.html:272
+#: app/templates/setup_profile.html:71
+msgid "Save"
+msgstr "Opslaan"
+
+#: app/templates/advanced.html:324
+msgid "Enable images"
+msgstr "Afbeeldingen inschakelen"
+
+#: app/templates/advanced.html:325
+msgid "Images"
+msgstr "Afbeeldingen"
+
+#: app/templates/advanced.html:343
+msgid "Currency Settings"
+msgstr "Valuta-instellingen"
+
+#: app/templates/advanced.html:348
+msgid "Currency Symbol"
+msgstr "Valutasymbool"
+
+#: app/templates/advanced.html:357
+msgid "Enter the currency symbol (max 5 characters)"
+msgstr "Voer het valutasymbool in (max. 5 tekens)"
+
+#: app/templates/advanced.html:363
+msgid "Symbol Position"
+msgstr "Positie van het symbool"
+
+#: app/templates/advanced.html:369
+msgid "Before amount (e.g., $50)"
+msgstr "Voor het bedrag (bijv. €50)"
+
+#: app/templates/advanced.html:374
+msgid "After amount (e.g., 50€)"
+msgstr "Na het bedrag (bijv. 50€)"
+
+#: app/templates/advanced.html:381
+msgid "Preview:"
+msgstr "Voorbeeld:"
+
+#: app/templates/advanced.html:383
+msgid "This is how gift values will appear"
+msgstr "Zo worden cadeauwaarden weergegeven"
+
+#: app/templates/advanced.html:390
+msgid "Save Currency Settings"
+msgstr "Valuta-instellingen opslaan"
+
+#: app/templates/advanced.html:400
+msgid "Self-Registration Settings"
+msgstr "Instellingen voor zelfregistratie"
+
+#: app/templates/advanced.html:407
+msgid "Enable Self Registration"
+msgstr "Zelfregistratie inschakelen"
+
+#: app/templates/advanced.html:409
+msgid "Allow new users to create their own accounts"
+msgstr "Nieuwe gebruikers toestaan zelf een account aan te maken"
+
+#: app/templates/advanced.html:415
+msgid "Joining Code (Optional)"
+msgstr "Deelnamecode (optioneel)"
+
+#: app/templates/advanced.html:422
+msgid "Leave empty to allow anyone to register"
+msgstr "Leeg laten om iedereen te laten registreren"
+
+#: app/templates/advanced.html:424
+msgid ""
+"If set, users must provide this code to register. Leave empty for open "
+"registration."
+msgstr ""
+"Indien ingesteld, moeten gebruikers deze code opgeven om te registreren. "
+"Leeg laten voor open registratie."
+
+#: app/templates/advanced.html:432
+msgid "Save Registration Settings"
+msgstr "Registratie-instellingen opslaan"
+
+#: app/templates/advanced.html:442
+msgid "Link Sharing Settings"
+msgstr "Instellingen voor delen via link"
+
+#: app/templates/advanced.html:449
+msgid "Enable Link Sharing Feature"
+msgstr "Delen via link inschakelen"
+
+#: app/templates/advanced.html:452
+msgid ""
+"Allow users to create public share links for their gift lists. When "
+"disabled, the \"Share My List\" feature will be hidden from all users."
+msgstr ""
+"Gebruikers toestaan openbare deellinks voor hun cadeaulijsten te maken. "
+"Indien uitgeschakeld, wordt de functie \"Mijn lijst delen\" voor alle "
+"gebruikers verborgen."
+
+#: app/templates/advanced.html:460
+msgid "Save Link Sharing Settings"
+msgstr "Instellingen voor delen opslaan"
+
+#: app/templates/bought_items.html:7
+msgid "Bought Items"
+msgstr "Gekochte artikelen"
+
+#: app/templates/bought_items.html:126
+msgid "Object bought by me:"
+msgstr "Door mij gekochte items:"
+
+#: app/templates/bought_items.html:131
+msgid "For:"
+msgstr "Voor:"
+
+#: app/templates/bought_items.html:132
+msgid "Description:"
+msgstr "Beschrijving:"
+
+#: app/templates/bought_items.html:134
+msgid "Link:"
+msgstr "Link:"
 
 #: app/templates/dashboard.html:6
 msgid "Gift Dashboard"
@@ -302,7 +991,7 @@ msgstr "Menu"
 msgid "Info"
 msgstr "Info"
 
-#: app/templates/dashboard.html:340
+#: app/templates/dashboard.html:340 app/templates/manage_users.html:261
 msgid "Name"
 msgstr "Naam"
 
@@ -318,7 +1007,7 @@ msgstr "Wachtwoord wijzigen"
 msgid "Current Password"
 msgstr "Huidig wachtwoord"
 
-#: app/templates/dashboard.html:356
+#: app/templates/dashboard.html:356 app/templates/manage_users.html:305
 msgid "New Password"
 msgstr "Nieuw wachtwoord"
 
@@ -334,11 +1023,12 @@ msgstr "E-mail wijzigen"
 msgid "New Email"
 msgstr "Nieuw e-mailadres"
 
-#: app/templates/dashboard.html:388
+#: app/templates/dashboard.html:388 app/templates/dashboard.html:389
 msgid "Logout"
 msgstr "Uitloggen"
 
-#: app/templates/dashboard.html:392
+#: app/templates/dashboard.html:392 app/templates/manage_shared_lists.html:6
+#: app/templates/manage_shared_lists.html:135
 msgid "Shared Lists"
 msgstr "Gedeelde lijsten"
 
@@ -350,22 +1040,1029 @@ msgstr "Openbare links"
 msgid "Theme"
 msgstr "Thema"
 
-#: app/templates/dashboard.html:401
-msgid "Admin Dashboard"
-msgstr "Admin Dashboard"
-
-#: app/templates/dashboard.html:427
+#: app/templates/dashboard.html:428
 msgid "Show as table"
 msgstr "Toon als tabel"
 
-#: app/templates/dashboard.html:432
+#: app/templates/dashboard.html:433
 msgid "View your Secret Santa assignment"
 msgstr "Bekijk uw Secret Santa toewijzing"
 
-#: app/templates/dashboard.html:439
+#: app/templates/dashboard.html:434
+msgid "Secret Santa Icon"
+msgstr "Secret Santa-icoon"
+
+#: app/templates/dashboard.html:440 app/templates/my_ideas.html:192
+#: app/templates/noideas.html:166
 msgid "Add ideas"
 msgstr "Ideeën toevoegen"
 
-#: app/templates/dashboard.html:446
-msgid "Users"
-msgstr "Gebruikers"
+#: app/templates/delete_old_gift_ideas.html:6
+msgid "Manage Gift Ideas"
+msgstr "Cadeau-ideeën beheren"
+
+#: app/templates/delete_old_gift_ideas.html:263
+msgid "Delete Old Gift Ideas"
+msgstr "Oude cadeau-ideeën verwijderen"
+
+#: app/templates/delete_old_gift_ideas.html:266
+#, python-format
+msgid "Delete Gift Ideas Older Than %(days)s Days"
+msgstr "Cadeau-ideeën ouder dan %(days)s dagen verwijderen"
+
+#: app/templates/delete_old_gift_ideas.html:273
+msgid "Change Days for Deleting Old Gift Ideas"
+msgstr "Aantal dagen voor het verwijderen van oude ideeën wijzigen"
+
+#: app/templates/delete_old_gift_ideas.html:275
+msgid "New Number of Days:"
+msgstr "Nieuw aantal dagen:"
+
+#: app/templates/delete_old_gift_ideas.html:279
+msgid "Update Days"
+msgstr "Dagen bijwerken"
+
+#: app/templates/edit_email_settings.html:6
+#: app/templates/edit_email_settings.html:243
+#: app/templates/edit_email_settings.html:252
+msgid "Edit Email Settings"
+msgstr "E-mailinstellingen bewerken"
+
+#: app/templates/edit_email_settings.html:255 app/templates/setupenv.html:18
+msgid "Mailjet API Key:"
+msgstr "Mailjet API-sleutel:"
+
+#: app/templates/edit_email_settings.html:260
+#: app/templates/edit_email_settings.html:270
+msgid "Leave blank to keep current"
+msgstr "Leeg laten om de huidige waarde te behouden"
+
+#: app/templates/edit_email_settings.html:265 app/templates/setupenv.html:23
+msgid "Mailjet API Secret:"
+msgstr "Mailjet API-geheim:"
+
+#: app/templates/edit_email_settings.html:275 app/templates/setupenv.html:28
+msgid "System Email:"
+msgstr "Systeem-e-mail:"
+
+#: app/templates/edit_email_settings.html:288 app/templates/edit_idea.html:253
+#: app/templates/manage_groups.html:340 app/templates/manage_users.html:315
+#: app/templates/setup_oidc.html:363
+msgid "Save Changes"
+msgstr "Wijzigingen opslaan"
+
+#: app/templates/edit_idea.html:6
+msgid "Edit an idea"
+msgstr "Een idee bewerken"
+
+#: app/templates/edit_idea.html:233 app/templates/my_ideas.html:221
+#: app/templates/shared_list_public.html:216
+#: app/templates/user_gift_ideas.html:199
+msgid "OG Image"
+msgstr "OG-afbeelding"
+
+#: app/templates/edit_idea.html:247
+msgid "Enter estimated value in dollars"
+msgstr "Voer de geschatte waarde in"
+
+#: app/templates/edit_idea.html:255 app/templates/manage_shared_lists.html:276
+#: app/templates/manage_sharing.html:304 app/templates/manage_users.html:316
+#: app/templates/shared_list_public.html:275
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: app/templates/edit_login_message.html:6
+#: app/templates/edit_login_message.html:244
+#: app/templates/edit_login_message.html:252
+msgid "Edit Login Message"
+msgstr "Inlogbericht bewerken"
+
+#: app/templates/edit_login_message.html:269
+msgid "Update Message"
+msgstr "Bericht bijwerken"
+
+#: app/templates/login.html:9 app/templates/login.html:207
+msgid "Login"
+msgstr "Inloggen"
+
+#: app/templates/login.html:225 app/templates/manage_guest_users.html:406
+#: app/templates/manage_users.html:260 app/templates/setup_oidc.html:321
+#: app/templates/setup_oidc.html:332
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+#: app/templates/login.html:227
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: app/templates/login.html:229
+msgid "SIGN IN"
+msgstr "INLOGGEN"
+
+#: app/templates/login.html:232 app/templates/login.html:243
+#: app/templates/oidc_only.html:141
+msgid "or"
+msgstr "of"
+
+#: app/templates/login.html:237
+msgid "Create New Account"
+msgstr "Nieuw account aanmaken"
+
+#: app/templates/login.html:248 app/templates/oidc_only.html:144
+msgid "I have a guest password"
+msgstr "Ik heb een gastwachtwoord"
+
+#: app/templates/login.html:255 app/templates/oidc_only.html:137
+msgid "Login with OIDC"
+msgstr "Inloggen met OIDC"
+
+#: app/templates/login.html:259
+msgid "Contact the administrator to reset your password."
+msgstr "Neem contact op met de beheerder om uw wachtwoord te resetten."
+
+#: app/templates/login.html:265
+msgid "Guest Login"
+msgstr "Gast-login"
+
+#: app/templates/login.html:267
+msgid "Enter your guest password to access limited features"
+msgstr "Voer uw gastwachtwoord in voor beperkte toegang"
+
+#: app/templates/login.html:282
+msgid "Guest Password"
+msgstr "Gastwachtwoord"
+
+#: app/templates/login.html:284 app/templates/oidc_only.html:150
+msgid "Enter guest password"
+msgstr "Voer het gastwachtwoord in"
+
+#: app/templates/login.html:286
+msgid "LOGIN AS GUEST"
+msgstr "INLOGGEN ALS GAST"
+
+#: app/templates/login.html:289
+msgid "Back to regular login"
+msgstr "Terug naar normaal inloggen"
+
+#: app/templates/login.html:292
+msgid "Contact the administrator for guest access."
+msgstr "Neem contact op met de beheerder voor gasttoegang."
+
+#: app/templates/manage_groups.html:6 app/templates/manage_groups.html:262
+#: app/templates/manage_groups.html:270
+msgid "Manage Groups"
+msgstr "Groepen beheren"
+
+#: app/templates/manage_groups.html:187
+msgid "Please enter a new group name."
+msgstr "Voer een nieuwe groepsnaam in."
+
+#: app/templates/manage_groups.html:192
+msgid "Please select at least one user to assign the new group."
+msgstr "Selecteer ten minste één gebruiker voor de nieuwe groep."
+
+#: app/templates/manage_groups.html:275
+msgid "Add a New Group"
+msgstr "Nieuwe groep toevoegen"
+
+#: app/templates/manage_groups.html:280
+msgid "Enter new group name"
+msgstr "Nieuwe groepsnaam invoeren"
+
+#: app/templates/manage_groups.html:285
+msgid "Assign to Users:"
+msgstr "Toewijzen aan gebruikers:"
+
+#: app/templates/manage_groups.html:302
+msgid "Add Group"
+msgstr "Groep toevoegen"
+
+#: app/templates/manage_groups.html:309
+msgid "Manage Existing Groups"
+msgstr "Bestaande groepen beheren"
+
+#: app/templates/manage_groups.html:314
+msgid "User"
+msgstr "Gebruiker"
+
+#: app/templates/manage_guest_users.html:6
+#: app/templates/manage_guest_users.html:303
+#: app/templates/manage_guest_users.html:322
+msgid "Manage Guest Users"
+msgstr "Gastgebruikers beheren"
+
+#: app/templates/manage_guest_users.html:207
+msgid "Please enter a display name for the guest."
+msgstr "Voer een weergavenaam in voor de gast."
+
+#: app/templates/manage_guest_users.html:212
+msgid "Please enter a password for the guest."
+msgstr "Voer een wachtwoord in voor de gast."
+
+#: app/templates/manage_guest_users.html:221
+msgid "Please select at least one family for guest access."
+msgstr "Selecteer ten minste één familie voor gasttoegang."
+
+#: app/templates/manage_guest_users.html:227
+msgid "Please select at least one person for guest access."
+msgstr "Selecteer ten minste één persoon voor gasttoegang."
+
+#: app/templates/manage_guest_users.html:327
+msgid "Create New Guest User"
+msgstr "Nieuwe gastgebruiker aanmaken"
+
+#: app/templates/manage_guest_users.html:331
+msgid "Display Name:"
+msgstr "Weergavenaam:"
+
+#: app/templates/manage_guest_users.html:334
+msgid "e.g., Uncle John"
+msgstr "bijv. Oom Jan"
+
+#: app/templates/manage_guest_users.html:335
+msgid "This name will be shown when guest marks items as bought"
+msgstr "Deze naam wordt getoond wanneer de gast items als gekocht markeert"
+
+#: app/templates/manage_guest_users.html:345
+msgid "Access Type:"
+msgstr "Type toegang:"
+
+#: app/templates/manage_guest_users.html:350
+msgid "Access by Family"
+msgstr "Toegang per familie"
+
+#: app/templates/manage_guest_users.html:355
+msgid "Access Specific People"
+msgstr "Toegang tot specifieke personen"
+
+#: app/templates/manage_guest_users.html:362
+msgid "Select Families:"
+msgstr "Families selecteren:"
+
+#: app/templates/manage_guest_users.html:378
+msgid "Select People:"
+msgstr "Personen selecteren:"
+
+#: app/templates/manage_guest_users.html:393
+msgid "Create Guest User"
+msgstr "Gastgebruiker aanmaken"
+
+#: app/templates/manage_guest_users.html:400
+msgid "Existing Guest Users"
+msgstr "Bestaande gastgebruikers"
+
+#: app/templates/manage_guest_users.html:407
+msgid "Display Name"
+msgstr "Weergavenaam"
+
+#: app/templates/manage_guest_users.html:408
+msgid "Access Type"
+msgstr "Type toegang"
+
+#: app/templates/manage_guest_users.html:409
+msgid "Access Details"
+msgstr "Toegangsdetails"
+
+#: app/templates/manage_guest_users.html:410
+#: app/templates/manage_users.html:265
+msgid "Actions"
+msgstr "Acties"
+
+#: app/templates/manage_guest_users.html:420
+msgid "Family Access"
+msgstr "Familietoegang"
+
+#: app/templates/manage_guest_users.html:422
+msgid "People Access"
+msgstr "Persoonstoegang"
+
+#: app/templates/manage_guest_users.html:428
+msgid "Families:"
+msgstr "Families:"
+
+#: app/templates/manage_guest_users.html:432
+msgid "People:"
+msgstr "Personen:"
+
+#: app/templates/manage_guest_users.html:442
+#, python-format
+msgid "Are you sure you want to delete guest user %(name)s?"
+msgstr "Weet u zeker dat u gastgebruiker %(name)s wilt verwijderen?"
+
+#: app/templates/manage_guest_users.html:444
+#: app/templates/manage_shared_lists.html:243
+#: app/templates/manage_sharing.html:247 app/templates/manage_users.html:294
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: app/templates/manage_guest_users.html:456
+msgid "No guest users configured yet."
+msgstr "Nog geen gastgebruikers geconfigureerd."
+
+#: app/templates/manage_shared_lists.html:153
+msgid "Create New Shared List"
+msgstr "Nieuwe gedeelde lijst aanmaken"
+
+#: app/templates/manage_shared_lists.html:157
+msgid "List Name:"
+msgstr "Naam van de lijst:"
+
+#: app/templates/manage_shared_lists.html:160
+msgid "e.g., Family Vacation, Office Party"
+msgstr "bijv. Familievakantie, Kantoorfeest"
+
+#: app/templates/manage_shared_lists.html:164
+msgid "List Avatar:"
+msgstr "Avatar van de lijst:"
+
+#: app/templates/manage_shared_lists.html:180
+msgid "Select an avatar for your shared list"
+msgstr "Kies een avatar voor uw gedeelde lijst"
+
+#: app/templates/manage_shared_lists.html:185
+msgid "Add Members:"
+msgstr "Leden toevoegen:"
+
+#: app/templates/manage_shared_lists.html:197
+msgid "Create Shared List"
+msgstr "Gedeelde lijst aanmaken"
+
+#: app/templates/manage_shared_lists.html:204
+msgid "My Shared Lists"
+msgstr "Mijn gedeelde lijsten"
+
+#: app/templates/manage_shared_lists.html:215
+msgid "List Avatar"
+msgstr "Avatar van de lijst"
+
+#: app/templates/manage_shared_lists.html:224
+msgid "Members:"
+msgstr "Leden:"
+
+#: app/templates/manage_shared_lists.html:233
+msgid "View"
+msgstr "Bekijken"
+
+#: app/templates/manage_shared_lists.html:238
+#: app/templates/manage_users.html:293
+msgid "Edit"
+msgstr "Bewerken"
+
+#: app/templates/manage_shared_lists.html:241
+msgid "Delete this list?"
+msgstr "Deze lijst verwijderen?"
+
+#: app/templates/manage_shared_lists.html:248
+msgid "Member"
+msgstr "Lid"
+
+#: app/templates/manage_shared_lists.html:257
+msgid "Edit Members"
+msgstr "Leden bewerken"
+
+#: app/templates/manage_shared_lists.html:286
+msgid "No shared lists yet."
+msgstr "Nog geen gedeelde lijsten."
+
+#: app/templates/manage_shared_lists.html:292
+#: app/templates/manage_sharing.html:319
+#: app/templates/secret_santa_assignment.html:144
+#: app/templates/table_view.html:81
+msgid "Back to Dashboard"
+msgstr "Terug naar dashboard"
+
+#: app/templates/manage_sharing.html:6
+msgid "Share List"
+msgstr "Lijst delen"
+
+#: app/templates/manage_sharing.html:112
+#, python-format
+msgid "Share: %(name)s"
+msgstr "Delen: %(name)s"
+
+#: app/templates/manage_sharing.html:114
+msgid "Share My List"
+msgstr "Mijn lijst delen"
+
+#: app/templates/manage_sharing.html:127
+msgid "My Personal List"
+msgstr "Mijn persoonlijke lijst"
+
+#: app/templates/manage_sharing.html:154
+#, python-format
+msgid "Create Share Link for %(name)s"
+msgstr "Deellink maken voor %(name)s"
+
+#: app/templates/manage_sharing.html:156
+msgid "Create New Share Link"
+msgstr "Nieuwe deellink maken"
+
+#: app/templates/manage_sharing.html:163
+msgid "Link Name:"
+msgstr "Naam van de link:"
+
+#: app/templates/manage_sharing.html:166
+#, python-format
+msgid "%(name)s List"
+msgstr "Lijst %(name)s"
+
+#: app/templates/manage_sharing.html:166
+msgid "My Gift List"
+msgstr "Mijn cadeaulijst"
+
+#: app/templates/manage_sharing.html:167
+msgid "Give this link a name"
+msgstr "Geef deze link een naam"
+
+#: app/templates/manage_sharing.html:170
+msgid "Valid for:"
+msgstr "Geldig voor:"
+
+#: app/templates/manage_sharing.html:172 app/templates/manage_sharing.html:291
+msgid "7 days"
+msgstr "7 dagen"
+
+#: app/templates/manage_sharing.html:173 app/templates/manage_sharing.html:292
+msgid "30 days"
+msgstr "30 dagen"
+
+#: app/templates/manage_sharing.html:174 app/templates/manage_sharing.html:293
+msgid "90 days"
+msgstr "90 dagen"
+
+#: app/templates/manage_sharing.html:175 app/templates/manage_sharing.html:294
+msgid "1 year"
+msgstr "1 jaar"
+
+#: app/templates/manage_sharing.html:181
+msgid "Allow visitors to mark items as purchased"
+msgstr "Bezoekers toestaan items als gekocht te markeren"
+
+#: app/templates/manage_sharing.html:183
+msgid "Visitors can enter their name when marking items as bought"
+msgstr "Bezoekers kunnen hun naam invullen wanneer ze items als gekocht markeren"
+
+#: app/templates/manage_sharing.html:187
+msgid "Create Share Link"
+msgstr "Deellink maken"
+
+#: app/templates/manage_sharing.html:198
+#, python-format
+msgid "%(name)s Share Links"
+msgstr "Deellinks van %(name)s"
+
+#: app/templates/manage_sharing.html:200
+msgid "My Share Links"
+msgstr "Mijn deellinks"
+
+#: app/templates/manage_sharing.html:219 app/templates/manage_sharing.html:271
+msgid "Expired"
+msgstr "Verlopen"
+
+#: app/templates/manage_sharing.html:220
+msgid "Active"
+msgstr "Actief"
+
+#: app/templates/manage_sharing.html:221
+msgid "Inactive"
+msgstr "Inactief"
+
+#: app/templates/manage_sharing.html:225
+#, python-format
+msgid "by %(name)s"
+msgstr "door %(name)s"
+
+#: app/templates/manage_sharing.html:239
+msgid "Deactivate"
+msgstr "Deactiveren"
+
+#: app/templates/manage_sharing.html:239
+msgid "Activate"
+msgstr "Activeren"
+
+#: app/templates/manage_sharing.html:244
+msgid "Are you sure you want to delete this share link?"
+msgstr "Weet u zeker dat u deze deellink wilt verwijderen?"
+
+#: app/templates/manage_sharing.html:255
+msgid "Share URL:"
+msgstr "Deel-URL:"
+
+#: app/templates/manage_sharing.html:264
+msgid "Created:"
+msgstr "Aangemaakt:"
+
+#: app/templates/manage_sharing.html:268
+msgid "Expires:"
+msgstr "Verloopt:"
+
+#: app/templates/manage_sharing.html:279
+msgid "↻ Extend Expiration"
+msgstr "↻ Vervaldatum verlengen"
+
+#: app/templates/manage_sharing.html:284
+msgid "Extend Expiration"
+msgstr "Vervaldatum verlengen"
+
+#: app/templates/manage_sharing.html:289
+msgid "Add days:"
+msgstr "Dagen toevoegen:"
+
+#: app/templates/manage_sharing.html:300
+msgid "Extend"
+msgstr "Verlengen"
+
+#: app/templates/manage_sharing.html:313
+msgid "No share links created yet."
+msgstr "Nog geen deellinks aangemaakt."
+
+#: app/templates/manage_users.html:6 app/templates/manage_users.html:234
+#: app/templates/manage_users.html:243
+msgid "Manage Users"
+msgstr "Gebruikers beheren"
+
+#: app/templates/manage_users.html:263 app/templates/manage_users.html:279
+msgid "Avatar"
+msgstr "Avatar"
+
+#: app/templates/manage_users.html:264
+msgid "Admin"
+msgstr "Admin"
+
+#: app/templates/manage_users.html:286
+msgid "Make Admin"
+msgstr "Admin maken"
+
+#: app/templates/manage_users.html:286
+msgid "Revoke Admin"
+msgstr "Adminrechten intrekken"
+
+#: app/templates/manage_users.html:294
+msgid "Are you sure you want to delete this user?"
+msgstr "Weet u zeker dat u deze gebruiker wilt verwijderen?"
+
+#: app/templates/manage_users.html:303 app/templates/setup_oidc.html:322
+#: app/templates/setup_oidc.html:334
+msgid "Full Name"
+msgstr "Volledige naam"
+
+#: app/templates/manage_users.html:307
+msgid "Current Avatar"
+msgstr "Huidige avatar"
+
+#: app/templates/my_ideas.html:6
+msgid "My Ideas"
+msgstr "Mijn ideeën"
+
+#: app/templates/my_ideas.html:197
+msgid "My List of Ideas"
+msgstr "Mijn lijst met ideeën"
+
+#: app/templates/my_ideas.html:199
+msgid "Reorder"
+msgstr "Herschikken"
+
+#: app/templates/my_ideas.html:200
+msgid "Save Order"
+msgstr "Volgorde opslaan"
+
+#: app/templates/my_ideas.html:212 app/templates/shared_list_public.html:208
+#: app/templates/user_gift_ideas.html:190
+msgid "Estimated Value:"
+msgstr "Geschatte waarde:"
+
+#: app/templates/my_ideas.html:214 app/templates/shared_list_public.html:210
+#: app/templates/user_gift_ideas.html:192
+msgid "Added By:"
+msgstr "Toegevoegd door:"
+
+#: app/templates/my_ideas.html:229 app/templates/user_gift_ideas.html:207
+msgid "Delete Icon"
+msgstr "Verwijder-icoon"
+
+#: app/templates/my_ideas.html:232 app/templates/user_gift_ideas.html:210
+msgid "Edit Icon"
+msgstr "Bewerk-icoon"
+
+#: app/templates/my_ideas.html:241 app/templates/shared_list_public.html:228
+#: app/templates/user_gift_ideas.html:219
+msgid "Open Link Icon"
+msgstr "Link-openen-icoon"
+
+#: app/templates/noideas.html:6
+msgid "No gift ideas?"
+msgstr "Geen cadeau-ideeën?"
+
+#: app/templates/noideas.html:163
+msgid "This person lacks imagination, help them!"
+msgstr "Deze persoon heeft geen inspiratie, help een handje!"
+
+#: app/templates/noideas.html:164
+msgid "No gift ideas image"
+msgstr "Afbeelding geen cadeau-ideeën"
+
+#: app/templates/oidc_only.html:6 app/templates/oidc_only.html:121
+msgid "OIDC Login Only"
+msgstr "Alleen OIDC-login"
+
+#: app/templates/oidc_only.html:153
+msgid "Login as Guest"
+msgstr "Inloggen als gast"
+
+#: app/templates/oidc_only.html:156
+msgid "Back to OIDC Login"
+msgstr "Terug naar OIDC-login"
+
+#: app/templates/register.html:6
+msgid "Register - Gift Manager"
+msgstr "Registreren - CadeauManager"
+
+#: app/templates/register.html:126 app/templates/register.html:214
+msgid "Register"
+msgstr "Registreren"
+
+#: app/templates/register.html:152
+msgid "Confirm Password:"
+msgstr "Wachtwoord bevestigen:"
+
+#: app/templates/register.html:156
+msgid "Email (optional):"
+msgstr "E-mail (optioneel):"
+
+#: app/templates/register.html:160
+msgid "Birthday (optional):"
+msgstr "Verjaardag (optioneel):"
+
+#: app/templates/register.html:166
+msgid "Joining Code:"
+msgstr "Deelnamecode:"
+
+#: app/templates/register.html:168
+msgid "Please ask your family for the joining code"
+msgstr "Vraag uw familie om de deelnamecode"
+
+#: app/templates/register.html:184
+msgid "Avatar Preview:"
+msgstr "Voorbeeld avatar:"
+
+#: app/templates/register.html:231
+msgid "Passwords do not match"
+msgstr "Wachtwoorden komen niet overeen"
+
+#: app/templates/restartneeded.html:6 app/templates/restartneeded.html:57
+msgid "Restart Required"
+msgstr "Herstart vereist"
+
+#: app/templates/restartneeded.html:58
+msgid ""
+"We’ve just created some necessary files (environment and data). To apply "
+"these changes, please restart the app."
+msgstr ""
+"We hebben zojuist enkele benodigde bestanden aangemaakt (omgeving en "
+"gegevens). Herstart de app om deze wijzigingen toe te passen."
+
+#: app/templates/restartneeded.html:59
+msgid ""
+"Once you restart the Docker container, Gunicorn will pick up the changes,"
+" and the app will be able to read the new environment and data files."
+msgstr ""
+"Zodra je de Docker-container herstart, neemt Gunicorn de wijzigingen over"
+" en kan de app de nieuwe omgevings- en gegevensbestanden lezen."
+
+#: app/templates/restartneeded.html:60
+msgid "After restarting, refresh this page to proceed to the setup."
+msgstr ""
+"Vernieuw deze pagina na het herstarten om verder te gaan met de "
+"installatie."
+
+#: app/templates/script_output.html:5 app/templates/script_output.html:8
+msgid "Script Output"
+msgstr "Scriptuitvoer"
+
+#: app/templates/secret_santa.html:192
+msgid "Select Participants for Secret Santa"
+msgstr "Deelnemers voor Secret Santa selecteren"
+
+#: app/templates/secret_santa.html:200
+msgid "Pool Name:"
+msgstr "Poolnaam:"
+
+#: app/templates/secret_santa.html:204
+#: app/templates/secret_santa_assignment.html:134
+msgid "Instructions:"
+msgstr "Instructies:"
+
+#: app/templates/secret_santa.html:208
+msgid "Generate Assignments"
+msgstr "Toewijzingen genereren"
+
+#: app/templates/secret_santa.html:215
+msgid "Delete a Secret Santa Pool"
+msgstr "Een Secret Santa-pool verwijderen"
+
+#: app/templates/secret_santa.html:217
+msgid "Pool Name to Delete:"
+msgstr "Te verwijderen pool:"
+
+#: app/templates/secret_santa.html:219
+msgid "-- Select Pool --"
+msgstr "-- Selecteer pool --"
+
+#: app/templates/secret_santa.html:226
+msgid "Delete Pool"
+msgstr "Pool verwijderen"
+
+#: app/templates/secret_santa.html:231
+msgid "Back to Admin Dashboard"
+msgstr "Terug naar admin-dashboard"
+
+#: app/templates/secret_santa_assignment.html:7
+msgid "Secret Santa Assignment"
+msgstr "Secret Santa-toewijzing"
+
+#: app/templates/secret_santa_assignment.html:121
+msgid "🎅 Secret Santa 🎁"
+msgstr "🎅 Secret Santa 🎁"
+
+#: app/templates/secret_santa_assignment.html:122
+msgid "Here are your Secret Santa assignments:"
+msgstr "Hier zijn uw Secret Santa-toewijzingen:"
+
+#: app/templates/secret_santa_assignment.html:127
+msgid "Your Secret Santa Assignments:"
+msgstr "Uw Secret Santa-toewijzingen:"
+
+#: app/templates/secret_santa_assignment.html:131
+msgid "Pool:"
+msgstr "Pool:"
+
+#: app/templates/secret_santa_assignment.html:132
+msgid "Assigned to:"
+msgstr "Toegewezen aan:"
+
+#: app/templates/setup_oidc.html:6 app/templates/setup_oidc.html:243
+msgid "Setup OIDC Configuration"
+msgstr "OIDC-configuratie instellen"
+
+#: app/templates/setup_oidc.html:265 app/templates/setupenv.html:38
+msgid "OIDC Client ID:"
+msgstr "OIDC Client-ID:"
+
+#: app/templates/setup_oidc.html:274 app/templates/setupenv.html:43
+msgid "OIDC Client Secret:"
+msgstr "OIDC Client Secret:"
+
+#: app/templates/setup_oidc.html:283 app/templates/setupenv.html:48
+msgid "OIDC Server Metadata URL:"
+msgstr "OIDC Server Metadata-URL:"
+
+#: app/templates/setup_oidc.html:292 app/templates/setupenv.html:53
+msgid "OIDC Logout URL:"
+msgstr "OIDC uitlog-URL:"
+
+#: app/templates/setup_oidc.html:301 app/templates/setupenv.html:58
+msgid "Primary OIDC Field:"
+msgstr "Primair OIDC-veld:"
+
+#: app/templates/setup_oidc.html:303
+msgid "Enter the primary OIDC field"
+msgstr "Voer het primaire OIDC-veld in"
+
+#: app/templates/setup_oidc.html:309 app/templates/setupenv.html:63
+msgid "Secondary OIDC Field:"
+msgstr "Secundair OIDC-veld:"
+
+#: app/templates/setup_oidc.html:311
+msgid "Enter the secondary OIDC field"
+msgstr "Voer het secundaire OIDC-veld in"
+
+#: app/templates/setup_oidc.html:317 app/templates/setupenv.html:68
+msgid "Primary DB Field:"
+msgstr "Primair DB-veld:"
+
+#: app/templates/setup_oidc.html:329 app/templates/setupenv.html:73
+msgid "Secondary DB Field:"
+msgstr "Secundair DB-veld:"
+
+#: app/templates/setup_oidc.html:341 app/templates/setupenv.html:78
+msgid "Enable Auto Registration:"
+msgstr "Automatische registratie inschakelen:"
+
+#: app/templates/setup_oidc.html:352
+msgid "Enable Default Login Form:"
+msgstr "Standaard inlogformulier inschakelen:"
+
+#: app/templates/setup_profile.html:6
+msgid "Setup Profile"
+msgstr "Profiel instellen"
+
+#: app/templates/setup_profile.html:14
+msgid "Setup Your Profile"
+msgstr "Stel uw profiel in"
+
+#: app/templates/setup_profile.html:17
+msgid "Username:"
+msgstr "Gebruikersnaam:"
+
+#: app/templates/setup_profile.html:22 app/templates/setupadmin.html:29
+msgid "Full Name:"
+msgstr "Volledige naam:"
+
+#: app/templates/setup_profile.html:38
+msgid "Password is not required because default login is disabled."
+msgstr "Wachtwoord is niet vereist omdat standaard inloggen is uitgeschakeld."
+
+#: app/templates/setupadmin.html:6 app/templates/setupadmin.html:14
+msgid "Admin Setup"
+msgstr "Admin-instelling"
+
+#: app/templates/setupadmin.html:60
+msgid "Create Admin Account"
+msgstr "Admin-account aanmaken"
+
+#: app/templates/setupenv.html:6
+msgid "Environment Setup"
+msgstr "Omgevingsinstelling"
+
+#: app/templates/setupenv.html:14
+msgid "Environment Variable Setup"
+msgstr "Omgevingsvariabelen instellen"
+
+#: app/templates/setupenv.html:19
+msgid "Mailjet API Key"
+msgstr "Mailjet API-sleutel"
+
+#: app/templates/setupenv.html:24
+msgid "Mailjet API Secret"
+msgstr "Mailjet API-geheim"
+
+#: app/templates/setupenv.html:29
+msgid "System Email"
+msgstr "Systeem-e-mail"
+
+#: app/templates/setupenv.html:33
+msgid "Delete Days:"
+msgstr "Dagen tot verwijdering:"
+
+#: app/templates/setupenv.html:34
+msgid "Default: 30"
+msgstr "Standaard: 30"
+
+#: app/templates/setupenv.html:39
+msgid "OIDC Client ID"
+msgstr "OIDC Client-ID"
+
+#: app/templates/setupenv.html:44
+msgid "OIDC Client Secret"
+msgstr "OIDC Client Secret"
+
+#: app/templates/setupenv.html:49
+msgid "OIDC Server Metadata URL"
+msgstr "OIDC Server Metadata-URL"
+
+#: app/templates/setupenv.html:54
+msgid "OIDC Logout URL"
+msgstr "OIDC uitlog-URL"
+
+#: app/templates/setupenv.html:59 app/templates/setupenv.html:69
+msgid "Default: email"
+msgstr "Standaard: email"
+
+#: app/templates/setupenv.html:64
+msgid "Default: preferred_username"
+msgstr "Standaard: preferred_username"
+
+#: app/templates/setupenv.html:74
+msgid "Default: username"
+msgstr "Standaard: username"
+
+#: app/templates/setupenv.html:87
+msgid "Save Configuration"
+msgstr "Configuratie opslaan"
+
+#: app/templates/setupenv.html:88
+msgid "Skip for Now"
+msgstr "Nu overslaan"
+
+#: app/templates/setupenv.html:89
+msgid "You can configure these settings later in the parameters section."
+msgstr "U kunt deze instellingen later configureren in de sectie instellingen."
+
+#: app/templates/shared_list_expired.html:6
+#: app/templates/shared_list_expired.html:12
+msgid "Share Link Expired"
+msgstr "Deellink verlopen"
+
+#: app/templates/shared_list_expired.html:14
+msgid "This share link has either expired or been deactivated by the list owner."
+msgstr "Deze deellink is verlopen of gedeactiveerd door de eigenaar van de lijst."
+
+#: app/templates/shared_list_expired.html:17
+msgid "Please contact the list owner if you need access to this gift list."
+msgstr ""
+"Neem contact op met de eigenaar van de lijst als u toegang tot deze "
+"cadeaulijst nodig hebt."
+
+#: app/templates/shared_list_public.html:6
+#: app/templates/shared_list_public.html:193
+#, python-format
+msgid "%(name)s's Gift List"
+msgstr "Cadeaulijst van %(name)s"
+
+#: app/templates/shared_list_public.html:194
+msgid "Shared via GiftManager"
+msgstr "Gedeeld via CadeauManager"
+
+#: app/templates/shared_list_public.html:199
+#, python-format
+msgid "Gift Ideas for %(name)s"
+msgstr "Cadeau-ideeën voor %(name)s"
+
+#: app/templates/shared_list_public.html:236
+#: app/templates/shared_list_public.html:245
+#: app/templates/user_gift_ideas.html:226
+#: app/templates/user_gift_ideas.html:287
+msgid "Purchased by:"
+msgstr "Gekocht door:"
+
+#: app/templates/shared_list_public.html:241
+msgid "Cancel Purchase"
+msgstr "Aankoop annuleren"
+
+#: app/templates/shared_list_public.html:248
+#: app/templates/user_gift_ideas.html:231
+msgid "Available idea"
+msgstr "Beschikbaar idee"
+
+#: app/templates/shared_list_public.html:250
+msgid "I Purchased This"
+msgstr "Ik heb dit gekocht"
+
+#: app/templates/shared_list_public.html:259
+#, python-format
+msgid "Shared on %(created)s • Expires on %(expires)s"
+msgstr "Gedeeld op %(created)s • Verloopt op %(expires)s"
+
+#: app/templates/shared_list_public.html:260
+msgid "Powered by GiftManager"
+msgstr "Mogelijk gemaakt door CadeauManager"
+
+#: app/templates/shared_list_public.html:266
+msgid "Enter Your Name"
+msgstr "Voer uw naam in"
+
+#: app/templates/shared_list_public.html:267
+msgid "Please enter your name to mark this item as purchased:"
+msgstr "Voer uw naam in om dit item als gekocht te markeren:"
+
+#: app/templates/shared_list_public.html:268
+msgid "Your name"
+msgstr "Uw naam"
+
+#: app/templates/shared_list_public.html:272
+msgid "Confirm Purchase"
+msgstr "Aankoop bevestigen"
+
+#: app/templates/shared_list_public.html:338
+msgid "Are you sure you want to cancel this purchase?"
+msgstr "Weet u zeker dat u deze aankoop wilt annuleren?"
+
+#: app/templates/shared_list_public.html:348
+msgid "Please enter your name"
+msgstr "Voer uw naam in"
+
+#: app/templates/shared_list_public.html:386
+#: app/templates/shared_list_public.html:411
+msgid "Error:"
+msgstr "Fout:"
+
+#: app/templates/shared_list_public.html:391
+#: app/templates/shared_list_public.html:416
+msgid "An error occurred"
+msgstr "Er is een fout opgetreden"
+
+#: app/templates/table_view.html:6
+msgid "Gift Summary Table"
+msgstr "Overzichtstabel cadeaus"
+
+#: app/templates/table_view.html:88
+msgid "Gift Summary"
+msgstr "Cadeau-overzicht"
+
+#: app/templates/user_gift_ideas.html:6
+msgid "Ideas List"
+msgstr "Ideeënlijst"
+
+#: app/templates/user_gift_ideas.html:181
+#, python-format
+msgid "Ideas list for %(name)s"
+msgstr "Ideeënlijst voor %(name)s"
+
+#: app/templates/user_gift_ideas.html:228
+msgid "Cancel the purchase"
+msgstr "Aankoop annuleren"
+
+#: app/templates/user_gift_ideas.html:232
+msgid "Purchase completed"
+msgstr "Aankoop voltooid"
+
