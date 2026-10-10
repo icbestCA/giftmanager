@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale or 'en' }}">
+<head>
+    {% include '_head.html' %}
+    <title>{% block title %}Giftmanager{% endblock %}</title>
+</head>
+<body class="min-h-screen bg-[rgb(var(--bg))]">
+<div class="flex min-h-screen items-center justify-center px-4 py-8">
+    <div class="w-full max-w-md">
+        <div class="mb-6 flex items-center justify-center gap-2 text-2xl font-bold text-[rgb(var(--text))]">
+            <span class="text-[rgb(var(--primary))]">&#127873;</span> {{ _('Giftmanager') }}
+        </div>
+        <div class="card p-6 sm:p-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ 'alert-success' if category in ['success', 'login-success'] else 'alert-danger' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+        <p class="mt-4 text-center text-xs text-[rgb(var(--text-secondary))]">{% block footer_text %}{{ _('Giftmanager') }}{% endblock %}</p>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

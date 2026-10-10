@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale or 'en' }}">
+<head>
+    {% include '_head.html' %}
+    <title>{% block title %}Giftmanager{% endblock %}</title>
+</head>
+<body>
+{% from '_icons.html' import icon %}
+<div class="flex h-screen flex-col overflow-hidden">
+    <header class="z-20 shrink-0 border-b border-[rgb(var(--border))] bg-[rgb(var(--surface))]">
+        <div class="flex items-center gap-3 px-4 py-3 sm:px-6">
+            {% if is_admin_page %}
+            <a href="{{ url_for('dashboard') }}" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))]" title="{{ _('To Dashboard') }}" aria-label="{{ _('To Dashboard') }}">
+                {{ icon('home', 'h-5 w-5') }}
+            </a>
+            {% else %}
+            <button id="backButton" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))]" aria-label="{{ _('Back') }}">
+                {{ icon('back', 'h-5 w-5') }}
+            </button>
+            {% endif %}
+            <h1 class="truncate text-lg font-semibold text-[rgb(var(--text))]">{% block page_title %}{% endblock %}</h1>
+            <div class="ml-auto flex items-center gap-2">
+                {% block header_actions %}
+                <button type="button" onclick="toggleDarkMode()" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))]" aria-label="{{ _('Toggle theme') }}">
+                    {{ icon('moon', 'h-5 w-5') }}
+                </button>
+                {% endblock %}
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-0 flex-1 overflow-y-auto">
+        <div class="mx-auto w-full max-w-5xl p-4 sm:p-6 lg:p-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ 'alert-success' if category in ['success', 'login-success'] else 'alert-danger' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

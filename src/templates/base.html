@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale or 'en' }}">
+<head>
+    {% include '_head.html' %}
+    <title>{% block title %}Giftmanager{% endblock %}</title>
+</head>
+<body>
+{% from '_icons.html' import icon %}
+<div class="flex h-screen overflow-hidden">
+    <aside id="sidebar"
+           class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-[rgb(var(--border))] bg-[rgb(var(--sidebar))] transition-transform duration-300 lg:static lg:translate-x-0 lg:shadow-none">
+        {% block sidebar %}{% endblock %}
+    </aside>
+
+    <div id="sidebarOverlay" class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"></div>
+
+    <div class="flex min-w-0 flex-1 flex-col">
+        <header class="z-20 shrink-0 border-b border-[rgb(var(--border))] bg-[rgb(var(--surface))]">
+            <div class="flex items-center gap-3 px-4 py-3 sm:px-6">
+                {% if is_admin_page %}
+                <a href="{{ url_for('dashboard') }}" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))]" title="{{ _('To Dashboard') }}" aria-label="{{ _('To Dashboard') }}">
+                    {{ icon('home', 'h-5 w-5') }}
+                </a>
+                {% endif %}
+                <button id="sidebarToggle" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))] lg:hidden" aria-label="{{ _('Toggle menu') }}">
+                    {{ icon('menu', 'h-6 w-6') }}
+                </button>
+                <h1 class="truncate text-lg font-semibold text-[rgb(var(--text))]">{% block page_title %}{% endblock %}</h1>
+                <div class="ml-auto flex items-center gap-2">
+                    {% block header_actions %}
+                    <button type="button" onclick="toggleDarkMode()" class="rounded-lg p-2 text-[rgb(var(--text-secondary))] hover:bg-[rgb(var(--surface-2))]" aria-label="{{ _('Toggle theme') }}">
+                        {{ icon('moon', 'h-5 w-5') }}
+                    </button>
+                    {% endblock %}
+                </div>
+            </div>
+        </header>
+
+        <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ 'alert-success' if category in ['success', 'login-success'] else 'alert-danger' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

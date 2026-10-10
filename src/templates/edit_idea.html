@@ -1,338 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ idea.gift_name }} {{ _('- Edit an idea') }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
-    <link rel="icon" href="/favicon.ico" type="image/png">
-    <meta name="theme-color" content="#000000"/>
-    <link rel="manifest" href="/manifest.json">
-    <style>
-         :root {
-        --bg-color: #f0f0f0;
-        --text-color: #333;
-        --button-bg-color: rgb(42, 42, 218);
-        --button-hover-bg-color: rgb(10, 10, 190);
-        --button-text-color: black;
-        --card-bg-color: white;
-        --card-border-color: #ebebeb;
-        --card-hover-bg-color: #ddd;
-        --sidebar-bg-color: #f0f0f0;
-        --overlay-bg-color: rgba(0, 0, 0, 0.5);
-        --hr-border-color: #333;
-        --alert-bg-color: #ffe6e6;
-        --alert-border-color: #ff4d4d;
-        --alert-text-color: #b30000;
-        --primary-text-color: #333;
-        --secondary-text-color: rgba(75,85,99);
-        --header-bg-color: #ffffff;
-        --header-text-color: #333;
-        --main-bg-color: #ffffff;
-        --section-bg-color: #f3f4f6;
-        --helplogo-color: #333;
-    }
+{% extends 'base_simple.html' %}
+{% block title %}{{ idea.gift_name }} {{ _('- Edit an idea') }}{% endblock %}
+{% block page_title %}{{ idea.gift_name }}{% endblock %}
 
-    [data-theme="dark"] {
-        --bg-color: rgb(38 38 38);
-        --text-color: #e0e0e0;
-        --button-bg-color: rgb(218, 42, 42);
-        --button-hover-bg-color: rgb(190, 10, 10);
-        --button-text-color: white;
-        --card-bg-color: black;
-        --card-border-color: #333;
-        --card-hover-bg-color: #2e2e2e;
-        --sidebar-bg-color: #1e1e1e;
-        --overlay-bg-color: rgba(0, 0, 0, 0.8);
-        --hr-border-color: #e0e0e0;
-        --alert-bg-color: #4d1919;
-        --alert-border-color: #ff4d4d;
-        --alert-text-color: #ffb3b3;
-        --primary-text-color: #e0e0e0;
-        --secondary-text-color: #aaaaaa;
-        --header-bg-color: rgb(18, 18, 18);
-        --header-text-color: #e0e0e0;
-        --main-bg-color: #121212;
-        --section-bg-color: #1e1e1e;
-        --helplogo-color: #e0e0e0;
-    }
+{% block content %}
+<form method="post" action="{{ url_for('edit_idea', idea_id=idea.gift_idea_id) }}" class="card space-y-4 p-4 sm:p-6">
+    <div>
+        <label for="description" class="label">{{ _('Description (Optional):') }}</label>
+        <textarea id="description" name="description" rows="4" cols="50" class="input">{{ idea.description }}</textarea>
+    </div>
 
-    .header {
-        background-color: var(--header-bg-color);
-        color: var(--header-text-color);
-    }
+    <div>
+        <label for="link" class="label">{{ _('Link (Optional):') }}</label>
+        <input type="text" id="link" name="link" value="{{ idea.link }}" class="input">
+    </div>
 
-    .main {
-        background-color: var(--bg-color);
-    }
-
-    .section {
-        background-color: var(--section-bg-color);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        padding: 24px;
-    }
-    body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-    }
-
-    .helplogo {
-        fill: var(--helplogo-color);
-        width: 24px;
-        height: 24px;
-    }
-
-    [data-theme="dark"] .helplogo {
-        filter: invert(1) brightness(1.5);
-    }
-    .sec-text{
-        color: var(--secondary-text-color);
-    }
-    .inputer{
-        color: var(--button-text-color);
-        background-color: var(--card-bg-color);
-    }
-    #imageContainer{
-        width: 200px;
-    }
-    .custom-field-group {
-        background-color: var(--card-bg-color);
-        border-color: var(--card-border-color);
-    }
-    </style>
-<script>
-    // Inline script to apply the theme from the cookie immediately
-    (function() {
-        function getThemeFromCookie() {
-            const cookies = document.cookie.split(';');
-            for (const cookie of cookies) {
-                const [name, value] = cookie.trim().split('=');
-                if (name === 'theme') {
-                    return value;
-                }
-            }
-            return 'light'; // Default to light mode if no cookie is found
-        }
-
-        const theme = getThemeFromCookie();
-        document.documentElement.setAttribute('data-theme', theme);
-    })();
-
-// Function to fetch the OG image URL from your Flask server
-async function fetchOGImage(url) {
-    try {
-        // Make a request to the Flask backend
-        const response = await fetch(`/fetch_og_image?url=${encodeURIComponent(url)}`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Check if OG image URL was returned
-        if (data.og_image_url) {
-            return data.og_image_url;
-        } else {
-            throw new Error('No OG image found');
-        }
-    } catch (error) {
-        console.error('Error fetching OG image:', error);
-        return null;
-    }
-}
-
-// Debounce function to limit the rate of function execution
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-// Event listener for link input change
-document.addEventListener('DOMContentLoaded', function () {
-    const linkInput = document.getElementById('link');
-    const imageContainer = document.getElementById('imageContainer');
-    const manualImageUrlInput = document.getElementById('manualImageUrl');
-    const imagePathInput = document.getElementById('image_path');
-
-    // If there is already an image path (on edit), set the image preview
-    if (imagePathInput.value) {
-        imageContainer.innerHTML = `<img src="${imagePathInput.value}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
-    }
-
-    // Handle link input changes
-    const handleInput = debounce(async () => {
-        const url = linkInput.value.trim();
-        if (url) {
-            try {
-                const ogImage = await fetchOGImage(url);
-                if (ogImage) {
-                    imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="w-full rounded shadow-lg mt-4">`;
-                    imagePathInput.value = ogImage; // Store the image URL in the hidden input
-                } else {
-                    imageContainer.innerHTML = '<p class="text-red-500">No OG image found. Enter an image URL below.</p>';
-                    imagePathInput.value = ''; // Clear the hidden input
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                imageContainer.innerHTML = '<p class="text-red-500">Error fetching OG image. Enter an image URL below.</p>';
-                imagePathInput.value = ''; // Clear the hidden input
-            }
-        } else {
-            imageContainer.innerHTML = ''; // Clear image container
-            imagePathInput.value = ''; // Clear the hidden input
-        }
-    }, 500); // 500ms debounce time
-
-    linkInput.addEventListener('input', handleInput);
-
-    // Handle manual image URL input
-    manualImageUrlInput.addEventListener('input', () => {
-        const manualImageUrl = manualImageUrlInput.value.trim();
-        if (manualImageUrl) {
-            // Validate the URL (basic check)
-            if (manualImageUrl.startsWith('http')) {
-                // Display the image preview
-                imageContainer.innerHTML = `<img src="${manualImageUrl}" alt="Manual Image" class="w-full rounded shadow-lg mt-4">`;
-                imagePathInput.value = manualImageUrl; // Store the manual image URL in the hidden input
-            } else {
-                // Invalid URL, clear the preview
-                imageContainer.innerHTML = '<p class="text-red-500">Invalid image URL. Please enter a valid URL.</p>';
-                imagePathInput.value = ''; // Clear the hidden input
-            }
-        } else {
-            // Clear the preview if the input is empty
-            imageContainer.innerHTML = '';
-            imagePathInput.value = ''; // Clear the hidden input
-        }
-    });
-});
-</script>
-</head>
-<body class="body font-sans">
-<div class="main container mx-auto p-8">
-    <h1 class="text-4xl font-bold mb-8">{{ idea.gift_name }}</h1> <!-- Display the gift_name as a heading -->
-
-    <form method="post" action="{{ url_for('edit_idea', idea_id=idea.gift_idea_id) }}" class="section p-6 rounded-lg shadow-md mb-8">
-        <!-- Description Field -->
-        <label for="description" class="block mb-2 sec-text">{{ _('Description (Optional):') }}</label>
-        <textarea id="description" name="description" rows="4" cols="50" class="border rounded py-2 px-3 w-full inputer">{{ idea.description }}</textarea>
-        
-        <br>
-    
-        <!-- Link Field -->
-        <label for="link" class="block mt-4 mb-2 sec-text">{{ _('Link (Optional):') }}</label>
-        <input type="text" id="link" name="link" value="{{ idea.link }}" class="border rounded py-2 px-3 w-full inputer">
-    
-        <br>
-
-        <!-- Display OG Image if the link is available -->
-        {% if imgenabled %}
-        <div id="imageContainer">
-            {% if idea.image_path %}
-            <img src="{{ idea.image_path }}" alt="{{ _('OG Image') }}" class="w-full rounded shadow-lg mt-4"> <!-- Prepopulate the image if already set -->
-            {% endif %}
-        </div> 
-        <div id="manualImageUrlContainer" class="mb-4">
-            <label for="manualImageUrl" class="block sec-text font-bold">{{ _('Enter Image URL (Optional):') }}</label>
-            <input type="url" name="manualImageUrl" id="manualImageUrl" class="border inputer rounded py-2 px-3 w-full" value="{{ idea.image_path }}">
-        </div>
+    {% if imgenabled %}
+    <div id="imageContainer" class="w-52">
+        {% if idea.image_path %}
+        <img src="{{ idea.image_path }}" alt="{{ _('OG Image') }}" class="mt-4 w-full rounded shadow-lg">
         {% endif %}
+    </div>
+    <div id="manualImageUrlContainer" class="mb-4">
+        <label for="manualImageUrl" class="label font-semibold">{{ _('Enter Image URL (Optional):') }}</label>
+        <input type="url" name="manualImageUrl" id="manualImageUrl" class="input" value="{{ idea.image_path }}">
+    </div>
+    {% endif %}
 
-        <!-- Hidden input to store the image URL -->
-        <input type="hidden" id="image_path" name="image_path" value="{{ idea.image_path }}"> 
-    
-        <!-- Estimated Value Field -->
-        <label for="value" class="block mt-4 mb-2 sec-text">{{ _('Estimated Value (Optional):') }}</label>
-        <input type="text" id="value" name="value" value="{{ idea.value }}" class="border rounded py-2 px-3 w-full inputer" placeholder="{{ _('Enter estimated value in dollars') }}">
-        <br>
-        <div class="mb-4">
-            <label class="block sec-text font-bold">{{ _('Custom Fields (Optional):') }}</label>
-            <div id="customFieldsContainer" class="space-y-3 mt-2">
-                <!-- Existing custom fields -->
-                {% set counter = 0 %}
-                {% for key, value in idea.get('custom_fields', {}).items() %}
-                    <div class="custom-field-group p-3 border rounded border-gray-300">
-                        <div class="flex items-center gap-2 mb-2">
-                            <input type="text" 
-                                name="existing_custom_key_{{ counter }}" 
-                                value="{{ key }}"
-                                placeholder="{{ _('Field name (e.g., Shoe Size)') }}" 
-                                class="flex-1 border inputer rounded py-1 px-2 text-sm">
-                            <input type="text" 
-                                name="existing_custom_value_{{ counter }}" 
-                                value="{{ value }}"
-                                placeholder="{{ _('Value (e.g., 6)') }}" 
-                                class="flex-1 border inputer rounded py-1 px-2 text-sm">
-                            <button type="button" 
-                                    onclick="this.parentElement.parentElement.remove()" 
-                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm">
-                                ✕
-                            </button>
-                        </div>
-                    </div>
-                    {% set counter = counter + 1 %}
-                {% endfor %}
-                <!-- New custom fields will be added here -->
-            </div>
-            <button type="button" 
-                    onclick="addCustomField()" 
-                    class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
-                {{ _('+ Add Custom Field') }}
-            </button>
-        </div>
-    
-        <!-- Save and Cancel Buttons -->
-        <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded mt-4 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
-            {{ _('Save Changes') }}
-        </button>
-        <a href="{{ url_for('user_gift_ideas', selected_user_id=idea.user_id) }}" class="text-blue-500 hover:underline">{{ _('Cancel') }}</a>
-    </form>
-</div>
-<script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
+    <input type="hidden" id="image_path" name="image_path" value="{{ idea.image_path }}">
 
-        let newCustomFieldCounter = 0;
+    <div>
+        <label for="value" class="label">{{ _('Estimated Value (Optional):') }}</label>
+        <input type="text" id="value" name="value" value="{{ idea.value }}" class="input" placeholder="{{ _('Enter estimated value in dollars') }}">
+    </div>
 
-        function addCustomField() {
-            const container = document.getElementById('customFieldsContainer');
-            const fieldId = newCustomFieldCounter++;
-            
-            const fieldDiv = document.createElement('div');
-            fieldDiv.className = 'custom-field-group p-3 border rounded border-gray-300';
-            fieldDiv.innerHTML = `
-                <div class="flex items-center gap-2 mb-2">
-                    <input type="text" 
-                        name="new_custom_field_key_${fieldId}" 
-                        placeholder="Field name (e.g., Shoe Size)" 
-                        class="flex-1 border inputer rounded py-1 px-2 text-sm">
-                    <input type="text" 
-                        name="new_custom_field_value_${fieldId}" 
-                        placeholder="Value (e.g., 6)" 
-                        class="flex-1 border inputer rounded py-1 px-2 text-sm">
-                    <button type="button" 
-                            onclick="this.parentElement.parentElement.remove()" 
-                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm">
+    <div>
+        <label class="label font-semibold">{{ _('Custom Fields (Optional):') }}</label>
+        <div id="customFieldsContainer" class="mt-2 space-y-3">
+            {% for key, value in idea.get('custom_fields', {}).items() %}
+            <div class="custom-field-group rounded border border-[rgb(var(--border))] bg-[rgb(var(--surface))] p-3">
+                <div class="mb-2 flex items-center gap-2">
+                    <input type="text"
+                        name="existing_custom_key_{{ loop.index0 }}"
+                        value="{{ key }}"
+                        placeholder="{{ _('Field name (e.g., Shoe Size)') }}"
+                        class="input flex-1 py-1 text-sm">
+                    <input type="text"
+                        name="existing_custom_value_{{ loop.index0 }}"
+                        value="{{ value }}"
+                        placeholder="{{ _('Value (e.g., 6)') }}"
+                        class="input flex-1 py-1 text-sm">
+                    <button type="button"
+                            onclick="this.parentElement.parentElement.remove()"
+                            class="rounded bg-[rgb(var(--danger))] px-2 py-1 text-sm font-bold text-white">
                         ✕
                     </button>
                 </div>
-            `;
-            container.appendChild(fieldDiv);
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" onclick="addCustomField()" class="btn-secondary mt-2 text-sm">
+            {{ _('+ Add Custom Field') }}
+        </button>
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="btn-primary">{{ _('Save Changes') }}</button>
+        <a href="{{ url_for('user_gift_ideas', selected_user_id=idea.user_id) }}" class="text-sm text-[rgb(var(--primary))] hover:underline">{{ _('Cancel') }}</a>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function fetchOGImage(url) {
+        try {
+            const response = await fetch(`/fetch_og_image?url=${encodeURIComponent(url)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            if (data.og_image_url) {
+                return data.og_image_url;
+            } else {
+                throw new Error('No OG image found');
+            }
+        } catch (error) {
+            console.error('Error fetching OG image:', error);
+            return null;
         }
-    </script>
-</body>
-</html>
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const linkInput = document.getElementById('link');
+        const imageContainer = document.getElementById('imageContainer');
+        const manualImageUrlInput = document.getElementById('manualImageUrl');
+        const imagePathInput = document.getElementById('image_path');
+        if (!linkInput) return;
+
+        if (imagePathInput.value) {
+            imageContainer.innerHTML = `<img src="${imagePathInput.value}" alt="OG Image" class="mt-4 w-full rounded shadow-lg">`;
+        }
+
+        const handleInput = debounce(async () => {
+            const url = linkInput.value.trim();
+            if (url) {
+                try {
+                    const ogImage = await fetchOGImage(url);
+                    if (ogImage) {
+                        imageContainer.innerHTML = `<img src="${ogImage}" alt="OG Image" class="mt-4 w-full rounded shadow-lg">`;
+                        imagePathInput.value = ogImage;
+                    } else {
+                        imageContainer.innerHTML = '<p class="text-[rgb(var(--danger))]">No OG image found. Enter an image URL below.</p>';
+                        imagePathInput.value = '';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    imageContainer.innerHTML = '<p class="text-[rgb(var(--danger))]">Error fetching OG image. Enter an image URL below.</p>';
+                    imagePathInput.value = '';
+                }
+            } else {
+                imageContainer.innerHTML = '';
+                imagePathInput.value = '';
+            }
+        }, 500);
+
+        linkInput.addEventListener('input', handleInput);
+
+        manualImageUrlInput.addEventListener('input', () => {
+            const manualImageUrl = manualImageUrlInput.value.trim();
+            if (manualImageUrl) {
+                if (manualImageUrl.startsWith('http')) {
+                    imageContainer.innerHTML = `<img src="${manualImageUrl}" alt="Manual Image" class="mt-4 w-full rounded shadow-lg">`;
+                    imagePathInput.value = manualImageUrl;
+                } else {
+                    imageContainer.innerHTML = '<p class="text-[rgb(var(--danger))]">Invalid image URL. Please enter a valid URL.</p>';
+                    imagePathInput.value = '';
+                }
+            } else {
+                imageContainer.innerHTML = '';
+                imagePathInput.value = '';
+            }
+        });
+    });
+
+    let newCustomFieldCounter = 0;
+
+    function addCustomField() {
+        const container = document.getElementById('customFieldsContainer');
+        const fieldId = newCustomFieldCounter++;
+
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'custom-field-group rounded border border-[rgb(var(--border))] bg-[rgb(var(--surface))] p-3';
+        fieldDiv.innerHTML = `
+            <div class="mb-2 flex items-center gap-2">
+                <input type="text"
+                    name="new_custom_field_key_${fieldId}"
+                    placeholder="Field name (e.g., Shoe Size)"
+                    class="input flex-1 py-1 text-sm">
+                <input type="text"
+                    name="new_custom_field_value_${fieldId}"
+                    placeholder="Value (e.g., 6)"
+                    class="input flex-1 py-1 text-sm">
+                <button type="button"
+                        onclick="this.parentElement.parentElement.remove()"
+                        class="rounded bg-[rgb(var(--danger))] px-2 py-1 text-sm font-bold text-white">
+                    ✕
+                </button>
+            </div>
+        `;
+        container.appendChild(fieldDiv);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a"/>
+<meta name="description" content="{{ _('Gift ideas management web app') }}">
+<link rel="icon" href="/favicon.ico" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v={{ css_version }}">
+<script>
+    // Apply theme from cookie before first paint to avoid FOUC
+    (function () {
+        var theme = 'light';
+        try {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var pair = cookies[i].trim().split('=');
+                if (pair[0] === 'theme') { theme = pair[1]; break; }
+            }
+        } catch (e) {}
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+    })();
+</script>
+{% block head_extra %}{% endblock %}

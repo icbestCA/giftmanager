@@ -1,0 +1,13 @@
+{
+  "name": "giftmanager-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build pipeline for Giftmanager styles (output is committed to src/static/css).",
+  "scripts": {
+    "build": "tailwindcss -i ./input.css -o ../src/static/css/app.css --minify",
+    "watch": "tailwindcss -i ./input.css -o ../src/static/css/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

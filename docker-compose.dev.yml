@@ -18,8 +18,21 @@ services:
       - giftmanager_venv:/app/.venv
       # Persistent app data (settings.json, users.json, ideas.json, avatars)
       - ./data:/app/data
-    # Hot reload on local file changes
+    # Hot reload on Python file changes
     command: gunicorn app:app --workers 1 --threads 2 --bind 0.0.0.0:5000 --reload
+    restart: unless-stopped
+
+  # Tailwind CSS watcher: rebuilds src/static/css/app.css on template/frontend changes.
+  # Output lands in ../src/static/css/app.css (host ./src), which the giftmanager
+  # container already sees through its own ./src:/app mount - no restart needed.
+  frontend:
+    image: node:20-alpine
+    container_name: giftmanager-frontend
+    working_dir: /frontend
+    volumes:
+      - ./frontend:/frontend
+      - ./src:/src
+    command: sh -c "npm install && npm run watch"
     restart: unless-stopped
 
 volumes:

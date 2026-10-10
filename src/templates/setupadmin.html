@@ -1,55 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Admin Setup') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.ico" type="image/png">
-    <meta name="theme-color" content="#000000"/>
-    <link rel="manifest" href="/manifest.json">
-</head>
-<body class="text-gray-900 font-sans">
-    <div class="container mx-auto p-8">
-        <h1 class="text-2xl font-semibold mb-4">{{ _('Admin Setup') }}</h1>
-        <form action="{{ url_for('setup') }}" method="post">
-            <div class="mb-4">
-                <label for="admin_username" class="block text-gray-700 font-bold">{{ _('Username for login:') }}</label>
-                <input type="text" name="admin_username" id="admin_username" class="border rounded py-2 px-3 w-full" required>
-            </div>
-            <div class="mb-4">
-                <label for="admin_password" class="block text-gray-700 font-bold">{{ _('Password:') }}</label>
-                <input type="password" name="admin_password" id="admin_password" class="border rounded py-2 px-3 w-full" required>
-            </div>
-            <div class="mb-4">
-                <label for="admin_email" class="block text-gray-700 font-bold">{{ _('Email:') }}</label>
-                <input type="email" name="admin_email" id="admin_email" class="border rounded py-2 px-3 w-full">
-            </div>
-            <div class="mb-4">
-                <label for="full_name" class="block text-gray-700 font-bold">{{ _('Full Name:') }}</label>
-                <input type="text" name="full_name" id="full_name" class="border rounded py-2 px-3 w-full" required>
-            </div>
-            <div class="mb-4">
-                <label for="birthday" class="block text-gray-700 font-bold">{{ _('Birthday:') }}</label>
-                <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full" required>
-            </div>
+{% extends 'base_standalone.html' %}
+{% block title %}{{ _('Admin Setup') }}{% endblock %}
 
-            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">{{ _('Create Admin Account') }}</button>
-        </div>
-        </form>
+{% block content %}
+<div class="mb-6 text-center">
+    <h1 class="text-2xl font-semibold text-[rgb(var(--text))]">{{ _('Admin Setup') }}</h1>
+</div>
+<form action="{{ url_for('setup') }}" method="post" class="space-y-4">
+    <div>
+        <label for="admin_username" class="label font-semibold">{{ _('Username for login:') }}</label>
+        <input type="text" name="admin_username" id="admin_username" class="input" required>
     </div>
-    <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-    </script>
-</body>
-</html>
+    <div>
+        <label for="admin_password" class="label font-semibold">{{ _('Password:') }}</label>
+        <input type="password" name="admin_password" id="admin_password" class="input" required>
+    </div>
+    <div>
+        <label for="admin_email" class="label font-semibold">{{ _('Email:') }}</label>
+        <input type="email" name="admin_email" id="admin_email" class="input">
+    </div>
+    <div>
+        <label for="full_name" class="label font-semibold">{{ _('Full Name:') }}</label>
+        <input type="text" name="full_name" id="full_name" class="input" required>
+    </div>
+    <div>
+        <label for="birthday" class="label font-semibold">{{ _('Birthday:') }}</label>
+        <input type="date" name="birthday" id="birthday" class="input" required>
+    </div>
+    <button type="submit" class="btn-primary w-full py-2.5">{{ _('Create Admin Account') }}</button>
+</form>
+{% endblock %}

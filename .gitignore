@@ -14,6 +14,9 @@ __pycache__/
 # Log files
 *.log
 
+# Frontend build dependencies (node_modules)
+frontend/node_modules/
+
 # Flask instance folder (can be used for instance-specific configurations)
 instance/
 
@@ -50,3 +53,6 @@ Thumbs.db
 .coverage
 *.cover
 *.py,cover
+
+# Runtime-generated files
+src/last_execution_time.txt

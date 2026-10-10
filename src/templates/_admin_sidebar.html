@@ -1,0 +1,49 @@
+{% from '_icons.html' import icon %}
+{% set admin_nav = [
+    ('manage_users', 'users', _('Users')),
+    ('secret_santa', 'gift', _('Secret Santa')),
+    ('add_user', 'user-plus', _('Add User')),
+    ('manage_groups', 'users-group', _('Families')),
+    ('manage_guest_users', 'user-clock', _('Guest Users')),
+    ('delete_old_gift_ideas_page', 'trash', _('Deletion Script')),
+    ('edit_email_settings', 'envelope', _('Email Settings')),
+    ('edit_login_message', 'user-cog', _('Login Settings')),
+    ('setup_oidc', 'shield', _('OIDC Settings')),
+    ('setup_advanced', 'sliders', _('Advanced')),
+] %}
+<div class="flex h-full flex-col overflow-y-auto px-3 py-4">
+    <a href="{{ url_for('admin_dashboard') }}" class="mb-6 flex items-center gap-2 px-3 text-lg font-bold text-[rgb(var(--text))]">
+        {{ icon('shield', 'h-6 w-6 text-[rgb(var(--primary))]') }}
+        {{ _('Admin') }}
+    </a>
+
+    <nav class="flex-1 space-y-6">
+        <div>
+            <h2 class="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-[rgb(var(--text-secondary))]">{{ _('Management') }}</h2>
+            {% for endpoint, name, label in admin_nav[:5] %}
+            <a href="{{ url_for(endpoint) }}"
+               class="{{ 'nav-item nav-item-active' if request.endpoint == endpoint else 'nav-item' }}">
+                {{ icon(name) }}
+                <span>{{ label }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        <div>
+            <h2 class="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-[rgb(var(--text-secondary))]">{{ _('Configuration & Maintenance') }}</h2>
+            {% for endpoint, name, label in admin_nav[5:] %}
+            <a href="{{ url_for(endpoint) }}"
+               class="{{ 'nav-item nav-item-active' if request.endpoint == endpoint else 'nav-item' }}">
+                {{ icon(name) }}
+                <span>{{ label }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </nav>
+
+    <div class="mt-6 border-t border-[rgb(var(--border))] pt-4">
+        <a href="{{ url_for('dashboard') }}" class="nav-item">
+            {{ icon('home') }}
+            <span>{{ _('To Dashboard') }}</span>
+        </a>
+    </div>
+</div>

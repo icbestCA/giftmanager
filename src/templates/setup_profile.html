@@ -1,137 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Setup Profile') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.ico" type="image/png">
-    <meta name="theme-color" content="#000000"/>
-    <link rel="manifest" href="/manifest.json">
-</head>
-<body class="text-gray-900 font-sans">
-    <div class="container mx-auto p-8">
-        <h1 class="text-2xl font-semibold mb-4">{{ _('Setup Your Profile') }}</h1>
-        <form action="{{ url_for('setup_profile') }}" method="post">
-            <div class="mb-4">
-                <label for="username" class="block text-gray-700 font-bold">{{ _('Username:') }}</label>
-                <input type="text" name="username" id="username" value="{{ user.username }}" class="border rounded py-2 px-3 w-full" disabled>
-            </div>
-            
-            <div class="mb-4">
-                <label for="full_name" class="block text-gray-700 font-bold">{{ _('Full Name:') }}</label>
-                <input type="text" name="full_name" id="full_name" 
-                       value="{{ oidc_user_info.full_name if oidc_user_info.full_name else '' }}" 
-                       class="border rounded py-2 px-3 w-full">
-            </div>
+{% extends 'base_standalone.html' %}
+{% block title %}{{ _('Setup Profile') }}{% endblock %}
 
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 font-bold">{{ _('Email:') }}</label>
-                <input type="email" name="email" id="email" value="{{ oidc_user_info.email }}" class="border rounded py-2 px-3 w-full" disabled>
-            </div>
+{% block content %}
+<div class="mb-6 text-center">
+    <h1 class="text-2xl font-semibold text-[rgb(var(--text))]">{{ _('Setup Your Profile') }}</h1>
+</div>
+<form action="{{ url_for('setup_profile') }}" method="post" class="space-y-4">
+    <div>
+        <label for="username" class="label font-semibold">{{ _('Username:') }}</label>
+        <input type="text" name="username" id="username" value="{{ user.username }}" class="input" disabled>
+    </div>
 
-            <div class="mb-4">
-                <label for="password" class="block text-gray-700 font-bold">{{ _('Password:') }}</label>
-                {% if enable_default_login %}
-                    <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
-                {% else %}
-                    <p class="text-gray-500 italic">{{ _('Password is not required because default login is disabled.') }}</p>
-                {% endif %}
-            </div>
+    <div>
+        <label for="full_name" class="label font-semibold">{{ _('Full Name:') }}</label>
+        <input type="text" name="full_name" id="full_name"
+               value="{{ oidc_user_info.full_name if oidc_user_info.full_name else '' }}"
+               class="input">
+    </div>
 
-            <div class="mb-4">
-                <label for="birthday" class="block text-gray-700 font-bold">{{ _('Birthday:') }}</label>
-                <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full" required>
-            </div>
+    <div>
+        <label for="email" class="label font-semibold">{{ _('Email:') }}</label>
+        <input type="email" name="email" id="email" value="{{ oidc_user_info.email }}" class="input" disabled>
+    </div>
 
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">{{ _('Avatar:') }}</label>
-                <div class="flex items-center gap-4">
-                    <!-- Hidden input to store the generated avatar filename -->
-                    <input type="hidden" name="avatar" id="avatar_input" value="">
-                    
-                    <!-- Avatar preview container (initially hidden) -->
-                    <div id="avatar_container" class="hidden">
-                        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
-                            <img id="avatar_preview" src="" alt="{{ _('Generated Avatar') }}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="text-sm text-gray-600 mt-2">
-                            <p class="text-green-600 font-medium">{{ _('✓ Avatar generated successfully') }}</p>
-                            <p class="text-xs italic mt-1">{{ _('You can change it later in profile settings') }}</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Loading state -->
-                    <div id="avatar_loading" class="flex items-center gap-3">
-                        <div class="w-24 h-24 rounded-full border-2 border-gray-300 border-dashed flex items-center justify-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                        </div>
-                        <div class="text-sm text-gray-600">
-                            <p class="font-medium">{{ _('Generating avatar...') }}</p>
-                            <p class="text-xs italic mt-1">{{ _('Please wait a moment') }}</p>
-                        </div>
-                    </div>
+    <div>
+        <label for="password" class="label font-semibold">{{ _('Password:') }}</label>
+        {% if enable_default_login %}
+            <input type="password" name="password" id="password" class="input" required>
+        {% else %}
+            <p class="text-sm italic text-[rgb(var(--text-secondary))]">{{ _('Password is not required because default login is disabled.') }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="birthday" class="label font-semibold">{{ _('Birthday:') }}</label>
+        <input type="date" name="birthday" id="birthday" class="input" required>
+    </div>
+
+    <div>
+        <label class="label mb-2 font-semibold">{{ _('Avatar:') }}</label>
+        <div class="flex items-center gap-4">
+            <input type="hidden" name="avatar" id="avatar_input" value="">
+
+            <div id="avatar_container" class="hidden">
+                <div class="h-24 w-24 overflow-hidden rounded-full border-2 border-[rgb(var(--border))]">
+                    <img id="avatar_preview" src="" alt="{{ _('Generated Avatar') }}" class="h-full w-full object-cover">
+                </div>
+                <div class="mt-2 text-sm text-[rgb(var(--text-secondary))]">
+                    <p class="font-medium text-[rgb(var(--success))]">{{ _('✓ Avatar generated successfully') }}</p>
+                    <p class="mt-1 text-xs italic">{{ _('You can change it later in profile settings') }}</p>
                 </div>
             </div>
 
-            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">{{ _('Save') }}</button>
-        </form>
+            <div id="avatar_loading" class="flex items-center gap-3">
+                <div class="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[rgb(var(--border))]">
+                    <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-[rgb(var(--text))]"></div>
+                </div>
+                <div class="text-sm text-[rgb(var(--text-secondary))]">
+                    <p class="font-medium">{{ _('Generating avatar...') }}</p>
+                    <p class="mt-1 text-xs italic">{{ _('Please wait a moment') }}</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-      // Function to generate and set avatar automatically
-        async function generateAndSetAvatar() {
-            try {
-                console.log('Generating avatar in background...');
-                
-                // Call your existing generate_avatar route
-                const response = await fetch("{{ url_for('generate_avatar') }}", {
-                    method: 'GET',
-                    credentials: 'same-origin' // Include cookies/session
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Get the generated filename
-                const filename = data.filename;
-                
-                // Set the hidden input value
-                document.getElementById('avatar_input').value = filename;
-                
-                // Show the avatar preview
-                document.getElementById('avatar_preview').src = `/avatars/${filename}?t=${Date.now()}`;
-                
-                // Hide loading, show preview
-                document.getElementById('avatar_loading').classList.add('hidden');
-                document.getElementById('avatar_container').classList.remove('hidden');
-                
-                console.log('Avatar generated:', filename);
-                
-            } catch (error) {
-                console.error('Error generating avatar:', error);
-                // Don't use fallback - just keep loading state
-                // User can't proceed without avatar anyway
-            }
-        }
 
-        // Generate avatar immediately when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            generateAndSetAvatar();
-        });
-    </script>
-</body>
-</html>
+    <button type="submit" class="btn-primary w-full py-2.5">{{ _('Save') }}</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function generateAndSetAvatar() {
+        try {
+            const response = await fetch("{{ url_for('generate_avatar') }}", {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const filename = data.filename;
+
+            document.getElementById('avatar_input').value = filename;
+            document.getElementById('avatar_preview').src = `/avatars/${filename}?t=${Date.now()}`;
+            document.getElementById('avatar_loading').classList.add('hidden');
+            document.getElementById('avatar_container').classList.remove('hidden');
+        } catch (error) {
+            console.error('Error generating avatar:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', generateAndSetAvatar);
+</script>
+{% endblock %}

@@ -1,3 +1,16 @@
+# Build stage: compile the Tailwind CSS bundle into src/static/css/app.css
+FROM node:20-alpine AS frontend-build
+
+WORKDIR /frontend
+
+# Install dependencies from the lockfile for reproducible builds
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+# Build the CSS (outputs to ../src/static/css/app.css)
+COPY frontend/input.css frontend/tailwind.config.js ./
+RUN npm run build
+
 # Use the official Python 3.11 Alpine image
 FROM python:3.11-alpine
 
@@ -17,6 +30,9 @@ RUN uv sync --frozen --no-dev
 
 # Copy the application source into the container at /app
 COPY src /app
+
+# Override with the freshly-built Tailwind CSS from the build stage
+COPY --from=frontend-build /src/static/css/app.css /app/static/css/app.css
 
 # Expose the port that the app will run on
 EXPOSE 5000

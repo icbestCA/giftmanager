@@ -163,6 +163,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['DATA'] = "./data"
 app.config['BABEL_DEFAULT_LOCALE'] = 'en'
 app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 SUPPORTED_LANGUAGES = ('en', 'es', 'fr', 'nl', 'sv')
 
@@ -194,10 +195,35 @@ def get_locale():
 
 babel = Babel(app, locale_selector=get_locale)
 
+ADMIN_ENDPOINTS = {
+    'admin_dashboard',
+    'manage_users',
+    'secret_santa',
+    'add_user',
+    'manage_groups',
+    'manage_guest_users',
+    'delete_old_gift_ideas_page',
+    'edit_email_settings',
+    'edit_login_message',
+    'setup_oidc',
+    'setup_advanced',
+}
+
+def _css_version():
+    """Cache-buster for the Tailwind bundle, based on its file mtime."""
+    try:
+        return int(os.path.getmtime(os.path.join(os.path.dirname(__file__), 'static', 'css', 'app.css')))
+    except OSError:
+        return 1
+
 @app.context_processor
 def inject_current_locale():
-    """Make the resolved locale available to templates as `current_locale`."""
-    return {'current_locale': get_locale()}
+    """Make the resolved locale and admin flag available to templates as `current_locale` and `is_admin_page`."""
+    return {
+        'current_locale': get_locale(),
+        'is_admin_page': request.endpoint in ADMIN_ENDPOINTS,
+        'css_version': _css_version(),
+    }
 
 _ = gettext
 
@@ -337,6 +363,15 @@ def manifest():
 def service_worker():
     response = make_response(send_from_directory('static', 'sw.js'))
     response.headers['Cache-Control'] = 'no-cache'
+    return response
+
+@app.after_request
+def prevent_html_caching(response):
+    """Never cache HTML pages so template changes are picked up immediately."""
+    if response.mimetype == 'text/html':
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
     return response
 
 @app.route('/favicon.ico')
@@ -1410,20 +1445,28 @@ def user_gift_ideas(selected_user_id):
     imgenabled = read_env_variable('IMGENABLED', 'true').lower() == 'true'
     hide_purchaser = read_env_variable('HIDE_PURCHASER', 'user_choice')
 
+    users = load_users()
+    connected_user_data = next((user for user in users if user['username'] == connected_user), None)
+    connected_groups = set(connected_user_data.get('groups', [])) if connected_user_data else set()
+
     # Ensure each idea has custom_fields and last_updated fields for template
     for idea in user_gift_ideas:
         if 'custom_fields' not in idea:
             idea['custom_fields'] = {}
-        # Replace bought_by if bought anonymously or globally hiding purchaser, for not leaking the info, but not for items bought by current user
+        # Replace bought_by if bought anonymously or globally hiding purchaser, for not leaking the info, but not for items bought by current user.
+        # The buyer is never anonymised when the connected user shares at least one family with them.
         if ('bought_by' in idea and
-            idea['bought_by'] and 
-            idea['bought_by'] != connected_user and
-            (('bought_anonymously' in idea and 
-                idea['bought_anonymously'] == True ) or
-            hide_purchaser)):
-            idea['bought_by'] = _('Anonymous')
+            idea['bought_by'] and
+            idea['bought_by'] != connected_user):
+            buyer = next((user for user in users if user['username'] == idea['bought_by']), None)
+            buyer_groups = set(buyer.get('groups', [])) if buyer else set()
+            shares_family = bool(connected_groups & buyer_groups)
+            if not shares_family and (
+                (idea.get('bought_anonymously') == True) or
+                hide_purchaser):
+                idea['bought_by'] = _('Anonymous')
+                idea['bought_by_hidden'] = True
 
-    users = load_users()
     shared_list = next((user for user in users if user['username'] == selected_user_id and user.get('shared_list')), None)
     is_shared_list_member = shared_list and connected_user in shared_list.get('list_members', [])
     # Call get_full_name function to fetch the user's full name directly in the route

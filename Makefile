@@ -1,11 +1,24 @@
 PYBABEL := .venv/bin/pybabel
 TRANSLATIONS := src/translations
 LANGUAGES := es fr nl sv
+NPM := npm --prefix frontend
 
-.PHONY: update-po compile-mo
+.PHONY: run frontend frontend-install update-po compile-mo
 
 run:
 	docker compose -f docker-compose.dev.yml up --build
+
+# Install frontend (Tailwind) dependencies
+frontend-install:
+	$(NPM) install
+
+# Rebuild the Tailwind CSS bundle into src/static/css/app.css
+frontend:
+	$(NPM) run build
+
+# Rebuild the Tailwind CSS bundle and watch for changes
+frontend-watch:
+	$(NPM) run watch
 
 # Extract new strings from source and refresh all .po files
 update-po:

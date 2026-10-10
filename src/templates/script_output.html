@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="icon" href="/favicon.ico" type="image/png">
-    <title>{{ _('Script Output') }}</title>
-</head>
-<body>
-    <h1>{{ _('Script Output') }}</h1>
-    <pre>{{ script_output }}</pre>
-</body>
-</html>
+{% extends 'base_standalone.html' %}
+{% block title %}{{ _('Script Output') }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 text-center">
+    <h1 class="text-2xl font-semibold text-[rgb(var(--text))]">{{ _('Script Output') }}</h1>
+</div>
+<pre class="max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-[rgb(var(--border))] bg-[rgb(var(--surface-2))] p-4 text-sm text-[rgb(var(--text))]">{{ script_output }}</pre>
+<div class="mt-6 text-center">
+    <a href="{{ url_for('index') }}" class="btn-secondary w-full">{{ _('Back') }}</a>
+</div>
+{% endblock %}
