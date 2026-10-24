@@ -47,3 +47,6 @@ Thumbs.db
 .coverage
 *.cover
 *.py,cover
+
+# Local SMTP password files used by the documented Compose example
+/secrets/

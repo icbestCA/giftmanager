@@ -1,5 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify, send_from_directory
 import requests
+import click
+import smtplib
+import ssl
+from email.headerregistry import Address
+from email.message import EmailMessage
 from functools import wraps
 from mailjet_rest import Client
 from datetime import datetime, timedelta
@@ -30,8 +35,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 #   2. settings.json — UI-saved values (non-secrets only)
 #   3. hardcoded default
 #
-# Secrets (never written to disk):
-#   SECRET_KEY, MAILJET_API_KEY, MAILJET_API_SECRET, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET
+# Secrets (never written to settings.json):
+#   SECRET_KEY, MAILJET_API_KEY, MAILJET_API_SECRET, SMTP_PASSWORD,
+#   SMTP_PASSWORD_FILE, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET
 #
 # Everything else lives in ./data/settings.json and is editable via the UI.
 #
@@ -46,6 +52,7 @@ _LEGACY_ENV_PATH = _DATA_DIR / ".env"
 
 _SECRET_KEYS = {
     "SECRET_KEY", "MAILJET_API_KEY", "MAILJET_API_SECRET",
+    "SMTP_PASSWORD", "SMTP_PASSWORD_FILE",
     "OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET",
 }
 
@@ -165,9 +172,6 @@ app.config['AVATAR_DIR'] = Path(app.config['DATA'], 'avatars')
 
 app.config['AVATAR_CLAIM_TIMEOUT'] = 3600 # in seconds
 
-mailjet_api_key = os.environ.get("MAILJET_API_KEY", "")
-mailjet_api_secret = os.environ.get("MAILJET_API_SECRET", "")
-mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
 ph = PasswordHasher()
 
 
@@ -919,8 +923,7 @@ def delete_idea(idea_id):
         if idea['added_by'] == current_user_username or idea['user_id'] == current_user_username or (shared_list and current_user_username in shared_list.get('list_members', [])):
             # Check if the idea is bought
             if idea['bought_by']:
-                # Send an email to the buyer using Mailjet
-                send_email_to_buyer_via_mailjet(idea['bought_by'], f'{idea["gift_name"]}', 'IDEAS DELETED')
+                send_email_to_buyer(idea['bought_by'], idea['gift_name'], 'IDEAS DELETED')
 
             # Delete the idea
             gift_ideas_data.remove(idea)
@@ -944,48 +947,101 @@ def get_user_email_by_username(username):
     user = next((u for u in users if u['username'] == username), None)
     return user.get('email') if user else None
 
-def send_email_to_buyer_via_mailjet(buyer_username, idea_name, message_subject):
-    if not read_env_variable("MAILJET_API_KEY") or not read_env_variable("MAILJET_API_SECRET"):
-        print("Mailjet not configured. Skipping email notification.")
-        return True  # Return True to allow deletion to proceed
-    # Find the idea bought by the buyer
-    gift_ideas_data = load_gift_ideas()
-    for idea in gift_ideas_data:
-        if idea.get('bought_by') == buyer_username:
-            buyer_email = get_user_email_by_username(buyer_username)
-            
-            if buyer_email:
-                text_part = f"This ideas, '{idea_name}',has been deleted but you already BOUGHT IT."
+def send_smtp_email(message):
+    security = read_env_variable("SMTP_SECURITY", "starttls").lower()
+    if security not in ("starttls", "ssl", "none"):
+        raise ValueError("Invalid SMTP_SECURITY")
+    host = read_env_variable("SMTP_HOST", "").strip()
+    port = int(read_env_variable("SMTP_PORT", "465" if security == "ssl" else "587"))
+    if not host or not 1 <= port <= 65535:
+        raise ValueError("Invalid SMTP host or port")
 
-                # Send an email to the buyer using Mailjet
-                data = {
-                    'Messages': [
-                        {
-                            'From': {
-                                'Email': read_env_variable("SYSTEM_EMAIL"),  # Your sender email address
-                                'Name': 'GiftManager',
-                            },
-                            'To': [
-                                {
-                                    'Email': buyer_email,  # Buyer's email
-                                    'Name': 'Buyer Name',
-                                },
-                            ],
-                            'Subject': message_subject,
-                            'TextPart': text_part,
-                        }
-                    ]
-                }
+    username = read_env_variable("SMTP_USERNAME", "")
+    password = read_env_variable("SMTP_PASSWORD", "")
+    password_file = read_env_variable("SMTP_PASSWORD_FILE", "")
+    if password and password_file:
+        raise ValueError("Set SMTP_PASSWORD or SMTP_PASSWORD_FILE, not both")
+    if password_file:
+        password = Path(password_file).read_text().rstrip("\r\n")
+    if bool(username) != bool(password):
+        raise ValueError("SMTP authentication requires both username and password")
+    if username and security == "none":
+        raise ValueError("SMTP authentication requires TLS")
 
-                response = mailjet.send.create(data=data)
+    context = ssl.create_default_context()
+    if security == "ssl":
+        connection = smtplib.SMTP_SSL(host, port, timeout=10, context=context)
+    else:
+        connection = smtplib.SMTP(host, port, timeout=10)
+    with connection as smtp:
+        if security == "starttls":
+            smtp.starttls(context=context)
+        if username:
+            smtp.login(username, password)
+        return not smtp.send_message(message)
 
-                if response.status_code == 200:
-                    print('Email sent to buyer successfully')
-                else:
-                    print('Failed to send email to buyer')
-            else:
-                print(f'Buyer email not found for username: {buyer_username}')
-            break
+
+def send_email(recipient, subject, text):
+    provider = read_env_variable("EMAIL_PROVIDER", "mailjet").lower()
+    if provider not in ("mailjet", "smtp"):
+        raise ValueError("Invalid EMAIL_PROVIDER")
+    api_key = read_env_variable("MAILJET_API_KEY", "")
+    api_secret = read_env_variable("MAILJET_API_SECRET", "")
+    if provider == "mailjet" and not (api_key and api_secret):
+        return False
+
+    sender = read_env_variable("SYSTEM_EMAIL", "")
+    if not sender or not recipient:
+        raise ValueError("Sender and recipient addresses are required")
+    # A single mailbox per field prevents extra recipients/header injection.
+    message = EmailMessage()
+    message["From"] = Address("GiftManager", addr_spec=sender)
+    message["To"] = Address(addr_spec=recipient)
+    if not all(address.domain for header in ("From", "To") for address in message[header].addresses):
+        raise ValueError("Email addresses must include a domain")
+    message["Subject"] = subject
+    message.set_content(text)
+    if provider == "smtp":
+        return send_smtp_email(message)
+
+    mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+    response = mailjet.send.create(data={"Messages": [{
+        "From": {"Email": sender, "Name": "GiftManager"},
+        "To": [{"Email": recipient, "Name": "Buyer Name"}],
+        "Subject": subject,
+        "TextPart": text,
+    }]})
+    return response.status_code == 200
+
+
+def send_email_to_buyer(buyer_username, idea_name, message_subject):
+    buyer_email = get_user_email_by_username(buyer_username)
+    if not buyer_email:
+        return False
+    try:
+        return send_email(
+            buyer_email, message_subject,
+            f"This idea, '{idea_name}', has been deleted but you already BOUGHT IT.",
+        )
+    except Exception as error:
+        # Best-effort notifications also cover SDK-specific exceptions across
+        # Mailjet versions. Their text may contain credentials/message contents.
+        app.logger.warning("Email notification failed (%s).", type(error).__name__)
+        return False
+
+
+@app.cli.command("test-email")
+@click.option("--to", "recipient", required=True, help="Address to receive one test email.")
+def test_email(recipient):
+    """Send a benign test using the configured notification transport."""
+    try:
+        sent = send_email(recipient, "GiftManager email test", "GiftManager email delivery is configured correctly.")
+    except Exception as error:
+        app.logger.warning("Email test failed (%s).", type(error).__name__)
+        raise click.ClickException("Email delivery failed. Check SMTP/Mailjet configuration and connectivity.") from None
+    if not sent:
+        raise click.ClickException("Email is not configured or the provider did not accept the message.")
+    click.echo("Test email accepted by the configured server; check the recipient's inbox.")
 
 @app.route('/logout')
 def logout():
@@ -2154,12 +2210,6 @@ def edit_email_settings():
         system_email = request.form.get('SYSTEM_EMAIL', None)
 
         try:
-            # Secrets go into os.environ in-process (takes effect immediately).
-            # Set them permanently in your Docker/systemd environment.
-            if mailjet_api_key:
-                os.environ["MAILJET_API_KEY"] = mailjet_api_key
-            if mailjet_api_secret:
-                os.environ["MAILJET_API_SECRET"] = mailjet_api_secret
             # SYSTEM_EMAIL is a non-secret — saved to settings.json
             if system_email:
                 save_setting("SYSTEM_EMAIL", system_email)
