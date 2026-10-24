@@ -77,6 +77,7 @@ services:
   giftmanager:
     image: giftmanager:smtp
     environment:
+      SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY to a unique random value}"
       EMAIL_PROVIDER: smtp
       SYSTEM_EMAIL: notifications@example.com
       SMTP_HOST: smtp.example.com
@@ -96,19 +97,43 @@ Create `./secrets/smtp_password` yourself before starting the service. Its
 contents are the SMTP password, without quotes. Keep the file readable only by
 the service operator/container user; do not put it in `settings.json`.
 
-Send one benign test without creating/deleting a gift or changing an account:
+### Test email from the browser
+
+1. Sign in as an administrator and open **Email Settings** (`/edit_email_settings`).
+2. Save any changes to **System Email (Sender)** first. An environment-provided
+   `SYSTEM_EMAIL` still takes precedence over the saved value.
+3. Enter a recipient under **Test Email Delivery** and select **Send Test Email**.
+4. Check the success/error notice, then verify delivery and the From address in
+   the recipient's inbox. Server acceptance does not guarantee inbox delivery.
+
+The test uses the currently configured SMTP or Mailjet provider and sends a
+benign message without changing gifts, users or saved email settings. Both
+Save and Send Test Email require an administrator session and a valid form
+security token. If the form expires, reload Email Settings and try again.
+
+For server diagnostics, run `docker compose logs --tail=50 giftmanager`.
+Failures record only the error type, without provider responses, credentials,
+recipient addresses or message contents. Notification failures do not prevent
+gift deletion. There is no delivery queue or retry after a failed notification.
+The previous `test-email` command has been replaced by this browser workflow.
+
+### Compose signing key
+
+The supplied Compose file requires `SECRET_KEY` from the shell environment or
+an untracked Compose `.env` file. Generate a private random value with:
 
 ```sh
-docker compose exec giftmanager flask --app app test-email --to you@example.com
+python -c 'import secrets; print(secrets.token_hex(32))'
 ```
 
-For a local Python install, run `flask --app app test-email --to you@example.com`
-from `main/` with the same configuration. A successful command means the server
-accepted the message; also check delivery and the From address in the inbox.
-Failures return a nonzero exit status. Notification failures do not prevent
-gift deletion; warnings record the error type without server responses,
-credentials, recipient addresses or message contents. There is no delivery queue
-or retry after a failed notification.
+For an existing installation, reuse its signing key only if it is already private
+and unpredictable. Replace public placeholders such as `<SECRET_KEY>` and the
+application's default key with a newly generated private value. Rotation signs
+users out; it does not delete their accounts or gifts. Supply the private value
+to Compose before starting the container, including when migrating from a legacy
+`data/.env`. Keep `.env`, password files and application data out of version
+control. The application fallback for non-Compose deployments is unchanged;
+those deployments must also supply a private `SECRET_KEY`.
 
 ## Running tests
 
@@ -121,8 +146,10 @@ pip install -r main/requirements.txt
 python -m unittest discover -s tests -v
 ```
 
-Tests use temporary data and loopback SMTP servers. They do not contact a real
-email provider or require credentials.
+Tests exercise the administrator browser route, authorization, form security,
+error redaction and SMTP/Mailjet compatibility, including real loopback TLS
+delivery and certificate rejection. They use temporary data and loopback SMTP
+servers, without contacting a real email provider or requiring credentials.
 
 ## Features
 

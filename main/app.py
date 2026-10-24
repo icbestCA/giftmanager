@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify, send_from_directory
+from flask import Flask, abort, render_template, request, redirect, url_for, session, flash, make_response, get_flashed_messages, request, jsonify, send_from_directory
 import requests
-import click
 import smtplib
 import ssl
 from email.headerregistry import Address
@@ -2192,51 +2191,61 @@ def manage_users():
 @app.route('/edit_email_settings', methods=['GET', 'POST'])
 @admin_required
 def edit_email_settings():
+    csrf_token = session.get('email_settings_csrf_token')
     if request.method == 'POST':
-        action = request.form.get('action', 'save')
+        submitted_token = request.form.get('csrf_token', '')
+        # Bytes also let malformed Unicode submissions fail validation normally.
+        if not isinstance(csrf_token, str) or not csrf_token or not secrets.compare_digest(
+            csrf_token.encode('utf-8'), submitted_token.encode('utf-8')
+        ):
+            abort(400, description="Reload Email Settings and try again.")
 
-        # --- Save Settings Action ---
+        action = request.form.get('action', 'save')
         if action == 'save':
             system_email = request.form.get('SYSTEM_EMAIL', '').strip()
             try:
                 if system_email:
                     save_setting("SYSTEM_EMAIL", system_email)
                 flash("Email settings updated successfully!", "success")
-            except Exception as e:
-                flash(f"An error occurred while saving: {e}", "danger")
+            except Exception as error:
+                app.logger.warning("Email settings save failed (%s).", type(error).__name__)
+                flash("Email settings could not be saved. Check the server logs and try again.", "danger")
             return redirect(url_for('edit_email_settings'))
 
-        # --- Test Email Action ---
-        elif action == 'test':
-            test_recipient = request.form.get('test_recipient', '').strip()
-            if not test_recipient:
-                flash("Please enter a recipient address for the test email.", "warning")
-                return redirect(url_for('edit_email_settings'))
+        if action != 'test':
+            abort(400, description="Unknown email settings action.")
 
-            try:
-                sent = send_email(
-                    recipient=test_recipient,
-                    subject="GiftManager Email Test",
-                    text="This is a test email from GiftManager. If you received this, your email configuration is working correctly."
-                )
-                if sent:
-                    flash(f"Test email accepted by server! Check {test_recipient}'s inbox.", "success")
-                else:
-                    flash("Email provider did not accept the message. Check your API keys or SMTP credentials in environment variables.", "danger")
-            except ValueError as ve:
-                # Configuration errors (invalid host, missing TLS, etc.)
-                flash(f"Configuration Error: {ve}", "danger")
-            except Exception as e:
-                # Log full error server-side but only show type to admin
-                app.logger.warning("UI email test failed (%s): %s", type(e).__name__, str(e))
-                flash(f"Email delivery failed ({type(e).__name__}). Check server logs for details.", "danger")
-
+        test_recipient = request.form.get('test_recipient', '').strip()
+        if not test_recipient:
+            flash("Please enter a recipient address for the test email.", "warning")
             return redirect(url_for('edit_email_settings'))
 
+        try:
+            sent = send_email(
+                recipient=test_recipient,
+                subject="GiftManager Email Test",
+                text="This is a test email from GiftManager. If you received this, your email configuration is working correctly."
+            )
+            if sent:
+                flash(f"Test email accepted by server! Check {test_recipient}'s inbox.", "success")
+            else:
+                flash("Email provider did not accept the message. Check the server's email settings.", "danger")
+        except ValueError as error:
+            app.logger.warning("UI email test failed (%s).", type(error).__name__)
+            flash("Email configuration is invalid. Check the sender, recipient and server email settings.", "danger")
+        except Exception as error:
+            # Provider errors can contain credentials or message contents.
+            app.logger.warning("UI email test failed (%s).", type(error).__name__)
+            flash(f"Email delivery failed ({type(error).__name__}). Check server logs for details.", "danger")
+        return redirect(url_for('edit_email_settings'))
+
+    if not isinstance(csrf_token, str) or not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session['email_settings_csrf_token'] = csrf_token
     current_settings = {
         'SYSTEM_EMAIL': read_env_variable("SYSTEM_EMAIL", ""),
     }
-    return render_template('edit_email_settings.html', settings=current_settings)
+    return render_template('edit_email_settings.html', settings=current_settings, csrf_token=csrf_token)
 
 @app.route('/edit_login_message', methods=['GET', 'POST'])
 @admin_required

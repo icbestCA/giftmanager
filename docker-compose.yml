@@ -3,7 +3,7 @@ services:
   giftmanager:
     image: icbest/giftmanager:latest
     environment:
-      SECRET_KEY: "<SECRET_KEY>"
+      SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY to a unique random value}"
       #EMAIL_PROVIDER: "smtp"
       #SMTP_HOST: "<SMTP_HOST>"
       #SMTP_PORT: "587"
