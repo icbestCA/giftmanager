@@ -2,6 +2,20 @@ version: '3.8'
 services:
   giftmanager:
     image: icbest/giftmanager:latest
+    environment:
+      SECRET_KEY: "<SECRET_KEY>"
+      #EMAIL_PROVIDER: "smtp"
+      #SMTP_HOST: "<SMTP_HOST>"
+      #SMTP_PORT: "587"
+      #SMTP_USERNAME: "<SMTP_USERNAME>"
+      #SMTP_SECURITY: "starttls"
+      #MAILJET_API_KEY: "<MAILJET_API_KEY>"
+      #MAILJET_API_SECRET: "<MAILJET_API_SECRET>"
+      #SMTP_PASSWORD: "<SMTP_PASSWORD>"
+      #SMTP_PASSWORD_FILE: "<SMTP_PASSWORD_FILE>"
+      #OIDC_CLIENT_ID: "<OIDC_CLIENT_ID>"
+      #OIDC_CLIENT_SECRET: "<OIDC_CLIENT_SECRET>"
+
     container_name: giftmanager
     ports:
       - "5000:5000"

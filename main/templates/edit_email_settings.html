@@ -251,15 +251,18 @@
                 <div class="main p-6 rounded shadow section">
                     <h3 class="text-lg font-semibold mb-4">Edit Email Settings</h3>
                     <form method="post" action="{{ url_for('edit_email_settings') }}">
+                        <input type="hidden" name="action" value="save">
                         <div class="mb-4">
-                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">System Email:</label>
+                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">System Email (Sender):</label>
                             <input 
                                 type="email" 
                                 id="SYSTEM_EMAIL" 
                                 name="SYSTEM_EMAIL" 
                                 value="{{ settings['SYSTEM_EMAIL'] }}"
                                 class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                                required
                             >
+                            <p class="sec-text text-sm mt-1">The "From" address used for all notifications.</p>
                         </div>
                         <button 
                             type="submit" 
@@ -268,20 +271,45 @@
                             Save Changes
                         </button>
                     </form>
-
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            <div class="mt-4">
-                                {% for category, message in messages %}
-                                    <div 
-                                        class="p-4 rounded mb-2 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
-                                        {{ message }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
                 </div>
+
+                <!-- Test Email Delivery -->
+                <div class="main p-6 rounded shadow section mt-6">
+                    <h3 class="text-lg font-semibold mb-2">Test Email Delivery</h3>
+                    <p class="sec-text text-sm mb-4">Send a benign test email using the currently configured provider (SMTP or Mailjet). Credentials are read from environment variables only.</p>
+                    <form method="post" action="{{ url_for('edit_email_settings') }}">
+                        <input type="hidden" name="action" value="test">
+                        <div class="mb-4">
+                            <label for="test_recipient" class="block sec-text font-medium">Test Recipient Address:</label>
+                            <input 
+                                type="email" 
+                                id="test_recipient" 
+                                name="test_recipient" 
+                                placeholder="admin@example.com"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                                required
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="border border-gray-400 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                            Send Test Email
+                        </button>
+                    </form>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="mt-4">
+                            {% for category, message in messages %}
+                                <div 
+                                    class="p-4 rounded mb-2 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </main>
         </div>
     </div>

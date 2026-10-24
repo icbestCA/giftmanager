@@ -1029,20 +1029,6 @@ def send_email_to_buyer(buyer_username, idea_name, message_subject):
         app.logger.warning("Email notification failed (%s).", type(error).__name__)
         return False
 
-
-@app.cli.command("test-email")
-@click.option("--to", "recipient", required=True, help="Address to receive one test email.")
-def test_email(recipient):
-    """Send a benign test using the configured notification transport."""
-    try:
-        sent = send_email(recipient, "GiftManager email test", "GiftManager email delivery is configured correctly.")
-    except Exception as error:
-        app.logger.warning("Email test failed (%s).", type(error).__name__)
-        raise click.ClickException("Email delivery failed. Check SMTP/Mailjet configuration and connectivity.") from None
-    if not sent:
-        raise click.ClickException("Email is not configured or the provider did not accept the message.")
-    click.echo("Test email accepted by the configured server; check the recipient's inbox.")
-
 @app.route('/logout')
 def logout():
     session.clear()  # Clear all session data
@@ -1202,7 +1188,7 @@ def dashboard():
         'avatar': current_user.get('avatar', None)
     }
 
-    app_version = "v2.8.0"
+    app_version = "v2.8.1"
     
     # Get assigned users if available in the current user's data
     assigned_users = current_user.get('assigned_users', None)
@@ -2207,16 +2193,45 @@ def manage_users():
 @admin_required
 def edit_email_settings():
     if request.method == 'POST':
-        system_email = request.form.get('SYSTEM_EMAIL', None)
+        action = request.form.get('action', 'save')
 
-        try:
-            # SYSTEM_EMAIL is a non-secret — saved to settings.json
-            if system_email:
-                save_setting("SYSTEM_EMAIL", system_email)
-            flash("Email settings updated successfully!", "success")
-        except Exception as e:
-            flash(f"An error occurred: {e}", "danger")
-        return redirect(url_for('edit_email_settings'))
+        # --- Save Settings Action ---
+        if action == 'save':
+            system_email = request.form.get('SYSTEM_EMAIL', '').strip()
+            try:
+                if system_email:
+                    save_setting("SYSTEM_EMAIL", system_email)
+                flash("Email settings updated successfully!", "success")
+            except Exception as e:
+                flash(f"An error occurred while saving: {e}", "danger")
+            return redirect(url_for('edit_email_settings'))
+
+        # --- Test Email Action ---
+        elif action == 'test':
+            test_recipient = request.form.get('test_recipient', '').strip()
+            if not test_recipient:
+                flash("Please enter a recipient address for the test email.", "warning")
+                return redirect(url_for('edit_email_settings'))
+
+            try:
+                sent = send_email(
+                    recipient=test_recipient,
+                    subject="GiftManager Email Test",
+                    text="This is a test email from GiftManager. If you received this, your email configuration is working correctly."
+                )
+                if sent:
+                    flash(f"Test email accepted by server! Check {test_recipient}'s inbox.", "success")
+                else:
+                    flash("Email provider did not accept the message. Check your API keys or SMTP credentials in environment variables.", "danger")
+            except ValueError as ve:
+                # Configuration errors (invalid host, missing TLS, etc.)
+                flash(f"Configuration Error: {ve}", "danger")
+            except Exception as e:
+                # Log full error server-side but only show type to admin
+                app.logger.warning("UI email test failed (%s): %s", type(e).__name__, str(e))
+                flash(f"Email delivery failed ({type(e).__name__}). Check server logs for details.", "danger")
+
+            return redirect(url_for('edit_email_settings'))
 
     current_settings = {
         'SYSTEM_EMAIL': read_env_variable("SYSTEM_EMAIL", ""),
