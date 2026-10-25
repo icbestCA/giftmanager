@@ -1,10 +1,41 @@
-version: '3.8'
 services:
   giftmanager:
-    image: icbest/giftmanager:latest
+    image: icbest/giftmanager:latest   # or: build: ./main
     container_name: giftmanager
+    restart: unless-stopped
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/app/data/
-    restart: unless-stopped
+      - ./data:/app/data
+    environment:
+      SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY to a unique random value}"
+
+      # OIDC
+      # OIDC_CLIENT_ID: "<OIDC_CLIENT_ID>"
+      # OIDC_CLIENT_SECRET: "<OIDC_CLIENT_SECRET>"
+
+
+      # Email is optional. Env variables override settings saved in the web UI.
+      # Configure System Email in the settings.json or Web UI
+      # --- SMTP (uncomment to use) ---
+      # EMAIL_PROVIDER: smtp
+      # SMTP_HOST: smtp.example.com
+      # SMTP_PORT: "587"              # 587 + starttls, or 465 + ssl
+      # SMTP_SECURITY: starttls       # starttls | ssl | none
+      # SMTP_USERNAME: your-smtp-login
+
+      # SMTP password: use ONE of these, not both
+      # SMTP_PASSWORD_FILE: /run/secrets/smtp_password   # also enable "secrets" below
+      # SMTP_PASSWORD: "${SMTP_PASSWORD}"
+
+      # --- Mailjet (default provider) ---
+      # MAILJET_API_KEY: "${MAILJET_API_KEY}"
+      # MAILJET_API_SECRET: "${MAILJET_API_SECRET}"
+
+    # For SMTP_PASSWORD_FILE, uncomment:
+    # secrets:
+    #   - smtp_password
+
+# secrets:
+#   smtp_password:
+#     file: ./secrets/smtp_password   # file contains only the password

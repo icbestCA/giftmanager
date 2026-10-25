@@ -1,6 +1,7 @@
 # Ignore the virtual environment directory
 venv/
-.env/
+.env
+.env.*
 
 # Python bytecode files
 __pycache__/
@@ -47,3 +48,6 @@ Thumbs.db
 .coverage
 *.cover
 *.py,cover
+
+# Local SMTP password files used by the documented Compose example
+/secrets/

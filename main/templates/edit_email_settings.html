@@ -98,6 +98,24 @@
             background-color: var(--card-bg-color);
         }
         
+        .email-action-button {
+            color: var(--primary-text-color);
+            background-color: transparent;
+            border: 1px solid currentColor;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            min-height: 44px;
+        }
+
+        .email-action-button:hover {
+            background-color: var(--card-hover-bg-color);
+        }
+
+        .email-action-button:focus-visible {
+            outline: 3px solid var(--primary-text-color);
+            outline-offset: 3px;
+        }
+
         .sidebar {
             overflow-y: scroll;
             transition: transform 0.3s ease-in-out;
@@ -240,7 +258,7 @@
                         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h2 class="text-xl font-semibold">Edit Email Settings</h2>
+                        <h1 class="text-xl font-semibold">Edit Email Settings</h1>
                     </div>
                     <a href="{{ url_for('dashboard') }}" class="text-red-500 hover:underline">To Dashboard</a>
                 </div>
@@ -249,45 +267,73 @@
             <main class="p-6">
                 <!-- Edit Email Settings Content -->
                 <div class="main p-6 rounded shadow section">
-                    <h3 class="text-lg font-semibold mb-4">Edit Email Settings</h3>
+                    <h2 class="text-lg font-semibold mb-4">Edit Email Settings</h2>
                     <form method="post" action="{{ url_for('edit_email_settings') }}">
+                        <input type="hidden" name="action" value="save">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                         <div class="mb-4">
-                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">System Email:</label>
+                            <label for="SYSTEM_EMAIL" class="block sec-text font-medium">System Email (Sender):</label>
                             <input 
                                 type="email" 
                                 id="SYSTEM_EMAIL" 
                                 name="SYSTEM_EMAIL" 
                                 value="{{ settings['SYSTEM_EMAIL'] }}"
                                 class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                                required
                             >
+                            <p class="sec-text text-sm mt-1">The "From" address used for all notifications.</p>
                         </div>
                         <button 
                             type="submit" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                            class="email-action-button"
                         >
                             Save Changes
                         </button>
                     </form>
-
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            <div class="mt-4">
-                                {% for category, message in messages %}
-                                    <div 
-                                        class="p-4 rounded mb-2 text-white {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }}">
-                                        {{ message }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
                 </div>
+
+                <!-- Test Email Delivery -->
+                <div class="main p-6 rounded shadow section mt-6">
+                    <h2 class="text-lg font-semibold mb-2">Test Email Delivery</h2>
+                    <p class="sec-text text-sm mb-4">Send a test email using the saved SMTP or Mailjet settings. Save any sender changes before testing.</p>
+                    <form method="post" action="{{ url_for('edit_email_settings') }}">
+                        <input type="hidden" name="action" value="test">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <div class="mb-4">
+                            <label for="test_recipient" class="block sec-text font-medium">Test Recipient Address:</label>
+                            <input 
+                                type="email" 
+                                id="test_recipient" 
+                                name="test_recipient" 
+                                placeholder="admin@example.com"
+                                class="border border-gray-300 rounded px-4 py-2 w-full inputer"
+                                required
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="email-action-button">
+                            Send Test Email
+                        </button>
+                    </form>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="mt-4">
+                            {% for category, message in messages %}
+                                <div 
+                                    role="{{ 'status' if category == 'success' else 'alert' }}" class="p-4 rounded mb-2 text-white {{ 'bg-green-800' if category == 'success' else 'bg-red-800' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </main>
         </div>
     </div>
 
-    <!-- Font Awesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         // Sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
