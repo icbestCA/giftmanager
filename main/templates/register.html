@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Gift Manager</title>
+    <title>{{ _('Register') }} - Gift Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -95,6 +95,11 @@
         }
     </style>
     <script>
+        // Translations for strings used inside JavaScript
+        const I18N = {
+            passwordsDoNotMatch: {{ _('Passwords do not match')|tojson }}
+        };
+
         // Inline script to apply the theme from the cookie immediately
         (function() {
             function getThemeFromCookie() {
@@ -117,13 +122,13 @@
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
             <button id="backButton" class="text-2xl px-4 py-2">
-                Back
+                {{ _('Back') }}
             </button>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <div class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">Register</h1>
+            <h1 class="text-2xl font-semibold mb-4" style="color: var(--text-color);">{{ _('Register') }}</h1>
             
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -137,40 +142,40 @@
 
             <form method="POST">
                 <div class="mb-4">
-                    <label for="username" class="block sec-text font-bold">Username for login:</label>
+                    <label for="username" class="block sec-text font-bold">{{ _('Username for login:') }}</label>
                     <input type="text" name="username" id="username" class="border rounded py-2 px-3 w-full inputer" required>
                 </div>
                 <div class="mb-4">
-                    <label for="full_name" class="block sec-text font-bold">Complete name:</label>
+                    <label for="full_name" class="block sec-text font-bold">{{ _('Complete name:') }}</label>
                     <input type="text" name="full_name" id="full_name" class="border rounded py-2 px-3 w-full inputer" required>
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="block sec-text font-bold">Password:</label>
+                    <label for="password" class="block sec-text font-bold">{{ _('Password:') }}</label>
                     <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full inputer" required>
                 </div>
                 <div class="mb-4">
-                    <label for="confirm_password" class="block sec-text font-bold">Confirm Password:</label>
+                    <label for="confirm_password" class="block sec-text font-bold">{{ _('Confirm Password:') }}</label>
                     <input type="password" name="confirm_password" id="confirm_password" class="border rounded py-2 px-3 w-full inputer" required>
                 </div>
                 <div class="mb-4">
-                    <label for="email" class="block sec-text font-bold">Email (optional):</label>
+                    <label for="email" class="block sec-text font-bold">{{ _('Email (optional):') }}</label>
                     <input type="email" name="email" id="email" class="border rounded py-2 px-3 w-full inputer">
                 </div>
                 <div class="mb-4">
-                    <label for="birthday" class="block sec-text font-bold">Birthday (optional):</label>
+                    <label for="birthday" class="block sec-text font-bold">{{ _('Birthday (optional):') }}</label>
                     <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full inputer">
                 </div>
 
                 {% if joining_code %}
                 <div class="mb-4">
-                    <label for="joining_code" class="block sec-text font-bold">Joining Code:</label>
+                    <label for="joining_code" class="block sec-text font-bold">{{ _('Joining Code:') }}</label>
                     <input type="text" name="joining_code" id="joining_code" class="border rounded py-2 px-3 w-full inputer" required>
-                    <p class="text-sm sec-text mt-1">Please ask your family for the joining code</p>
+                    <p class="text-sm sec-text mt-1">{{ _('Please ask your family for the joining code') }}</p>
                 </div>
                 {% endif %}
 
                 <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">Avatar:</label>
+                        <label class="block text-gray-700 font-bold mb-2">{{ _('Avatar:') }}</label>
                         <div class="flex items-center gap-4">
                             <!-- Hidden input to store the generated avatar filename -->
                             <input type="hidden" name="avatar" id="avatar_input" value="avatar1.png">
@@ -178,17 +183,17 @@
                             <!-- Avatar preview container (initially hidden) -->
                             <div id="avatar_container">
                                 <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
-                                    <img id="avatar_preview" src="{{ url_for('static', filename='icons/avatar1.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
+                                    <img id="avatar_preview" src="{{ url_for('static', filename='icons/avatar1.png') }}" alt="{{ _('Default Avatar') }}" class="w-full h-full object-cover">
                             </div>
                                 <div class="text-sm text-gray-600 mt-2">
-                                    <p class="text-m italic mt-1">You can change your avatar later in profile settings</p>
+                                    <p class="text-m italic mt-1">{{ _('You can change your avatar later in profile settings') }}</p>
                             </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Register</button>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">{{ _('Register') }}</button>
             </form>
         </div>
     </main>
@@ -205,7 +210,7 @@
             const confirmPassword = this;
             
             if (password.value !== confirmPassword.value) {
-                confirmPassword.setCustomValidity('Passwords do not match');
+                confirmPassword.setCustomValidity(I18N.passwordsDoNotMatch);
             } else {
                 confirmPassword.setCustomValidity('');
             }

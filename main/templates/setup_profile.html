@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup Profile</title>
+    <title>{{ _('Setup Profile') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -11,41 +11,41 @@
 </head>
 <body class="text-gray-900 font-sans">
     <div class="container mx-auto p-8">
-        <h1 class="text-2xl font-semibold mb-4">Setup Your Profile</h1>
+        <h1 class="text-2xl font-semibold mb-4">{{ _('Setup Your Profile') }}</h1>
         <form action="{{ url_for('setup_profile') }}" method="post">
             <div class="mb-4">
-                <label for="username" class="block text-gray-700 font-bold">Username:</label>
+                <label for="username" class="block text-gray-700 font-bold">{{ _('Username:') }}</label>
                 <input type="text" name="username" id="username" value="{{ user.username }}" class="border rounded py-2 px-3 w-full" disabled>
             </div>
             
             <div class="mb-4">
-                <label for="full_name" class="block text-gray-700 font-bold">Full Name:</label>
+                <label for="full_name" class="block text-gray-700 font-bold">{{ _('Full Name:') }}</label>
                 <input type="text" name="full_name" id="full_name" 
                        value="{{ oidc_user_info.full_name if oidc_user_info.full_name else '' }}" 
                        class="border rounded py-2 px-3 w-full">
             </div>
 
             <div class="mb-4">
-                <label for="email" class="block text-gray-700 font-bold">Email:</label>
+                <label for="email" class="block text-gray-700 font-bold">{{ _('Email:') }}</label>
                 <input type="email" name="email" id="email" value="{{ oidc_user_info.email }}" class="border rounded py-2 px-3 w-full" disabled>
             </div>
 
             <div class="mb-4">
-                <label for="password" class="block text-gray-700 font-bold">Password:</label>
+                <label for="password" class="block text-gray-700 font-bold">{{ _('Password:') }}</label>
                 {% if enable_default_login %}
                     <input type="password" name="password" id="password" class="border rounded py-2 px-3 w-full" required>
                 {% else %}
-                    <p class="text-gray-500 italic">Password is not required because default login is disabled.</p>
+                    <p class="text-gray-500 italic">{{ _('Password is not required because default login is disabled.') }}</p>
                 {% endif %}
             </div>
 
             <div class="mb-4">
-                <label for="birthday" class="block text-gray-700 font-bold">Birthday:</label>
+                <label for="birthday" class="block text-gray-700 font-bold">{{ _('Birthday:') }}</label>
                 <input type="date" name="birthday" id="birthday" class="border rounded py-2 px-3 w-full" required>
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Avatar:</label>
+                <label class="block text-gray-700 font-bold mb-2">{{ _('Avatar:') }}</label>
                 <div class="flex items-center gap-4">
                     <!-- Hidden input to store the generated avatar filename -->
                     <input type="hidden" name="avatar" id="avatar_input" value="">
@@ -53,11 +53,11 @@
                     <!-- Avatar preview container (initially hidden) -->
                     <div id="avatar_container" class="hidden">
                         <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
-                            <img id="avatar_preview" src="" alt="Generated Avatar" class="w-full h-full object-cover">
+                            <img id="avatar_preview" src="" alt="{{ _('Generated Avatar') }}" class="w-full h-full object-cover">
                         </div>
                         <div class="text-sm text-gray-600 mt-2">
-                            <p class="text-green-600 font-medium">✓ Avatar generated successfully</p>
-                            <p class="text-xs italic mt-1">You can change it later in profile settings</p>
+                            <p class="text-green-600 font-medium">✓ {{ _('Avatar generated successfully') }}</p>
+                            <p class="text-xs italic mt-1">{{ _('You can change it later in profile settings') }}</p>
                         </div>
                     </div>
                     
@@ -67,14 +67,14 @@
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                         </div>
                         <div class="text-sm text-gray-600">
-                            <p class="font-medium">Generating avatar...</p>
-                            <p class="text-xs italic mt-1">Please wait a moment</p>
+                            <p class="font-medium">{{ _('Generating avatar...') }}</p>
+                            <p class="text-xs italic mt-1">{{ _('Please wait a moment') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">Save</button>
+            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded">{{ _('Save') }}</button>
         </form>
     </div>
     <script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shared Lists</title>
+    <title>{{ _('Shared Lists') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <style>
@@ -131,8 +131,8 @@
 <body class="font-sans">
     <header class="bg-white shadow p-4 header">
         <div class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
-            <h1 class="text-xl font-semibold">Shared Lists</h1>
+            <button id="backButton" class="text-2xl px-4 py-2">{{ _('Back') }}</button>
+            <h1 class="text-xl font-semibold">{{ _('Shared Lists') }}</h1>
         </div>
     </header>
 
@@ -150,18 +150,18 @@
 
         <!-- Create New Shared List Section -->
         <div class="card p-6 rounded-lg shadow-lg mb-8">
-            <h2 class="text-2xl font-semibold mb-4">Create New Shared List</h2>
+            <h2 class="text-2xl font-semibold mb-4">{{ _('Create New Shared List') }}</h2>
             
             <form method="POST" action="{{ url_for('manage_shared_lists') }}">
                 <div class="mb-4">
-                    <label for="list_name" class="block font-medium mb-2">List Name:</label>
+                    <label for="list_name" class="block font-medium mb-2">{{ _('List Name:') }}</label>
                     <input type="text" id="list_name" name="list_name" 
                            class="w-full px-3 py-2 border rounded inputer" 
-                           placeholder="e.g., Family Vacation, Office Party" required>
+                           placeholder="{{ _('e.g., Family Vacation, Office Party') }}" required>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block font-medium mb-2">List Avatar:</label>
+                    <label class="block font-medium mb-2">{{ _('List Avatar:') }}</label>
                     <div class="border rounded p-4">
                         <div class="grid grid-cols-4 gap-2">
                             {% for i in range(1, 9) %}
@@ -169,7 +169,7 @@
                                 <input type="radio" id="avatar{{ i }}" name="avatar" value="icons/avatar{{ i }}.png" 
                                        class="hidden" {% if i == 1 %}checked{% endif %}>
                                 <img src="{{ url_for('static', filename='icons/avatar' ~ i ~ '.png') }}" 
-                                     alt="Avatar {{ i }}" 
+                                     alt="{% trans number=i %}Avatar {{ number }}{% endtrans %}" 
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <div class="avatar-placeholder" style="display: none;">
                                     {{ i }}
@@ -177,12 +177,12 @@
                             </label>
                             {% endfor %}
                         </div>
-                        <p class="text-sm text-gray-500 mt-2 text-center">Select an avatar for your shared list</p>
+                        <p class="text-sm text-gray-500 mt-2 text-center">{{ _('Select an avatar for your shared list') }}</p>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block font-medium mb-2">Add Members:</label>
+                    <label class="block font-medium mb-2">{{ _('Add Members:') }}</label>
                     <div class="border rounded p-4 max-h-48 overflow-y-auto">
                         {% for user in available_users %}
                         <label class="flex items-center mb-2">
@@ -194,14 +194,14 @@
                 </div>
 
                 <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Create Shared List
+                    {{ _('Create Shared List') }}
                 </button>
             </form>
         </div>
 
         <!-- Manage Existing Shared Lists Section -->
         <div class="card p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4">My Shared Lists</h2>
+            <h2 class="text-2xl font-semibold mb-4">{{ _('My Shared Lists') }}</h2>
             
             {% if shared_lists %}
             <div class="space-y-4">
@@ -212,7 +212,7 @@
                             <div class="flex items-center mb-2">
                                 <!-- Display actual avatar image instead of placeholder -->
                                 <img src="{{ url_for('static', filename=list.avatar if list.avatar else 'icons/avatar1.png') }}" 
-                                     alt="List Avatar" 
+                                     alt="{{ _('List Avatar') }}" 
                                      class="w-8 h-8 rounded-full object-cover mr-3"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3" style="display: none;">
@@ -221,7 +221,7 @@
                                 <h3 class="text-lg font-semibold">{{ list.full_name }}</h3>
                             </div>
                             <p class="text-sm text-gray-600">
-                                Members: 
+                                {{ _('Members:') }}
                                 {% for username in list.list_members %}
                                 {{ get_full_name(username) }}{% if not loop.last %}, {% endif %}
                                 {% endfor %}
@@ -230,22 +230,22 @@
                         <div class="flex space-x-2 ml-4">
                             <a href="{{ url_for('user_gift_ideas', selected_user_id=list.username) }}" 
                                class="bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">
-                                View
+                                {{ _('View') }}
                             </a>
                             {% if list.list_owner == session['username'] %}
                             <button onclick="toggleEditMembers('{{ list.username }}')" 
                                     class="bg-yellow-500 text-white px-3 py-2 rounded text-sm hover:bg-yellow-600">
-                                Edit
+                                {{ _('Edit') }}
                             </button>
                             <form method="POST" action="{{ url_for('delete_shared_list', list_username=list.username) }}" 
-                                  onsubmit="return confirm('Delete this list?')">
+                                  onsubmit="return confirm({{ _('Delete this list?')|tojson }})">
                                 <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600">
-                                    Delete
+                                    {{ _('Delete') }}
                                 </button>
                             </form>
                             {% else %}
                             <span class="bg-gray-500 text-white px-3 py-2 rounded text-sm">
-                                Member
+                                {{ _('Member') }}
                             </span>
                             {% endif %}
                         </div>
@@ -254,7 +254,7 @@
                     <!-- Edit Members Form -->
                     {% if list.list_owner == session['username'] %}
                     <div id="edit-members-{{ list.username }}" class="edit-members-form">
-                        <h4 class="font-semibold mb-3">Edit Members</h4>
+                        <h4 class="font-semibold mb-3">{{ _('Edit Members') }}</h4>
                         <form method="POST" action="{{ url_for('edit_shared_list_members', list_username=list.username) }}">
                             <div class="mb-4">
                                 <div class="border rounded p-4 max-h-48 overflow-y-auto">
@@ -269,11 +269,11 @@
                             </div>
                             <div class="flex space-x-2">
                                 <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600">
-                                    Save
+                                    {{ _('Save') }}
                                 </button>
                                 <button type="button" onclick="toggleEditMembers('{{ list.username }}')" 
                                         class="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">
-                                    Cancel
+                                    {{ _('Cancel') }}
                                 </button>
                             </div>
                         </form>
@@ -283,13 +283,13 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-gray-500 text-center py-4">No shared lists yet.</p>
+            <p class="text-gray-500 text-center py-4">{{ _('No shared lists yet.') }}</p>
             {% endif %}
         </div>
 
         <div class="mt-8 text-center">
             <a href="{{ url_for('dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                Back to Dashboard
+                {{ _('Back to Dashboard') }}
             </a>
         </div>
     </main>

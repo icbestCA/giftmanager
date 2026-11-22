@@ -6,7 +6,7 @@
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
     <link rel="manifest" href="/manifest.json">
-    <title>Login</title>
+    <title>{{ _('Login') }}</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -204,7 +204,7 @@
 <body>
     <!-- Regular Login Form -->
     <form method="post" action="/login" id="regular-login">
-        <h1>Login</h1>
+        <h1>{{ _('Login') }}</h1>
         <div class="info-box">
             {{ login_message }}
         </div>
@@ -222,48 +222,48 @@
         {% endwith %}
 
         <!-- Your form fields here -->
-        <label for="username">Username</label>
+        <label for="username">{{ _('Username') }}</label>
         <input type="text" id="username" name="username"  style="font-size: 17px;" required>
-        <label for="password">Password</label>
+        <label for="password">{{ _('Password') }}</label>
         <input type="password" id="password" name="password" style="font-size: 17px;" required>
-        <input type="submit" value="SIGN IN">
+        <input type="submit" value="{{ _('SIGN IN') }}">
 
         {% if enable_self_registration %}
-        <div class="separator">or</div>
+        <div class="separator">{{ _('or') }}</div>
         
         <!-- Registration Button -->
         <a href="{{ url_for('register') }}">
             <button type="button" class="register-button">
-                Create New Account
+                {{ _('Create New Account') }}
             </button>
         </a>
         {% endif %}
 
         {% if guests_exist %}
-        <div class="separator">or</div>
+        <div class="separator">{{ _('or') }}</div>
         
         <!-- Guest Login Button -->
         
         <button type="button" class="guest-login" onclick="showGuestLogin()">
-            I have a guest password
+            {{ _('I have a guest password') }}
         </button>
         {% endif %}
         
         <!-- Display OIDC Login Button if enabled -->
         {% if oidc_enabled %}
             <a href="{{ url_for('login_oidc') }}">
-                <button type="button" class="oidc-login">Login with OIDC</button>
+                <button type="button" class="oidc-login">{{ _('Login with OIDC') }}</button>
             </a>
         {% endif %}
         
-        <p>Contact the administrator to reset your password.</p>
+        <p>{{ _('Contact the administrator to reset your password.') }}</p>
     </form>
 
     <!-- Guest Login Form (Initially Hidden) -->
     <form method="post" action="/guest_login" id="guest-login" style="display: none;">
-        <h1>Guest Login</h1>
+        <h1>{{ _('Guest Login') }}</h1>
         <div class="info-box">
-            Enter your guest password to access limited features
+            {{ _('Enter your guest password to access limited features') }}
         </div>
         <!-- Displaying flashed messages for guest login -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -278,17 +278,17 @@
             {% endif %}
         {% endwith %}
 
-        <label for="guest_password">Guest Password</label>
+        <label for="guest_password">{{ _('Guest Password') }}</label>
         <input type="password" id="guest_password" name="password" style="font-size: 17px;" required 
-               placeholder="Enter guest password">
+               placeholder="{{ _('Enter guest password') }}">
         
-        <input type="submit" value="LOGIN AS GUEST" style="background-color: #28a745;">
+        <input type="submit" value="{{ _('LOGIN AS GUEST') }}" style="background-color: #28a745;">
         
         <button type="button" class="secondary-button" onclick="showRegularLogin()">
-            Back to regular login
+            {{ _('Back to regular login') }}
         </button>
         
-        <p>Contact the administrator for guest access.</p>
+        <p>{{ _('Contact the administrator for guest access.') }}</p>
     </form>
 
     <script>

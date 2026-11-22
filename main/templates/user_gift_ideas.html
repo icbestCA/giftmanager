@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ideas List</title>
+    <title>{{ _('Ideas List') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/png">
     <meta name="theme-color" content="#000000"/>
@@ -229,13 +229,13 @@
 <body class="body font-sans">
     <header class="header p-4">
         <nav class="container mx-auto flex justify-between items-center">
-            <button id="backButton" class="text-2xl px-4 py-2">Back</button>
-            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add Ideas</a>
+            <button id="backButton" class="text-2xl px-4 py-2">{{ _('Back') }}</button>
+            <a href="{{ url_for('add_idea', selected_user_id=user_gift_ideas[0].user_id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">{{ _('Add Ideas') }}</a>
         </nav>
     </header>
     <main class="main container mx-auto p-8">
         <section class="section shadow-lg rounded-lg p-6">
-            <h1 class="text-2xl font-semibold mb-4 text-primary">Ideas list for {{ user_namels }}</h1>
+            <h1 class="text-2xl font-semibold mb-4 text-primary">{% trans username=user_namels %}Ideas list for {{ username }}{% endtrans %}</h1>
             <ul class="space-y-4">
                 {% for gift_idea in user_gift_ideas %}
                 <li class="actions-container p-4 shadow-md rounded-lg">
@@ -255,15 +255,15 @@
                             {% endif %}
                             <p class="text-gray-600 description" style="white-space: pre-wrap;">{{ gift_idea.description }}</p>
                             {% if gift_idea.value %}
-                            <p class="text-gray-600 sec-text">Estimated Value: {{ format_currency(gift_idea.value) }}</p>
+                            <p class="text-gray-600 sec-text">{% trans %}Estimated Value:{% endtrans %} {{ format_currency(gift_idea.value) }}</p>
                             {% endif %}
-                            <p class="text-gray-600 sec-text">Added By: {{ get_full_name(gift_idea.added_by) }}</p>
+                            <p class="text-gray-600 sec-text">{% trans %}Added By:{% endtrans %} {{ get_full_name(gift_idea.added_by) }}</p>
                         </div>
                         {% if imgenabled %}
                         <div class="divimage">
                             <!-- Display image if available -->
                             {% if gift_idea.image_path %}
-                                <img src="{{ gift_idea.image_path }}" alt="OG Image" class="image">
+                                <img src="{{ gift_idea.image_path }}" alt="{{ _('OG Image') }}" class="image">
                             {% endif %}
                         </div>
                         {% endif %}
@@ -271,10 +271,10 @@
                         <div class="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 idea-actions">
                             {% if gift_idea.added_by == session['username'] or is_shared_list_member %}
                             <button class="bg-red-500 text-white px-3 py-1 rounded delete-idea-button flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="Delete Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/delete.svg') }}" alt="{{ _('Delete Icon') }}" class="h-5 w-5 helplogo">
                             </button>
                             <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded edit-idea-link flex justify-center items-center" data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="{{ _('Edit Icon') }}" class="h-5 w-5 helplogo">
                             </a>
                             {% endif %}
                             {% if gift_idea.link %}
@@ -283,14 +283,14 @@
                             {% set link = 'https://' + link %}
                             {% endif %}
                             <a href="{{ link }}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded flex justify-center items-center open-link-button">
-                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="Open Link Icon" class="h-5 w-5 helplogo">
+                                <img src="{{ url_for('static', filename='icons/link.svg') }}" alt="{{ _('Open Link Icon') }}" class="h-5 w-5 helplogo">
                             </a>
                             {% endif %}
                         </div>
                     </div>
     
                     {% if gift_idea.bought_by %}
-                        <p class="text-green-500">Purchased by:
+                        <p class="text-green-500">{% trans %}Purchased by:{% endtrans %}
                             {% set is_anonymous = False %}
                             {% if hide_purchaser == 'global' %}
                                 {% set is_anonymous = True %}
@@ -301,24 +301,24 @@
                             {% endif %}
                             
                             {% if is_anonymous and gift_idea.bought_by != session['username'] %}
-                                Anonymous
+                                {{ _('Anonymous') }}
                             {% elif gift_idea.bought_by == session['username'] %}
-                                Me ({{ session['username']}})
+                                {% trans username=session['username'] %}Me ({{ username }}){% endtrans %}
                                 {% if hide_purchaser == 'user_choice' and gift_idea.get('bought_anonymously', False) %}
-                                    (anonymously)
+                                    {{ _('(anonymously)') }}
                                 {% elif hide_purchaser == 'global' %}
-                                    (anonymously)
+                                    {{ _('(anonymously)') }}
                                 {% endif %}
                             {% else %}
                                 {{ get_full_name(gift_idea.bought_by) }}
                             {% endif %}
                         </p>
                     {% if gift_idea.bought_by == session['username'] %}
-                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">Cancel the purchase</button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded mark-as-not-bought-button" data-idea-id="{{ gift_idea.gift_idea_id }}">{{ _('Cancel the purchase') }}</button>
                     {% endif %}
                     {% else %}
                         <div class="flex flex-col">
-                    <strong>Available idea</strong>
+                    <strong>{{ _('Available idea') }}</strong>
                             <div>
                                 {% if hide_purchaser == 'global' %}
                                     <!-- Global mode - only anonymous purchase button -->
@@ -326,7 +326,7 @@
                                         type="button"
                                         class="mark-as-bought-anon-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                                         data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                        Purchase (anonymously)
+                                        {{ _('Purchase (anonymously)') }}
                                     </button>
                                 {% elif hide_purchaser == 'disabled' %}
                                     <!-- Disabled mode - only regular purchase button -->
@@ -334,7 +334,7 @@
                                         type="button"
                                         class="mark-as-bought-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                                         data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                        Purchase
+                                        {{ _('Purchase') }}
                                     </button>
                                 {% else %}
                                     <!-- User choice mode - dropdown with both options -->
@@ -344,7 +344,7 @@
                                             type="button"
                                             class="mark-as-bought-button px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-l-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                                             data-idea-id="{{ gift_idea.gift_idea_id }}">
-                                            Purchase
+                                            {{ _('Purchase') }}
                                         </button>
 
                                         <!-- Dropdown trigger -->
@@ -372,7 +372,7 @@
                                                 class="mark-as-bought-anon-button block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                                 data-idea-id="{{ gift_idea.gift_idea_id }}"
                                                 style="color: black;">
-                                                Purchase anonymously
+                                                {{ _('Purchase anonymously') }}
                                             </button>
                                         </div>
                                     </div>
@@ -383,7 +383,7 @@
                     <div class="mt-2 text-xs text-gray-500">
                         
                         {% if gift_idea.get('last_updated') %}
-                            Last updated: {{ gift_idea.last_updated[:10] }}
+                            {% trans date=gift_idea.last_updated[:10] %}Last updated: {{ date }}{% endtrans %}
                         {% endif %}
                     </div>
                 </li>

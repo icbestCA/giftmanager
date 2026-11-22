@@ -1,0 +1,2059 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: giftmanager\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-21 19:05-0500\n"
+"PO-Revision-Date: 2026-11-22 00:10\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"Language-Team: French\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Crowdin-Project: giftmanager\n"
+"X-Crowdin-Project-ID: 839024\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: messages.po\n"
+"X-Crowdin-File-ID: 78\n"
+
+#: app.py:254 app.py:272 app.py:302
+msgid "Please log in first."
+msgstr "Connectez-vous d'abord."
+
+#: app.py:261
+msgid "This feature is not available for guest users."
+msgstr "Cette fonctionnalité n'est pas disponible pour les utilisateurs invités."
+
+#: app.py:283
+msgid "Admin access required."
+msgstr "Accès administrateur requis."
+
+#: app.py:363 app.py:389 app.py:546
+msgid "User not found."
+msgstr "Utilisateur introuvable."
+
+#: app.py:369
+msgid "Email updated successfully."
+msgstr "Courriel mis à jour avec succès."
+
+#: app.py:461
+msgid "Authorization failed: invalid state."
+msgstr "Échec de l'autorisation: état invalide."
+
+#: app.py:468
+msgid "OIDC authorization failed."
+msgstr "L'autorisation OIDC a échoué."
+
+#: app.py:478
+msgid "Failed to parse user information."
+msgstr "Impossible d'analyser les informations de l'utilisateur."
+
+#: app.py:510
+msgid "Login successful with OIDC!"
+msgstr "Connexion réussie avec OIDC!"
+
+#: app.py:526
+msgid "New profile created. Please complete your profile setup."
+msgstr "Nouveau profil créé. Veuillez compléter la configuration de votre profil."
+
+#: app.py:529
+msgid "User not found and auto-registration is disabled."
+msgstr "L'utilisateur est introuvable et l'enregistrement automatique est désactivé."
+
+#: app.py:551
+msgid "Profile setup not required. Avatar already set."
+msgstr "La configuration de profil n'est pas requise. L'avatar est déjà défini."
+
+#: app.py:572
+msgid "Profile setup complete!"
+msgstr "Configuration du profil terminée !"
+
+#: app.py:601 app.py:655
+#, python-format
+msgid "Error reading users.json: %(error)s"
+msgstr "Erreur lors de la lecture de users.json : %(error)s"
+
+#: app.py:635 app.py:653
+msgid "User does not exist"
+msgstr "L'utilisateur n'existe pas"
+
+#: app.py:646
+msgid "Login successful!"
+msgstr "Connexion réussie!"
+
+#: app.py:649
+msgid "Wrong password"
+msgstr "Mauvais mot de passe"
+
+#: app.py:670
+msgid "Self-registration is not enabled. Please contact an administrator."
+msgstr "L'auto-inscription n'est pas activée. Veuillez contacter un administrateur."
+
+#: app.py:689
+msgid "Invalid joining code. Please check with your family."
+msgstr "Code d'adhésion invalide. Veuillez vérifier auprès de votre famille."
+
+#: app.py:694
+msgid "Please fill in all required fields."
+msgstr "Veuillez remplir tous les champs obligatoires."
+
+#: app.py:698
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas."
+
+#: app.py:708
+msgid "Username already exists. Please choose a different one."
+msgstr "Ce nom d'utilisateur est déjà pris, veuillez en choisir un autre"
+
+#: app.py:713
+msgid "Email already registered. Please use a different email or contact support."
+msgstr "E-mail déjà enregistré. Veuillez utiliser un e-mail différent ou contacter le support."
+
+#: app.py:733
+msgid "Registration successful! You can now log in."
+msgstr "Inscription réussie ! Vous pouvez maintenant vous connecter."
+
+#: app.py:750
+msgid "Current user not found."
+msgstr "L'utilisateur actuel est introuvable."
+
+#: app.py:801
+#, python-format
+msgid "Idea \"%(name)s\" added for user %(user)s by %(added_by)s!"
+msgstr "Idée \"%(name)s\" ajoutée pour l'utilisateur %(user)s par %(added_by)s!"
+
+#: app.py:841
+msgid "You are not authorized to delete this idea."
+msgstr "Vous n'êtes pas autorisé à supprimer cette idée."
+
+#: app.py:843 app.py:1202 app.py:1231 app.py:1691
+msgid "Idea not found"
+msgstr "Idée introuvable"
+
+#: app.py:958
+msgid "User data not found"
+msgstr "Données utilisateur non trouvées"
+
+#: app.py:1139 app.py:1475 app.py:2881
+msgid "User not found"
+msgstr "Utilisateur introuvable"
+
+#: app.py:1144
+msgid "Current password is incorrect"
+msgstr "Le mot de passe actuel est incorrect"
+
+#: app.py:1149
+msgid "New password and confirmation do not match"
+msgstr "Le nouveau mot de passe et la confirmation ne correspondent pas"
+
+#: app.py:1158
+msgid "Password successfully changed"
+msgstr "Mot de passe modifié avec succès"
+
+#: app.py:1191
+#, python-format
+msgid "Marked \"%(name)s\" as bought!"
+msgstr "Marqué \"%(name)s\" comme acheté!"
+
+#: app.py:1198 app.py:1200
+#, python-format
+msgid "\"%(name)s\" has already been bought by an anonymous user."
+msgstr "\"%(name)s\" a déjà été acheté par un utilisateur anonyme."
+
+#: app.py:1224
+#, python-format
+msgid "Marked \"%(name)s\" as not bought."
+msgstr "Marqué \"%(name)s\" comme non acheté."
+
+#: app.py:1229
+#, python-format
+msgid "You did not buy \"%(name)s\", so you cannot mark it as not bought."
+msgstr "Vous n'avez pas acheté \"%(name)s\", vous ne pouvez donc pas le marquer comme non acheté."
+
+#: app.py:1281
+msgid "No gift ideas for this user."
+msgstr "Aucune idée cadeau pour cet utilisateur."
+
+#: app.py:1332
+msgid "You haven't added any gift ideas."
+msgstr "Vous n'avez ajouté aucune idée cadeau."
+
+#: app.py:1528
+msgid "Avatar file not found!"
+msgstr "Fichier avatar introuvable !"
+
+#: app.py:1568
+msgid "Generated user avatar timed out and was deleted! Try again to add the new user."
+msgstr "L'avatar de l'utilisateur généré a expiré et a été supprimé ! Réessayez pour ajouter le nouvel utilisateur."
+
+#: app.py:1576
+msgid "Username already exists!"
+msgstr "Ce nom d'utilisateur existe déjà !"
+
+#: app.py:1597
+msgid "User added successfully!"
+msgstr "Utilisateur ajouté avec succès !"
+
+#: app.py:1680
+msgid "Idea updated successfully!"
+msgstr "Idée mise à jour avec succès !"
+
+#: app.py:1689
+msgid "You are not authorized to edit this idea."
+msgstr "Vous n'êtes pas autorisé à modifier cette idée."
+
+#: app.py:1780
+msgid "Invalid pool name"
+msgstr "Nom de pool invalide"
+
+#: app.py:1792
+#, python-format
+msgid "Pool \"%(name)s\" deleted"
+msgstr "Le pool \"%(name)s\" a été supprimé"
+
+#: app.py:1794
+#, python-format
+msgid "Pool \"%(name)s\" not found"
+msgstr "Pool \"%(name)s\" introuvable"
+
+#: app.py:1900
+#, python-format
+msgid " Pool \"%(name)s\" created"
+msgstr " Pool \"%(name)s\" créé"
+
+#: app.py:1939
+msgid "You don't have any Secret Santa assignments yet."
+msgstr "Vous n'avez pas encore d'assignation Secret Santa."
+
+#: app.py:1985
+msgid "User deleted successfully!"
+msgstr "Utilisateur supprimé avec succès !"
+
+#: app.py:1996
+msgid "Admin status updated successfully!"
+msgstr "Le statut de l'administrateur a été mis à jour avec succès !"
+
+#: app.py:2024
+msgid "Avatar uploaded successfully!"
+msgstr "Avatar téléchargé avec succès !"
+
+#: app.py:2026
+#, python-format
+msgid "Error uploading avatar: %(error)s"
+msgstr "Erreur lors du chargement de l'avatar : %(error)s"
+
+#: app.py:2042
+msgid "Generated avatar timed out and was deleted! Please generate a new one."
+msgstr "L'avatar généré a expiré et a été supprimé! Veuillez en générer un nouveau."
+
+#: app.py:2061
+msgid "User updated successfully!"
+msgstr "Utilisateur mis à jour avec succès !"
+
+#: app.py:2115
+msgid "Email settings updated successfully!"
+msgstr "Paramètres d'Email ont été mis à jour avec succès !"
+
+#: app.py:2118
+msgid "Email settings could not be saved. Check the server logs and try again."
+msgstr "Les paramètres de messagerie n'ont pas pu être enregistrés. Vérifiez les logs du serveur et réessayez."
+
+#: app.py:2126
+msgid "Please enter a recipient address for the test email."
+msgstr "Veuillez entrer une adresse de destinataire pour l'email de test."
+
+#: app.py:2136
+#, python-format
+msgid "Test email accepted by server! Check %(recipient)s's inbox."
+msgstr "Email de test accepté par le serveur! Vérifiez la boîte de réception de %(recipient)s."
+
+#: app.py:2138
+msgid "Email provider did not accept the message. Check the server's email settings."
+msgstr "Le fournisseur de messagerie n'a pas accepté le message. Vérifiez les paramètres de messagerie du serveur."
+
+#: app.py:2141
+msgid "Email configuration is invalid. Check the sender, recipient and server email settings."
+msgstr "La configuration de l'e-mail n'est pas valide. Vérifiez les paramètres de l'expéditeur, du destinataire et du serveur."
+
+#: app.py:2145
+#, python-format
+msgid "Email delivery failed (%(error_type)s). Check server logs for details."
+msgstr "L'envoi de l'e-mail a échoué (%(error_type)s). Vérifiez les journaux du serveur pour plus de détails."
+
+#: app.py:2164
+msgid "Login message updated successfully!"
+msgstr "Message de connexion mis à jour avec succès !"
+
+#: app.py:2166
+#, python-format
+msgid "Error updating login message: %(error)s"
+msgstr "Erreur lors de la mise à jour du message de connexion : %(error)s"
+
+#: app.py:2168
+msgid "Message cannot be empty."
+msgstr "Le message ne peut pas être vide."
+
+#: app.py:2228
+#, python-brace-format
+msgid "{count} gift ideas older than the threshold have been successfully deleted."
+msgstr "{count} idées cadeau plus anciennes que le seuil ont été supprimées avec succès."
+
+#: app.py:2234
+#, python-format
+msgid "Error deleting old gift ideas: %(error)s"
+msgstr "Erreur lors de la suppression des anciennes idées cadeaux : %(error)s"
+
+#: app.py:2255
+#, python-format
+msgid "The number of days to delete old gift ideas has been updated to %(days)s."
+msgstr "Le nombre de jours pour supprimer les anciennes idées cadeaux a été mis à jour pour %(days)s."
+
+#: app.py:2259
+msgid "Invalid number of days entered. Please enter a valid number."
+msgstr "Nombre de jours invalide entrés. Veuillez entrer un nombre valide."
+
+#: app.py:2261
+msgid "Please provide a value for the number of days."
+msgstr "Veuillez fournir une valeur pour le nombre de jours."
+
+#: app.py:2274
+msgid "Users are already configured. Setup page is unavailable."
+msgstr "Les utilisateurs sont déjà configurés. La page d'installation n'est pas disponible."
+
+#: app.py:2305
+msgid "Admin account created successfully. Please configure the environment variables."
+msgstr "Compte administrateur créé avec succès. Veuillez configurer les variables d'environnement."
+
+#: app.py:2315
+msgid "You must access this page from the setupadmin route."
+msgstr "Vous devez accéder à cette page à partir de la page setupadmin."
+
+#: app.py:2341
+msgid "Settings saved successfully!"
+msgstr "Paramètres enregistrés avec succès !"
+
+#: app.py:2369
+#, python-format
+msgid "Missing required fields: %(fields)s"
+msgstr "Champs obligatoires manquants : %(fields)s"
+
+#: app.py:2380
+msgid "OIDC settings saved successfully!"
+msgstr "Paramètres OIDC enregistrés avec succès !"
+
+#: app.py:2383
+#, python-format
+msgid "Error saving OIDC settings: %(error)s"
+msgstr "Erreur lors de l'enregistrement des paramètres OIDC : %(error)s"
+
+#: app.py:2427
+msgid "New group added successfully!"
+msgstr "Nouveau groupe ajouté avec succès !"
+
+#: app.py:2454
+msgid "Group assignments updated successfully!"
+msgstr "Assignations des groupes mis à jour avec succès !"
+
+#: app.py:2620
+msgid "Guest user created successfully!"
+msgstr "Utilisateur invité créé avec succès !"
+
+#: app.py:2669
+#, python-format
+msgid "Guest user %(username)s deleted successfully! %(count)s purchased gift ideas deleted."
+msgstr "L'utilisateur invité %(username)s a été supprimé avec succès ! %(count)s cadeaux achetés supprimés."
+
+#: app.py:2671
+msgid "Guest user not found."
+msgstr "Utilisateur invité introuvable."
+
+#: app.py:2686
+msgid "Guest login successful!"
+msgstr "Connexion d'invité réussie!"
+
+#: app.py:2689
+msgid "Invalid guest password"
+msgstr "Mot de passe d'invité invalide"
+
+#: app.py:2711
+msgid "Currency settings updated! Please restart to see changes"
+msgstr "Paramètres des devises mis à jour !"
+
+#: app.py:2724
+msgid "Self-registration settings updated successfully!"
+msgstr "Paramètres d'auto-inscription mis à jour avec succès !"
+
+#: app.py:2767
+#, python-format
+msgid "Shared list \"%(name)s\" created successfully!"
+msgstr "Liste partagée \"%(name)s\" créée avec succès !"
+
+#: app.py:2804 app.py:2832
+msgid "Shared list not found."
+msgstr "Liste partagée non trouvée."
+
+#: app.py:2809
+msgid "Only the list owner can delete this shared list."
+msgstr "Seul le propriétaire de la liste peut supprimer cette liste partagée."
+
+#: app.py:2820
+#, python-format
+msgid "Shared list \"%(name)s\" deleted successfully!"
+msgstr "Liste partagée \"%(name)s\" supprimée avec succès !"
+
+#: app.py:2837
+msgid "Only the list owner can edit members."
+msgstr "Seul le propriétaire de la liste peut modifier les membres."
+
+#: app.py:2849
+#, python-format
+msgid "Members updated for \"%(name)s\"!"
+msgstr "Membres mis à jour pour \"%(name)s\"!"
+
+#: app.py:2861
+msgid "Link sharing settings updated!"
+msgstr "Paramètres de partage de liens mis à jour !"
+
+#: app.py:2873
+msgid "Link sharing feature is currently disabled by administrator."
+msgstr "La fonction de partage de liens est actuellement désactivée par l'administrateur."
+
+#: app.py:2889
+msgid "Target not found"
+msgstr "Cible introuvable"
+
+#: app.py:2896
+msgid "You are not a member of this shared list"
+msgstr "Vous n'êtes pas membre de cette liste partagée"
+
+#: app.py:2901
+msgid "You can only manage your own sharing settings"
+msgstr "Vous ne pouvez gérer que vos propres paramètres de partage"
+
+#: app.py:2928
+msgid "New share link created!"
+msgstr "Nouveau lien de partage créé !"
+
+#: app.py:2938
+#, python-format
+msgid "Share link %(status)s!"
+msgstr "Lien de partage %(status)s!"
+
+#: app.py:2952
+#, python-format
+msgid "Share link extended by %(days)s days! New expiry: %(expiry)s"
+msgstr "Lien de partage étendu de %(days)s jours! Nouvelle expiration: %(expiry)s"
+
+#: app.py:2963
+msgid "Share link deleted!"
+msgstr "Lien de partage supprimé !"
+
+#: app.py:3170
+msgid "Invalid language selection."
+msgstr "Sélection de langue invalide."
+
+#: app.py:3174
+msgid "Language updated successfully."
+msgstr "Langue mise à jour avec succès !"
+
+#: templates/add_idea.html:6
+msgid "New Ideas"
+msgstr "Nouvelle idée"
+
+#: templates/add_idea.html:105 templates/edit_idea.html:107
+msgid "No OG image found. Enter an image URL below."
+msgstr "Aucune image OG trouvée. Entrez une URL de l'image ci-dessous."
+
+#: templates/add_idea.html:106 templates/edit_idea.html:108
+msgid "Error fetching OG image. Enter an image URL below."
+msgstr "Erreur lors de la récupération de l'image OG. Entrez une URL de l'image ci-dessous."
+
+#: templates/add_idea.html:107 templates/edit_idea.html:109
+msgid "Invalid image URL. Please enter a valid URL."
+msgstr "URL d'image invalide. Veuillez entrer une URL valide."
+
+#: templates/add_idea.html:108 templates/edit_idea.html:110
+#: templates/edit_idea.html:248 templates/my_ideas.html:292
+#: templates/shared_list_public.html:224 templates/user_gift_ideas.html:266
+msgid "OG Image"
+msgstr "OG Image"
+
+#: templates/add_idea.html:109 templates/edit_idea.html:111
+msgid "Manual Image"
+msgstr "Image manuelle"
+
+#: templates/add_idea.html:110 templates/edit_idea.html:112
+#: templates/edit_idea.html:275
+msgid "Field name (e.g., Shoe Size)"
+msgstr "Nom du champ (ex: taille de chaussure)"
+
+#: templates/add_idea.html:111 templates/edit_idea.html:113
+#: templates/edit_idea.html:280
+msgid "Value (e.g., 6)"
+msgstr "Valeur (ex: 6)"
+
+#: templates/add_idea.html:247 templates/bought_items.html:121
+#: templates/manage_shared_lists.html:134 templates/manage_sharing.html:109
+#: templates/my_ideas.html:245 templates/noideas.html:158
+#: templates/register.html:125 templates/user_gift_ideas.html:232
+msgid "Back"
+msgstr "Retour"
+
+#: templates/add_idea.html:253 templates/user_gift_ideas.html:233
+msgid "Add Ideas"
+msgstr "Ajouter une idée cadeau"
+
+#: templates/add_idea.html:256
+msgid "Add to:"
+msgstr "Ajouter à:"
+
+#: templates/add_idea.html:259
+msgid "-- Choose here --"
+msgstr "Choisir ici"
+
+#: templates/add_idea.html:267
+msgid "Title:"
+msgstr "Titre :"
+
+#: templates/add_idea.html:271 templates/edit_idea.html:233
+msgid "Description (Optional):"
+msgstr "Description (facultative):"
+
+#: templates/add_idea.html:275 templates/edit_idea.html:239
+msgid "Link (Optional):"
+msgstr "Lien (facultatif):"
+
+#: templates/add_idea.html:281 templates/edit_idea.html:252
+msgid "Enter Image URL (Optional):"
+msgstr "Entrer l'URL de l'image (facultatif):"
+
+#: templates/add_idea.html:287 templates/edit_idea.html:261
+msgid "Estimated Value (Optional):"
+msgstr "Valeur estimée (facultative):"
+
+#: templates/add_idea.html:288
+msgid "Estimated Value"
+msgstr "Valeur estimée"
+
+#: templates/add_idea.html:292 templates/edit_idea.html:265
+msgid "Custom Fields (Optional):"
+msgstr "Champs personnalisés (facultatif) :"
+
+#: templates/add_idea.html:299 templates/edit_idea.html:296
+msgid "+ Add Custom Field"
+msgstr "+ Ajouter un champ personnalisé"
+
+#: templates/add_idea.html:302
+msgid "Submit"
+msgstr "Ajouter"
+
+#: templates/add_user.html:3 templates/add_user.html:10
+msgid "New User"
+msgstr "Nouvel Utilisateur"
+
+#: templates/add_user.html:4 templates/admin_base.html:205
+msgid "Add User"
+msgstr "Nouvel Utilisateur"
+
+#: templates/add_user.html:15 templates/register.html:145
+#: templates/setupadmin.html:17
+msgid "Username for login:"
+msgstr "Nom d'utilisateur pour la connexion:"
+
+#: templates/add_user.html:21 templates/manage_guest_users.html:43
+#: templates/register.html:153 templates/setup_profile.html:34
+#: templates/setupadmin.html:21
+msgid "Password:"
+msgstr "Mot de passe:"
+
+#: templates/add_user.html:27 templates/register.html:149
+msgid "Complete name:"
+msgstr "Nom complet:"
+
+#: templates/add_user.html:33 templates/dashboard.html:401
+#: templates/setup_profile.html:43 templates/setupadmin.html:33
+msgid "Birthday:"
+msgstr "Anniversaire:"
+
+#: templates/add_user.html:39 templates/setup_profile.html:29
+#: templates/setupadmin.html:25
+msgid "Email:"
+msgstr "Email:"
+
+#: templates/add_user.html:47
+msgid "Select an avatar"
+msgstr "Sélectionner un avatar"
+
+#: templates/add_user.html:53 templates/dashboard.html:431
+#: templates/manage_users.html:28 templates/manage_users.html:47
+#: templates/manage_users.html:110 templates/manage_users.html:115
+msgid "Avatar"
+msgstr "Avatar"
+
+#: templates/add_user.html:61 templates/dashboard.html:436
+msgid "Random avatar"
+msgstr "Avatar aléatoire"
+
+#: templates/add_user.html:65 templates/dashboard.html:440
+msgid "Upload image"
+msgstr "Importer une image"
+
+#: templates/add_user.html:75
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/admin_base.html:6 templates/admin_base.html:244
+#: templates/manage_users.html:29 templates/secret_santa.html:3
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/admin_base.html:191 templates/admin_dashboard.html:3
+#: templates/dashboard.html:508
+msgid "Admin Dashboard"
+msgstr "Tableau de bord admin"
+
+#: templates/admin_base.html:197
+msgid "Management"
+msgstr "Gestion"
+
+#: templates/admin_base.html:199 templates/dashboard.html:548
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: templates/admin_base.html:202 templates/secret_santa.html:3
+#: templates/secret_santa.html:118 templates/secret_santa_assignment.html:121
+msgid "Secret Santa"
+msgstr "Secret Santa"
+
+#: templates/admin_base.html:208
+msgid "Families"
+msgstr "Familles"
+
+#: templates/admin_base.html:211
+msgid "Guest Users"
+msgstr "Utilisateurs invités"
+
+#: templates/admin_base.html:216
+msgid "Configuration & Maintenance"
+msgstr "Configuration et maintenance"
+
+#: templates/admin_base.html:218 templates/delete_old_gift_ideas.html:4
+msgid "Deletion Script"
+msgstr "Script de suppression"
+
+#: templates/admin_base.html:221
+msgid "Email Settings"
+msgstr "Paramètres Email"
+
+#: templates/admin_base.html:224
+msgid "Login Settings"
+msgstr "Paramètres de connexion"
+
+#: templates/admin_base.html:227
+msgid "OIDC Settings"
+msgstr "Paramètres OIDC"
+
+#: templates/admin_base.html:230
+msgid "Advanced"
+msgstr "Avancé"
+
+#: templates/admin_base.html:241
+msgid "Toggle menu"
+msgstr "Afficher/Masquer le menu"
+
+#: templates/admin_base.html:246
+msgid "To Dashboard"
+msgstr "Vers page principale"
+
+#: templates/admin_dashboard.html:4
+msgid "Welcome!"
+msgstr "Bienvenue!"
+
+#: templates/admin_dashboard.html:8
+msgid "Dashboard Overview"
+msgstr "Aperçu du tableau de bord"
+
+#: templates/admin_dashboard.html:9
+msgid "This is the admin dashboard where you can manage users, configure settings, and more."
+msgstr "Ceci est le tableau de bord d'administration où vous pouvez gérer les utilisateurs, configurer les paramètres, et plus encore."
+
+#: templates/advanced.html:3 templates/advanced.html:4
+msgid "Advanced Settings"
+msgstr "Paramètres avancés"
+
+#: templates/advanced.html:80
+msgid "Hide Purchaser Identity"
+msgstr "Masquer l'identité de l'acheteur"
+
+#: templates/advanced.html:84
+msgid "Hide the identity of the user, who purchased a specific gift."
+msgstr "Masquer l'identité de l'utilisateur, qui a acheté un cadeau spécifique."
+
+#: templates/advanced.html:85
+msgid "Hide purchaser identity"
+msgstr "Masquer l'identité de l'acheteur"
+
+#: templates/advanced.html:87
+msgid "Apply to everyone (global)"
+msgstr "Appliquer à tous (global)"
+
+#: templates/advanced.html:88
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: templates/advanced.html:89
+msgid "User choice"
+msgstr "Choix de l'utilisateur"
+
+#: templates/advanced.html:92
+msgid "Global: All purchases are always anonymous"
+msgstr "Global: Tous les achats sont toujours anonymes"
+
+#: templates/advanced.html:93
+msgid "Disabled: Purchaser identity is always shown"
+msgstr "Désactivé: L'identité de l'acheteur est toujours affichée"
+
+#: templates/advanced.html:94
+msgid "User choice: Each user decides whether to purchase anonymously"
+msgstr "Choix de l'utilisateur: chaque utilisateur décide d'acheter de façon anonyme ou non"
+
+#: templates/advanced.html:97 templates/advanced.html:117
+#: templates/advanced.html:137 templates/advanced.html:275
+#: templates/manage_shared_lists.html:272 templates/setup_profile.html:77
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/advanced.html:106
+msgid "Reordering Button"
+msgstr "Bouton de réorganisation"
+
+#: templates/advanced.html:110
+msgid "Enable reordering button on the myideas page."
+msgstr "Activer le bouton de réorganisation sur la page Mes idées."
+
+#: templates/advanced.html:111
+msgid "Reordering button"
+msgstr "Bouton de réorganisation"
+
+#: templates/advanced.html:113 templates/advanced.html:133
+#: templates/setup_oidc.html:92 templates/setup_oidc.html:103
+#: templates/setupenv.html:87
+msgid "True"
+msgstr "Actif"
+
+#: templates/advanced.html:114 templates/advanced.html:134
+#: templates/setup_oidc.html:93 templates/setup_oidc.html:104
+#: templates/setupenv.html:88
+msgid "False"
+msgstr "Désactivé"
+
+#: templates/advanced.html:126 templates/advanced.html:131
+msgid "Images"
+msgstr "Images"
+
+#: templates/advanced.html:130
+msgid "Enable images"
+msgstr "Activer les images"
+
+#: templates/advanced.html:146
+msgid "Currency Settings"
+msgstr "Paramètres de la devise"
+
+#: templates/advanced.html:152
+msgid "Currency Symbol"
+msgstr "Symbole de la devise"
+
+#: templates/advanced.html:159
+msgid "e.g., $, €, £, ¥"
+msgstr "ex: $, €, £, ¥"
+
+#: templates/advanced.html:160
+msgid "Enter the currency symbol (max 5 characters)"
+msgstr "Entrez le symbole de la devise (maximum 5 caractères)"
+
+#: templates/advanced.html:165
+msgid "Symbol Position"
+msgstr "Position du symbole"
+
+#: templates/advanced.html:170
+msgid "Before amount (e.g., $50)"
+msgstr "Avant le montant (p. ex., $50)"
+
+#: templates/advanced.html:175
+msgid "After amount (e.g., 50€)"
+msgstr "Après le montant (par exemple, 50€)"
+
+#: templates/advanced.html:182
+msgid "Preview:"
+msgstr "Aperçu:"
+
+#: templates/advanced.html:184
+msgid "This is how gift values will appear"
+msgstr "Voici comment les valeurs des cadeaux apparaîtront"
+
+#: templates/advanced.html:189
+msgid "Save Currency Settings"
+msgstr "Enregistrer les paramètres de la devise"
+
+#: templates/advanced.html:199
+msgid "Self-Registration Settings"
+msgstr "Paramètres d'auto-inscription"
+
+#: templates/advanced.html:207
+msgid "Enable Self Registration"
+msgstr "Activer l'inscription automatique"
+
+#: templates/advanced.html:209
+msgid "Allow new users to create their own accounts"
+msgstr "Permettre aux nouveaux utilisateurs de créer leurs propres comptes"
+
+#: templates/advanced.html:213
+msgid "Joining Code (Optional)"
+msgstr "Code d'inscription (facultatif)"
+
+#: templates/advanced.html:219
+msgid "Leave empty to allow anyone to register"
+msgstr "Laisser vide pour permettre à tout le monde de s'inscrire"
+
+#: templates/advanced.html:221
+msgid "If set, users must provide this code to register. Leave empty for open registration."
+msgstr "Si défini, les utilisateurs doivent fournir ce code pour s'inscrire. Laisser vide pour inscription ouverte."
+
+#: templates/advanced.html:227
+msgid "Save Registration Settings"
+msgstr "Enregistrer les paramètres d'inscription"
+
+#: templates/advanced.html:237
+msgid "Link Sharing Settings"
+msgstr "Paramètres de partage de liens"
+
+#: templates/advanced.html:245
+msgid "Enable Link Sharing Feature"
+msgstr "Activer la fonctionnalité de partage de liens"
+
+#: templates/advanced.html:248
+msgid "Allow users to create public share links for their gift lists. When disabled, the \"Share My List\" feature will be hidden from all users."
+msgstr "Autoriser les utilisateurs à créer des liens de partage public pour leurs listes de cadeaux. Lorsque cette option est désactivée, la fonction « Partager ma liste » sera cachée à tous les utilisateurs."
+
+#: templates/advanced.html:254
+msgid "Save Link Sharing Settings"
+msgstr "Enregistrer les paramètres de partage de liens"
+
+#: templates/advanced.html:263 templates/advanced.html:268
+msgid "Language"
+msgstr "Langue"
+
+#: templates/advanced.html:267
+msgid "Select the language used throughout the application. This overrides the browser language."
+msgstr "Sélectionnez la langue utilisée dans l'application. Cela remplace la langue du navigateur."
+
+#: templates/bought_items.html:7
+msgid "Bought Items"
+msgstr "Articles achetés"
+
+#: templates/bought_items.html:126
+msgid "Object bought by me:"
+msgstr "Objet acheté par moi :"
+
+#: templates/bought_items.html:131
+msgid "For:"
+msgstr "Pour :"
+
+#: templates/bought_items.html:132
+msgid "Description:"
+msgstr "Description :"
+
+#: templates/bought_items.html:134
+msgid "Link:"
+msgstr "Lien :"
+
+#: templates/dashboard.html:6
+msgid "Gift Dashboard"
+msgstr "Cadeaux"
+
+#: templates/dashboard.html:382
+msgid "Menu"
+msgstr "Menu"
+
+#: templates/dashboard.html:399
+msgid "Info"
+msgstr "Informations"
+
+#: templates/dashboard.html:400
+msgid "Name:"
+msgstr "Nom:"
+
+#: templates/dashboard.html:412
+msgid "Group users on dashboard"
+msgstr "Grouper les utilisateurs sur le tableau de bord"
+
+#: templates/dashboard.html:422 templates/dashboard.html:447
+msgid "Change Avatar"
+msgstr "Changer d'avatar"
+
+#: templates/dashboard.html:455 templates/dashboard.html:469
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+#: templates/dashboard.html:460
+msgid "Current Password"
+msgstr "Mot de passe actuel"
+
+#: templates/dashboard.html:463 templates/manage_users.html:105
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+#: templates/dashboard.html:466
+msgid "Repeat New Password"
+msgstr "Répétez le nouveau mot de passe"
+
+#: templates/dashboard.html:477 templates/dashboard.html:485
+msgid "Change Email"
+msgstr "Changer l'email"
+
+#: templates/dashboard.html:482
+msgid "New Email"
+msgstr "Nouvel Email"
+
+#: templates/dashboard.html:495 templates/dashboard.html:496
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: templates/dashboard.html:499 templates/manage_shared_lists.html:6
+#: templates/manage_shared_lists.html:135
+msgid "Shared Lists"
+msgstr "Listes partagées"
+
+#: templates/dashboard.html:501
+msgid "Public links"
+msgstr "Lien public"
+
+#: templates/dashboard.html:504
+msgid "Theme"
+msgstr "Theme"
+
+#: templates/dashboard.html:534
+msgid "View your Secret Santa assignment"
+msgstr "Voir votre affectation Secret Santa"
+
+#: templates/dashboard.html:535
+msgid "Secret Santa Icon"
+msgstr "Secret Santa Icon"
+
+#: templates/dashboard.html:541 templates/my_ideas.html:247
+#: templates/noideas.html:166
+msgid "Add ideas"
+msgstr "Nouvelle idée"
+
+#: templates/delete_old_gift_ideas.html:3
+msgid "Manage Gift Ideas"
+msgstr "Gérer les idées cadeaux"
+
+#: templates/delete_old_gift_ideas.html:18
+msgid "Delete Old Gift Ideas"
+msgstr "Supprimer les vieilles idées cadeaux"
+
+#: templates/delete_old_gift_ideas.html:21
+#, python-format
+msgid "Delete Gift Ideas Older Than %(days)s Days"
+msgstr "Supprimer les idées cadeaux plus anciennes que %(days)s jours"
+
+#: templates/delete_old_gift_ideas.html:27
+msgid "Change Days for Deleting Old Gift Ideas"
+msgstr "Modifier les jours pour supprimer les vieilles idées de cadeaux"
+
+#: templates/delete_old_gift_ideas.html:29
+msgid "New Number of Days:"
+msgstr "Nouveau nombre de jours :"
+
+#: templates/delete_old_gift_ideas.html:33
+msgid "Update Days"
+msgstr "Jours de mise à jour"
+
+#: templates/edit_email_settings.html:3 templates/edit_email_settings.html:4
+#: templates/edit_email_settings.html:9
+msgid "Edit Email Settings"
+msgstr "Modifer les paramètres Email"
+
+#: templates/edit_email_settings.html:14
+msgid "System Email (Sender):"
+msgstr "Email du système (Expéditeur):"
+
+#: templates/edit_email_settings.html:23
+msgid "The \"From\" address used for all notifications."
+msgstr "L'adresse \"De\" utilisée pour toutes les notifications."
+
+#: templates/edit_email_settings.html:29 templates/edit_idea.html:302
+#: templates/manage_groups.html:85 templates/manage_users.html:149
+#: templates/setup_oidc.html:112
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+#: templates/edit_email_settings.html:36
+msgid "Test Email Delivery"
+msgstr "Tester l'envoi d'email"
+
+#: templates/edit_email_settings.html:37
+msgid "Send a test email using the saved SMTP or Mailjet settings. Save any sender changes before testing."
+msgstr "Envoyer un email de test en utilisant les paramètres SMTP ou Mailjet enregistrés. Enregistrez les modifications de l'expéditeur avant de tester."
+
+#: templates/edit_email_settings.html:42
+msgid "Test Recipient Address:"
+msgstr "Adresse du destinataire du test:"
+
+#: templates/edit_email_settings.html:55
+msgid "Send Test Email"
+msgstr "Envoyer un email de test"
+
+#: templates/edit_idea.html:6
+#, python-format
+msgid "%(gift_name)s - Edit an idea"
+msgstr "%(gift_name)s - Modifier une idée"
+
+#: templates/edit_idea.html:262
+msgid "Enter estimated value in dollars"
+msgstr "Entrez la valeur estimée en dollars"
+
+#: templates/edit_idea.html:304 templates/manage_shared_lists.html:276
+#: templates/manage_sharing.html:304 templates/manage_users.html:144
+#: templates/shared_list_public.html:283
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/edit_login_message.html:3 templates/edit_login_message.html:4
+#: templates/edit_login_message.html:8
+msgid "Edit Login Message"
+msgstr "Modifier le message de connexion"
+
+#: templates/edit_login_message.html:25
+msgid "Update Message"
+msgstr "Mettre à jour le message"
+
+#: templates/login.html:9 templates/login.html:207
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/login.html:225 templates/manage_guest_users.html:109
+#: templates/manage_users.html:25 templates/setup_oidc.html:69
+#: templates/setup_oidc.html:80
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: templates/login.html:227
+msgid "Password"
+msgstr "Mot de passe"
+
+#: templates/login.html:229
+msgid "SIGN IN"
+msgstr "S'identifier"
+
+#: templates/login.html:232 templates/login.html:243
+#: templates/oidc_only.html:141
+msgid "or"
+msgstr "ou"
+
+#: templates/login.html:237
+msgid "Create New Account"
+msgstr "Créer un nouveau compte"
+
+#: templates/login.html:248 templates/oidc_only.html:144
+msgid "I have a guest password"
+msgstr "J'ai un mot de passe d'invité"
+
+#: templates/login.html:255 templates/oidc_only.html:137
+msgid "Login with OIDC"
+msgstr "Connexion avec OIDC"
+
+#: templates/login.html:259
+msgid "Contact the administrator to reset your password."
+msgstr "Contactez l'administrateur pour réinitialiser votre mot de passe."
+
+#: templates/login.html:264
+msgid "Guest Login"
+msgstr "Connexion d'invité"
+
+#: templates/login.html:266
+msgid "Enter your guest password to access limited features"
+msgstr "Entrez votre mot de passe invité pour accéder à des fonctionnalités limitées"
+
+#: templates/login.html:281
+msgid "Guest Password"
+msgstr "Mot de passe d'invité"
+
+#: templates/login.html:283 templates/oidc_only.html:150
+msgid "Enter guest password"
+msgstr "Entrez le mot de passe invité"
+
+#: templates/login.html:285
+msgid "LOGIN AS GUEST"
+msgstr "Se connecter en tant qu'invité"
+
+#: templates/login.html:288
+msgid "Back to regular login"
+msgstr "Retour à la connexion régulière"
+
+#: templates/login.html:291
+msgid "Contact the administrator for guest access."
+msgstr "Contactez l'administrateur pour obtenir l'accès invité."
+
+#: templates/manage_groups.html:3 templates/manage_groups.html:4
+#: templates/manage_groups.html:31
+msgid "Manage Groups"
+msgstr "Gérer les groupes"
+
+#: templates/manage_groups.html:9
+msgid "Please enter a new group name."
+msgstr "Veuillez entrer un nouveau nom de groupe."
+
+#: templates/manage_groups.html:10
+msgid "Please select at least one user to assign the new group."
+msgstr "Veuillez sélectionner au moins un utilisateur à assigner au nouveau groupe."
+
+#: templates/manage_groups.html:35
+msgid "Add a New Group"
+msgstr "Ajouter un nouveau groupe"
+
+#: templates/manage_groups.html:37
+msgid "Enter new group name"
+msgstr "Entrez un nouveau nom de groupe"
+
+#: templates/manage_groups.html:41
+msgid "Assign to Users:"
+msgstr "Assigner aux utilisateurs:"
+
+#: templates/manage_groups.html:52
+msgid "Add Group"
+msgstr "Ajouter un groupe"
+
+#: templates/manage_groups.html:58
+msgid "Manage Existing Groups"
+msgstr "Gérer les groupes existants"
+
+#: templates/manage_groups.html:63
+msgid "User"
+msgstr "Utilisateur"
+
+#: templates/manage_guest_users.html:3 templates/manage_guest_users.html:4
+#: templates/manage_guest_users.html:27
+msgid "Manage Guest Users"
+msgstr "Gérer les utilisateurs invités"
+
+#: templates/manage_guest_users.html:32
+msgid "Create New Guest User"
+msgstr "Créer un nouvel utilisateur invité"
+
+#: templates/manage_guest_users.html:36
+msgid "Display Name:"
+msgstr "Nom complet:"
+
+#: templates/manage_guest_users.html:39
+msgid "e.g., Uncle John"
+msgstr "ex: Oncle John"
+
+#: templates/manage_guest_users.html:40
+msgid "This name will be shown when guest marks items as bought"
+msgstr "Ce nom sera affiché lorsque les invités marquent des objets comme achetés"
+
+#: templates/manage_guest_users.html:50
+msgid "Access Type:"
+msgstr "Type d'accès:"
+
+#: templates/manage_guest_users.html:55
+msgid "Access by Family"
+msgstr "Accès par famille"
+
+#: templates/manage_guest_users.html:60
+msgid "Access Specific People"
+msgstr "Accéder à des personnes spécifiques"
+
+#: templates/manage_guest_users.html:67
+msgid "Select Families:"
+msgstr "Sélectionner des familles:"
+
+#: templates/manage_guest_users.html:82
+msgid "Select People:"
+msgstr "Sélectionner des personnes:"
+
+#: templates/manage_guest_users.html:96
+msgid "Create Guest User"
+msgstr "Créer un nouvel utilisateur invité"
+
+#: templates/manage_guest_users.html:103
+msgid "Existing Guest Users"
+msgstr "Utilisateurs invités existants"
+
+#: templates/manage_guest_users.html:110
+msgid "Display Name"
+msgstr "Nom complet"
+
+#: templates/manage_guest_users.html:111
+msgid "Access Type"
+msgstr "Type d'accès"
+
+#: templates/manage_guest_users.html:112
+msgid "Access Details"
+msgstr "Détails de l'accès"
+
+#: templates/manage_guest_users.html:113 templates/manage_users.html:30
+msgid "Actions"
+msgstr "Actions"
+
+#: templates/manage_guest_users.html:123
+msgid "Family Access"
+msgstr "Accès Famille"
+
+#: templates/manage_guest_users.html:125
+msgid "People Access"
+msgstr "Accès à des personnes"
+
+#: templates/manage_guest_users.html:131
+msgid "Families:"
+msgstr "Familles:"
+
+#: templates/manage_guest_users.html:135
+msgid "People:"
+msgstr "Personnes :"
+
+#: templates/manage_guest_users.html:145
+#, python-format
+msgid "Are you sure you want to delete guest user %(name)s?"
+msgstr "Êtes-vous sûr de vouloir supprimer l'utilisateur invité %(name)s?"
+
+#: templates/manage_guest_users.html:147 templates/manage_shared_lists.html:243
+#: templates/manage_sharing.html:247 templates/manage_users.html:75
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/manage_guest_users.html:159
+msgid "No guest users configured yet."
+msgstr "Aucun utilisateur invité n'a encore été configuré."
+
+#: templates/manage_guest_users.html:170
+msgid "Please enter a display name for the guest."
+msgstr "Veuillez entrer un nom d'affichage pour l'invité."
+
+#: templates/manage_guest_users.html:171
+msgid "Please enter a password for the guest."
+msgstr "Veuillez entrer un mot de passe pour l'invité."
+
+#: templates/manage_guest_users.html:172
+msgid "Please select at least one family for guest access."
+msgstr "Veuillez sélectionner au moins une famille pour l'accès aux invités."
+
+#: templates/manage_guest_users.html:173
+msgid "Please select at least one person for guest access."
+msgstr "Veuillez sélectionner au moins une personne pour l'accès aux invités."
+
+#: templates/manage_shared_lists.html:153
+msgid "Create New Shared List"
+msgstr "Créer une nouvelle liste partagée"
+
+#: templates/manage_shared_lists.html:157
+msgid "List Name:"
+msgstr "Nom de la liste :"
+
+#: templates/manage_shared_lists.html:160
+msgid "e.g., Family Vacation, Office Party"
+msgstr "ex: Vacances familiales, bureau"
+
+#: templates/manage_shared_lists.html:164
+msgid "List Avatar:"
+msgstr "Avatar de la liste:"
+
+#: templates/manage_shared_lists.html:172
+#, python-format
+msgid "Avatar %(number)s"
+msgstr "Avatar %(number)s"
+
+#: templates/manage_shared_lists.html:180
+msgid "Select an avatar for your shared list"
+msgstr "Sélectionnez un avatar pour votre liste partagée"
+
+#: templates/manage_shared_lists.html:185
+msgid "Add Members:"
+msgstr "Ajouter des membres:"
+
+#: templates/manage_shared_lists.html:197
+msgid "Create Shared List"
+msgstr "Créer une liste partagée"
+
+#: templates/manage_shared_lists.html:204
+msgid "My Shared Lists"
+msgstr "Mes listes partagées"
+
+#: templates/manage_shared_lists.html:215
+msgid "List Avatar"
+msgstr "Avatar de la liste"
+
+#: templates/manage_shared_lists.html:224
+msgid "Members:"
+msgstr "Membres:"
+
+#: templates/manage_shared_lists.html:233
+msgid "View"
+msgstr "Voir"
+
+#: templates/manage_shared_lists.html:238 templates/manage_users.html:65
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/manage_shared_lists.html:241
+msgid "Delete this list?"
+msgstr "Supprimer cette liste ?"
+
+#: templates/manage_shared_lists.html:248
+msgid "Member"
+msgstr "Membre"
+
+#: templates/manage_shared_lists.html:257
+msgid "Edit Members"
+msgstr "Modifier les membres"
+
+#: templates/manage_shared_lists.html:286
+msgid "No shared lists yet."
+msgstr "Pas encore de listes partagées."
+
+#: templates/manage_shared_lists.html:292 templates/manage_sharing.html:319
+#: templates/secret_santa_assignment.html:144
+msgid "Back to Dashboard"
+msgstr "Retour au tableau de bord"
+
+#: templates/manage_sharing.html:6
+msgid "Share List"
+msgstr "Partager la liste"
+
+#: templates/manage_sharing.html:112
+#, python-format
+msgid "Share: %(name)s"
+msgstr "Partager: %(name)s"
+
+#: templates/manage_sharing.html:114
+msgid "Share My List"
+msgstr "Partager ma liste"
+
+#: templates/manage_sharing.html:127
+msgid "My Personal List"
+msgstr "Ma liste personnelle"
+
+#: templates/manage_sharing.html:154
+#, python-format
+msgid "Create Share Link for %(name)s"
+msgstr "Créer un lien de partage pour %(name)s"
+
+#: templates/manage_sharing.html:156
+msgid "Create New Share Link"
+msgstr "Créer un lien partageable"
+
+#: templates/manage_sharing.html:163
+msgid "Link Name:"
+msgstr "Nom du lien:"
+
+#: templates/manage_sharing.html:166
+#, python-format
+msgid "%(name)s List"
+msgstr "Liste %(name)s"
+
+#: templates/manage_sharing.html:166
+msgid "My Gift List"
+msgstr "Ma liste de cadeaux"
+
+#: templates/manage_sharing.html:167
+msgid "Give this link a name"
+msgstr "Donner un nom à ce lien"
+
+#: templates/manage_sharing.html:170
+msgid "Valid for:"
+msgstr "Valide pendant:"
+
+#: templates/manage_sharing.html:172 templates/manage_sharing.html:173
+#: templates/manage_sharing.html:174 templates/manage_sharing.html:291
+#: templates/manage_sharing.html:292 templates/manage_sharing.html:293
+#, python-format
+msgid "%(days)s days"
+msgstr "%(days)s jours"
+
+#: templates/manage_sharing.html:175 templates/manage_sharing.html:294
+msgid "1 year"
+msgstr "1 année"
+
+#: templates/manage_sharing.html:181
+msgid "Allow visitors to mark items as purchased"
+msgstr "Permettre aux visiteur de maruqer les articles comme étant achetés"
+
+#: templates/manage_sharing.html:183
+msgid "Visitors can enter their name when marking items as bought"
+msgstr "Les visiteurs peuvent entrer leur nom en marquant des objets comme achetés"
+
+#: templates/manage_sharing.html:187
+msgid "Create Share Link"
+msgstr "Créer un lien partageable"
+
+#: templates/manage_sharing.html:198
+#, python-format
+msgid "%(name)s Share Links"
+msgstr "Liens de partage %(name)s"
+
+#: templates/manage_sharing.html:200
+msgid "My Share Links"
+msgstr "Mes liens partagés"
+
+#: templates/manage_sharing.html:219
+msgid "Expired"
+msgstr "Expiré"
+
+#: templates/manage_sharing.html:220
+msgid "Active"
+msgstr "Actif"
+
+#: templates/manage_sharing.html:221
+msgid "Inactive"
+msgstr "Inactif"
+
+#: templates/manage_sharing.html:225
+#, python-format
+msgid "by %(name)s"
+msgstr "par %(name)s"
+
+#: templates/manage_sharing.html:239
+msgid "Deactivate"
+msgstr "Désactiver"
+
+#: templates/manage_sharing.html:239
+msgid "Activate"
+msgstr "Activer"
+
+#: templates/manage_sharing.html:244
+msgid "Are you sure you want to delete this share link?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce lien de partage ?"
+
+#: templates/manage_sharing.html:255
+msgid "Share URL:"
+msgstr "URL de partage:"
+
+#: templates/manage_sharing.html:264
+msgid "Created:"
+msgstr "Créé:"
+
+#: templates/manage_sharing.html:268
+msgid "Expires:"
+msgstr "Valide jusqu’à:"
+
+#: templates/manage_sharing.html:271
+msgid "(Expired)"
+msgstr "(Expiré)"
+
+#: templates/manage_sharing.html:279 templates/manage_sharing.html:284
+msgid "Extend Expiration"
+msgstr "Prolonger l'expiration"
+
+#: templates/manage_sharing.html:289
+msgid "Add days:"
+msgstr "Ajouter des jours :"
+
+#: templates/manage_sharing.html:300
+msgid "Extend"
+msgstr "Étendre"
+
+#: templates/manage_sharing.html:313
+msgid "No share links created yet."
+msgstr "Aucun lien de partage n'a encore été créé."
+
+#: templates/manage_users.html:3 templates/manage_users.html:4
+#: templates/manage_users.html:8
+msgid "Manage Users"
+msgstr "Gestion des utilisateurs"
+
+#: templates/manage_users.html:26
+msgid "Name"
+msgstr "Nom"
+
+#: templates/manage_users.html:27 templates/manage_users.html:94
+#: templates/setup_oidc.html:68 templates/setup_oidc.html:81
+msgid "Email"
+msgstr "Email"
+
+#: templates/manage_users.html:56
+msgid "Are you sure you want to change admin status?"
+msgstr "Êtes-vous sûr de vouloir changer le statut d'administrateur ?"
+
+#: templates/manage_users.html:57
+msgid "Make Admin"
+msgstr "Rendre administrateur"
+
+#: templates/manage_users.html:57
+msgid "Revoke Admin"
+msgstr "Révoquer les droits d'admin"
+
+#: templates/manage_users.html:73
+msgid "Are you sure you want to delete this user?"
+msgstr "Voulez-vous vraiment supprimer cet utilisateur ?"
+
+#: templates/manage_users.html:82
+#, python-format
+msgid "Edit User: %(username)s"
+msgstr "Modifier l'utilisateur %(username)s"
+
+#: templates/manage_users.html:86 templates/setup_oidc.html:70
+#: templates/setup_oidc.html:82
+msgid "Full Name"
+msgstr "Nom complet"
+
+#: templates/manage_users.html:102
+msgid "New Password (leave empty to keep current)"
+msgstr "Nouveau mot de passe (garder vide pour le courant)"
+
+#: templates/manage_users.html:123
+msgid "Random Avatar"
+msgstr "Avatar aléatoire"
+
+#: templates/manage_users.html:127
+msgid "Upload Image"
+msgstr "Charger une image"
+
+#: templates/my_ideas.html:6
+msgid "My Ideas"
+msgstr "Mes idées"
+
+#: templates/my_ideas.html:252
+msgid "My List of Ideas"
+msgstr "Ma liste d'idées"
+
+#: templates/my_ideas.html:254
+msgid "Reorder"
+msgstr "Réordonner"
+
+#: templates/my_ideas.html:255
+msgid "Save Order"
+msgstr "Enregistrer l'ordre"
+
+#: templates/my_ideas.html:278 templates/shared_list_public.html:216
+#: templates/user_gift_ideas.html:258
+msgid "Estimated Value:"
+msgstr "Valeur estimée:"
+
+#: templates/my_ideas.html:280 templates/shared_list_public.html:218
+#: templates/user_gift_ideas.html:260
+msgid "Added By:"
+msgstr "Ajouté par :"
+
+#: templates/my_ideas.html:283 templates/user_gift_ideas.html:386
+#, python-format
+msgid "Last updated: %(date)s"
+msgstr "Dernière mise à jour : %(date)s"
+
+#: templates/my_ideas.html:300 templates/user_gift_ideas.html:274
+msgid "Delete Icon"
+msgstr "Delete Icon"
+
+#: templates/my_ideas.html:303 templates/user_gift_ideas.html:277
+msgid "Edit Icon"
+msgstr "Edit Icon"
+
+#: templates/my_ideas.html:312 templates/shared_list_public.html:236
+#: templates/user_gift_ideas.html:286
+msgid "Open Link Icon"
+msgstr "Open Link Icon"
+
+#: templates/noideas.html:6
+msgid "No gift ideas?"
+msgstr "Aucune idée cadeau ?"
+
+#: templates/noideas.html:163
+msgid "This person lacks imagination, help them!"
+msgstr "Cette personne manque d'imagination, aidez-la!"
+
+#: templates/noideas.html:164
+msgid "No gift ideas image"
+msgstr "Image pas d'idée cadeaux"
+
+#: templates/oidc_only.html:6 templates/oidc_only.html:121
+msgid "OIDC Login Only"
+msgstr "Connexion OIDC seulement"
+
+#: templates/oidc_only.html:153
+msgid "Login as Guest"
+msgstr "Se connecter en tant qu'invité"
+
+#: templates/oidc_only.html:156
+msgid "Back to OIDC Login"
+msgstr "Retour à la connexion OIDC"
+
+#: templates/register.html:6 templates/register.html:131
+#: templates/register.html:196
+msgid "Register"
+msgstr "Inscription"
+
+#: templates/register.html:100
+msgid "Passwords do not match"
+msgstr "Les mots de passe ne correspondent pas"
+
+#: templates/register.html:157
+msgid "Confirm Password:"
+msgstr "Confirmer le mot de passe :"
+
+#: templates/register.html:161
+msgid "Email (optional):"
+msgstr "Email (facultatif) :"
+
+#: templates/register.html:165
+msgid "Birthday (optional):"
+msgstr "Anniversaire (facultatif) :"
+
+#: templates/register.html:171
+msgid "Joining Code:"
+msgstr "Code d'inscription :"
+
+#: templates/register.html:173
+msgid "Please ask your family for the joining code"
+msgstr "Veuillez demander à votre famille le code d'inscription"
+
+#: templates/register.html:178 templates/setup_profile.html:48
+msgid "Avatar:"
+msgstr "Avatar:"
+
+#: templates/register.html:186
+msgid "Default Avatar"
+msgstr "Avatar par Défaut"
+
+#: templates/register.html:189
+msgid "You can change your avatar later in profile settings"
+msgstr "Vous pouvez modifier votre avatar plus tard dans les paramètres du profil"
+
+#: templates/secret_santa.html:4
+msgid "Secret Santa Manager"
+msgstr "Gestionnaire Secret Santa"
+
+#: templates/secret_santa.html:119
+msgid "Create gift exchanges with exclusions"
+msgstr "Créez des échanges de cadeaux avec des exclusions"
+
+#: templates/secret_santa.html:123
+msgid "Create New Pool"
+msgstr "Créer un nouveau pool"
+
+#: templates/secret_santa.html:126
+msgid "Error"
+msgstr "Erreur"
+
+#: templates/secret_santa.html:135
+msgid "Pool Name"
+msgstr "Nom du pool"
+
+#: templates/secret_santa.html:138
+msgid "Letters, numbers, dashes, underscores only"
+msgstr "Lettres, chiffres, tirets, tirets bas seulement"
+
+#: templates/secret_santa.html:143
+msgid "Participants"
+msgstr "Participants"
+
+#: templates/secret_santa.html:156
+msgid "Select at least 2 participants"
+msgstr "Sélectionnez au moins 2 participants"
+
+#: templates/secret_santa.html:161
+msgid "Exclusions (Optional)"
+msgstr "Exclusions (facultatif)"
+
+#: templates/secret_santa.html:165 templates/secret_santa.html:174
+#: templates/secret_santa.html:238
+msgid "Select person..."
+msgstr "Sélectionner une personne..."
+
+#: templates/secret_santa.html:172 templates/secret_santa.html:239
+msgid "cannot gift to"
+msgstr "ne peut pas donner à"
+
+#: templates/secret_santa.html:185
+msgid "+ Add Exclusion"
+msgstr "+ Ajouter une exclusion"
+
+#: templates/secret_santa.html:186
+msgid "Exclusions work both ways"
+msgstr "Les exclusions fonctionnent dans les deux sens"
+
+#: templates/secret_santa.html:192
+msgid "Instructions (Optional)"
+msgstr "Instructions (facultatif)"
+
+#: templates/secret_santa.html:194
+msgid "Budget: $50 \n"
+"Exchange date: Dec 24 \n"
+"Theme: Handmade"
+msgstr "Budget : 50 $ \n"
+"Date d'échange : 24 Déc \n"
+"Thème : Fabriqué à la main"
+
+#: templates/secret_santa.html:204
+msgid "Create Pool"
+msgstr "Créer un pool"
+
+#: templates/secret_santa.html:211
+msgid "Existing Pools"
+msgstr "Pools existants"
+
+#: templates/secret_santa.html:213
+msgid "Delete this pool?"
+msgstr "Supprimer ce pool?"
+
+#: templates/secret_santa.html:215
+msgid "Select Pool to Delete"
+msgstr "Sélectionnez un pool à supprimer"
+
+#: templates/secret_santa.html:217
+msgid "Choose a pool..."
+msgstr "Choisissez un pool..."
+
+#: templates/secret_santa.html:224
+msgid "Delete Pool"
+msgstr "Supprimer le pool"
+
+#: templates/secret_santa.html:228
+msgid "No pools yet"
+msgstr "Pas encore de pools"
+
+#: templates/secret_santa.html:240
+msgid "Please select at least 2 participants"
+msgstr "Sélectionnez au moins 2 participants"
+
+#: templates/secret_santa.html:241
+msgid "Pool name can only contain letters, numbers, dashes, and underscores"
+msgstr "Le nom du pool ne peut contenir que des lettres, chiffres, tirets et traits de soulignement"
+
+#: templates/secret_santa.html:242
+msgid "has no possible gift recipients"
+msgstr "n'a pas de destinataire de cadeau possible"
+
+#: templates/secret_santa.html:243
+msgid "have no possible gift recipients"
+msgstr "n'ont pas de récipiendaire de cadeau possible"
+
+#: templates/secret_santa_assignment.html:7
+msgid "Secret Santa Assignment"
+msgstr "Assignation Secret Santa"
+
+#: templates/secret_santa_assignment.html:122
+msgid "Here are your Secret Santa assignments:"
+msgstr "Voici vos assignations pour le Secret Santa:"
+
+#: templates/secret_santa_assignment.html:127
+msgid "Your Secret Santa Assignments:"
+msgstr "Vos assignation Secret Santa:"
+
+#: templates/secret_santa_assignment.html:131
+#, python-format
+msgid "Pool: %(pool_name)s"
+msgstr "Pool : %(pool_name)s"
+
+#: templates/secret_santa_assignment.html:132
+#, python-format
+msgid "Assigned to: %(name)s"
+msgstr "Assigné à: %(name)s"
+
+#: templates/secret_santa_assignment.html:134
+msgid "Instructions:"
+msgstr "Instructions:"
+
+#: templates/setup_oidc.html:3 templates/setup_oidc.html:4
+msgid "Setup OIDC Configuration"
+msgstr "Configuration OIDC"
+
+#: templates/setup_oidc.html:23 templates/setupenv.html:55
+msgid "OIDC Server Metadata URL:"
+msgstr "URL des métadonnées du serveur OIDC :"
+
+#: templates/setup_oidc.html:33 templates/setupenv.html:60
+msgid "OIDC Logout URL:"
+msgstr "URL de déconnexion OIDC :"
+
+#: templates/setup_oidc.html:43 templates/setupenv.html:65
+msgid "Primary OIDC Field:"
+msgstr "Champ principal OIDC :"
+
+#: templates/setup_oidc.html:48
+msgid "Enter the primary OIDC field"
+msgstr "Entrez le champ OIDC principal"
+
+#: templates/setup_oidc.html:54 templates/setupenv.html:70
+msgid "Secondary OIDC Field:"
+msgstr "Champ OIDC secondaire :"
+
+#: templates/setup_oidc.html:59
+msgid "Enter the secondary OIDC field"
+msgstr "Entrez le champ OIDC secondaire"
+
+#: templates/setup_oidc.html:65 templates/setupenv.html:75
+msgid "Primary DB Field:"
+msgstr "Champ principal de la base de données :"
+
+#: templates/setup_oidc.html:77 templates/setupenv.html:80
+msgid "Secondary DB Field:"
+msgstr "Champ secondaire de la base de données :"
+
+#: templates/setup_oidc.html:89 templates/setupenv.html:85
+msgid "Enable Auto Registration:"
+msgstr "Activer l'inscription automatique:"
+
+#: templates/setup_oidc.html:100
+msgid "Enable Default Login Form:"
+msgstr "Activer la page de connexion par défaut:"
+
+#: templates/setup_profile.html:6
+msgid "Setup Profile"
+msgstr "Configuration du profil"
+
+#: templates/setup_profile.html:14
+msgid "Setup Your Profile"
+msgstr "Configurer votre profil"
+
+#: templates/setup_profile.html:17
+msgid "Username:"
+msgstr "Nom d'utilisateur:"
+
+#: templates/setup_profile.html:22 templates/setupadmin.html:29
+msgid "Full Name:"
+msgstr "Nom complet:"
+
+#: templates/setup_profile.html:38
+msgid "Password is not required because default login is disabled."
+msgstr "Le mot de passe n'est pas requis car la connexion par défaut est désactivée."
+
+#: templates/setup_profile.html:56
+msgid "Generated Avatar"
+msgstr "Avatar généré"
+
+#: templates/setup_profile.html:59
+msgid "Avatar generated successfully"
+msgstr "Avatar généré avec succès"
+
+#: templates/setup_profile.html:60
+msgid "You can change it later in profile settings"
+msgstr "Vous pouvez modifier votre avatar plus tard dans les paramètres du profil"
+
+#: templates/setup_profile.html:70
+msgid "Generating avatar..."
+msgstr "Génération de l'avatar..."
+
+#: templates/setup_profile.html:71
+msgid "Please wait a moment"
+msgstr "Veuillez patienter quelques instants"
+
+#: templates/setupadmin.html:6 templates/setupadmin.html:14
+msgid "Admin Setup"
+msgstr "Configuration de l'administrateur"
+
+#: templates/setupadmin.html:37
+msgid "Create Admin Account"
+msgstr "Créer le compte administrateur"
+
+#: templates/setupenv.html:6
+msgid "Environment Setup"
+msgstr "Configuration de l'environnement"
+
+#: templates/setupenv.html:14
+msgid "Environment Variable Setup"
+msgstr "Configuration des variables d'environnement"
+
+#: templates/setupenv.html:19
+msgid "System Email:"
+msgstr "Email du système:"
+
+#: templates/setupenv.html:20
+msgid "System Email"
+msgstr "Email du système"
+
+#: templates/setupenv.html:24
+msgid "SMTP Host:"
+msgstr "Hôte SMTP:"
+
+#: templates/setupenv.html:29
+msgid "SMTP Port:"
+msgstr "Port SMTP:"
+
+#: templates/setupenv.html:36
+msgid "Use TLS"
+msgstr "Utiliser TLS"
+
+#: templates/setupenv.html:40
+msgid "Use SSL"
+msgstr "Utiliser SSL"
+
+#: templates/setupenv.html:45
+msgid "SMTP Username:"
+msgstr "Nom d'utilisateur SMTP:"
+
+#: templates/setupenv.html:46
+msgid "SMTP Username"
+msgstr "Nom d'utilisateur SMTP"
+
+#: templates/setupenv.html:50
+msgid "Delete Days:"
+msgstr "Jours avant supression:"
+
+#: templates/setupenv.html:51
+msgid "Default: 30"
+msgstr "Par défaut: 30"
+
+#: templates/setupenv.html:56
+msgid "OIDC Server Metadata URL"
+msgstr "URL des métadonnées du serveur OIDC"
+
+#: templates/setupenv.html:61
+msgid "OIDC Logout URL"
+msgstr "URL de déconnexion OIDC"
+
+#: templates/setupenv.html:66 templates/setupenv.html:76
+msgid "Default: email"
+msgstr "Default: email"
+
+#: templates/setupenv.html:71
+msgid "Default: preferred_username"
+msgstr "Par défaut: nom d'utilisateur préféré"
+
+#: templates/setupenv.html:81
+msgid "Default: username"
+msgstr "Par défaut: nom d'utilisateur"
+
+#: templates/setupenv.html:94
+msgid "Save Configuration"
+msgstr "Enregistrer la configuration"
+
+#: templates/setupenv.html:95
+msgid "Skip for Now"
+msgstr "Ignorer pour l'instant"
+
+#: templates/setupenv.html:96
+msgid "You can configure these settings later in the parameters section."
+msgstr "Vous pourrez configurer ces paramètres plus tard dans la section paramètres."
+
+#: templates/shared_list_expired.html:6 templates/shared_list_expired.html:12
+msgid "Share Link Expired"
+msgstr "Lien de partage expiré"
+
+#: templates/shared_list_expired.html:14
+msgid "This share link has either expired or been deactivated by the list owner."
+msgstr "Ce lien de partage a expiré ou a été désactivé par le propriétaire de la liste."
+
+#: templates/shared_list_expired.html:17
+msgid "Please contact the list owner if you need access to this gift list."
+msgstr "Veuillez contacter le propriétaire de la liste si vous avez besoin d'accéder à cette liste de cadeaux."
+
+#: templates/shared_list_public.html:6 templates/shared_list_public.html:201
+#, python-format
+msgid "%(name)s's Gift List"
+msgstr "Liste de cadeaux de %(name)s"
+
+#: templates/shared_list_public.html:176
+msgid "Are you sure you want to cancel this purchase?"
+msgstr "Êtes-vous sûr de vouloir annuler cet achat ?"
+
+#: templates/shared_list_public.html:177
+msgid "Please enter your name"
+msgstr "Veuillez saisir votre nom"
+
+#: templates/shared_list_public.html:178
+msgid "Error:"
+msgstr "Erreur:"
+
+#: templates/shared_list_public.html:179
+msgid "An error occurred"
+msgstr "Une erreur est survenue"
+
+#: templates/shared_list_public.html:202
+msgid "Shared via GiftManager"
+msgstr "Partagé via GiftManager"
+
+#: templates/shared_list_public.html:207
+#, python-format
+msgid "Gift Ideas for %(name)s"
+msgstr "Idées cadeau pour %(name)s"
+
+#: templates/shared_list_public.html:244 templates/shared_list_public.html:253
+#, python-format
+msgid "Purchased by: %(name)s"
+msgstr "Acheté par : %(name)s"
+
+#: templates/shared_list_public.html:249
+msgid "Cancel Purchase"
+msgstr "Annuler l'achat"
+
+#: templates/shared_list_public.html:256 templates/user_gift_ideas.html:321
+msgid "Available idea"
+msgstr "Idée disponible"
+
+#: templates/shared_list_public.html:258
+msgid "I Purchased This"
+msgstr "J'ai acheté ceci"
+
+#: templates/shared_list_public.html:267
+#, python-format
+msgid "Shared on %(shared)s • Expires on %(expires)s"
+msgstr "Partagé sur %(shared)s • Expire le %(expires)s"
+
+#: templates/shared_list_public.html:268
+msgid "Powered by GiftManager"
+msgstr "Propulsé par GiftManager"
+
+#: templates/shared_list_public.html:274
+msgid "Enter Your Name"
+msgstr "Entrez votre nom"
+
+#: templates/shared_list_public.html:275
+msgid "Please enter your name to mark this item as purchased:"
+msgstr "Veuillez entrer votre nom pour marquer cet objet comme étant acheté :"
+
+#: templates/shared_list_public.html:276
+msgid "Your name"
+msgstr "Votre nom"
+
+#: templates/shared_list_public.html:280
+msgid "Confirm Purchase"
+msgstr "Confirmer l'achat"
+
+#: templates/user_gift_ideas.html:6
+msgid "Ideas List"
+msgstr "Liste d'idées"
+
+#: templates/user_gift_ideas.html:238
+#, python-format
+msgid "Ideas list for %(username)s"
+msgstr "Liste des idées pour %(username)s"
+
+#: templates/user_gift_ideas.html:293
+msgid "Purchased by:"
+msgstr "Acheté par :"
+
+#: templates/user_gift_ideas.html:304
+msgid "Anonymous"
+msgstr "Anonyme"
+
+#: templates/user_gift_ideas.html:306
+#, python-format
+msgid "Me (%(username)s)"
+msgstr "Moi (%(username)s)"
+
+#: templates/user_gift_ideas.html:308 templates/user_gift_ideas.html:310
+msgid "(anonymously)"
+msgstr "(anonymement)"
+
+#: templates/user_gift_ideas.html:317
+msgid "Cancel the purchase"
+msgstr "Annuler l'achat"
+
+#: templates/user_gift_ideas.html:329
+msgid "Purchase (anonymously)"
+msgstr "Acheter (anonymement)"
+
+#: templates/user_gift_ideas.html:337 templates/user_gift_ideas.html:347
+msgid "Purchase"
+msgstr "Acheter"
+
+#: templates/user_gift_ideas.html:375
+msgid "Purchase anonymously"
+msgstr "Acheter anonymement"
+
+#~ msgid "An error occurred: %(error)s"
+#~ msgstr "Une erreur est survenue : %(error)s"
+
